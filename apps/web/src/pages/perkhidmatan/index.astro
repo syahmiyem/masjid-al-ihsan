@@ -1,5 +1,7 @@
 ---
 // All services (plan 4.3). Each service also has its own SEO page.
+import ShareBar from '../../components/ShareBar.astro';
+import { sharePage } from '../../lib/share';
 import ServiceCard from '../../components/ui/ServiceCard.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getPerkhidmatan } from '../../lib/sanity';
@@ -20,4 +22,5 @@ const services = await getPerkhidmatan();
       <ServiceCard name={s.nama} summary={s.ringkasan} href={`/perkhidmatan/${s.slug}`} />
     ))}
   </div>
+  <ShareBar url={new URL(Astro.url.pathname, Astro.site).href} message={sharePage('Perkhidmatan')} />
 </BaseLayout>

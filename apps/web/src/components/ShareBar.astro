@@ -1,0 +1,112 @@
+---
+// Sharing on every page/item (plan 4.4, D-32): WhatsApp link (works everywhere, no JavaScript),
+// device share sheet and copy link (shown only when the browser supports them), and add-to-calendar.
+import { CalendarPlus, Link, MessageCircle, Share2 } from '@lucide/astro';
+
+interface Props {
+  /** Absolute URL of the page being shared */
+  url: string;
+  /** Pre-written message; the URL is appended */
+  message: string;
+  title?: string;
+  calendar?: { google: string; ics: string };
+}
+const { url, message, title, calendar } = Astro.props;
+const whatsapp = `https://wa.me/?text=${encodeURIComponent(`${message} ${url}`)}`;
+---
+
+<section class="share" aria-label="Kongsi">
+  <div class="btn-row">
+    <a class="btn btn-primary" href={whatsapp}>
+      <MessageCircle size={22} aria-hidden="true" /> Kongsi ke WhatsApp
+    </a>
+    <button
+      class="btn btn-secondary"
+      type="button"
+      data-share-url={url}
+      data-share-text={message}
+      data-share-title={title}
+      hidden
+    >
+      <Share2 size={22} aria-hidden="true" /> Kongsi
+    </button>
+    <button class="btn btn-secondary" type="button" data-copy-link={url} hidden>
+      <Link size={22} aria-hidden="true" /> Salin Pautan
+    </button>
+  </div>
+  {calendar && (
+    <details class="cal">
+      <summary class="btn btn-secondary">
+        <CalendarPlus size={22} aria-hidden="true" /> Tambah ke Kalendar
+      </summary>
+      <ul>
+        <li>
+          <a href={calendar.google}>Google Calendar</a>
+        </li>
+        <li>
+          <a href={calendar.ics} download>
+            Kalendar telefon (fail .ics)
+          </a>
+        </li>
+      </ul>
+    </details>
+  )}
+  <p class="share-status" role="status" aria-live="polite"></p>
+</section>
+
+<script>
+  // Progressive enhancement: reveal buttons only where the browser supports them.
+  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-share-url]')) {
+    const data = {
+      url: button.dataset.shareUrl,
+      text: button.dataset.shareText,
+      title: button.dataset.shareTitle,
+    };
+    if (!navigator.share || (navigator.canShare && !navigator.canShare(data))) continue;
+    button.hidden = false;
+    button.addEventListener('click', () => navigator.share(data).catch(() => {}));
+  }
+  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-copy-link]')) {
+    if (!navigator.clipboard) continue;
+    button.hidden = false;
+    const status = button.closest('.share')?.querySelector<HTMLElement>('.share-status');
+    button.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(button.dataset.copyLink ?? '');
+        if (status) status.textContent = 'Pautan telah disalin.';
+      } catch {
+        if (status) status.textContent = 'Tidak dapat menyalin pautan.';
+      }
+    });
+  }
+</script>
+
+<style>
+  .share {
+    margin: var(--s3) 0;
+  }
+  .cal summary {
+    list-style: none;
+  }
+  .cal summary::-webkit-details-marker {
+    display: none;
+  }
+  .cal ul {
+    list-style: none;
+    padding: 0.5rem 0 0;
+    margin: 0;
+  }
+  .cal a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    font-weight: 700;
+  }
+  .share-status {
+    margin: 0.5rem 0 0;
+    font-weight: 700;
+  }
+  .share-status:empty {
+    display: none;
+  }
+</style>

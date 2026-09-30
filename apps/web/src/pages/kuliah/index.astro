@@ -1,5 +1,7 @@
 ---
 // Jadual Kuliah (plan 4.2): "Minggu Ini" with changes applied, weekly timetable Isnin → Ahad, monthly series.
+import ShareBar from '../../components/ShareBar.astro';
+import { sharePage } from '../../lib/share';
 import { Clock, MapPin, User } from '@lucide/astro';
 import EventItem from '../../components/ui/EventItem.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
@@ -120,6 +122,10 @@ const monthly = active
       </section>
     ))}
   </div>
+  <ShareBar
+    url={new URL(Astro.url.pathname, Astro.site).href}
+    message={sharePage('Jadual Kuliah Mingguan & Bulanan')}
+  />
 </BaseLayout>
 
 <style>

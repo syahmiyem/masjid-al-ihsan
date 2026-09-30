@@ -1,5 +1,7 @@
 ---
 // Carta Organisasi (plan 4.5, D-35): grouped stacked cards on mobile, vacancies shown.
+import ShareBar from '../../components/ShareBar.astro';
+import { sharePage } from '../../lib/share';
 import OrgCard from '../../components/ui/OrgCard.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getJawatan, getSettings } from '../../lib/sanity';
@@ -39,6 +41,7 @@ const groups = GROUPS.map(([key, label]) => ({
       </div>
     </section>
   ))}
+  <ShareBar url={new URL(Astro.url.pathname, Astro.site).href} message={sharePage('Carta Organisasi')} />
 </BaseLayout>
 
 <style>

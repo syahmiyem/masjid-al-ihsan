@@ -1,6 +1,8 @@
 ---
 // Derma (plan 4.9, D-80): display-only bank details + DuitNow QR. Details come from config/derma/ in Git
 // (two-person review), never from the CMS. The build fails if the QR doesn't match (scripts/check-derma.ts).
+import ShareBar from '../components/ShareBar.astro';
+import { sharePage } from '../lib/share';
 import { Copy, TriangleAlert } from '@lucide/astro';
 import dermaConfig from '../../../../config/derma/derma.json';
 import qrUrl from '../../../../config/derma/duitnow-qr.png?url';
@@ -91,6 +93,10 @@ const settings = await getSettings();
     ) : null}
     .
   </p>
+  <ShareBar
+    url={new URL(Astro.url.pathname, Astro.site).href}
+    message={sharePage('Derma untuk Masjid Al-Ihsan')}
+  />
 </BaseLayout>
 
 <script>

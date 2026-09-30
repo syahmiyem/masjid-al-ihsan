@@ -2,12 +2,15 @@
 // /aktiviti/2026-10 → that month's calendar; /aktiviti/<slug> → one activity (plan 3.1, 4.1).
 import { ChevronLeft } from '@lucide/astro';
 import MonthView from '../../components/MonthView.astro';
+import ShareBar from '../../components/ShareBar.astro';
 import StatusLabel from '../../components/ui/StatusLabel.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { calendarItems, calendarMonths } from '../../lib/calendar';
 import { monthBounds } from '../../lib/dates';
 import { formatDate, monthName } from '../../lib/format';
+import { googleCalendarLink } from '../../lib/ics';
 import { masaLabel } from '../../lib/masa';
+import { calendarLocation, shareActivity } from '../../lib/share';
 import { getAktiviti } from '../../lib/sanity';
 import { calendarSources } from '../../lib/site';
 import type { Aktiviti } from '../../lib/types';
@@ -62,6 +65,30 @@ if (props.kind === 'month') {
   title = `${a.tajuk} – Masjid Al-Ihsan Kuantan`;
   description = `${a.tajuk}, ${formatDate(a.tarikhMula)} di ${a.tempat}, Masjid Al-Ihsan Felda Sg Panching Selatan, Kuantan.`;
 }
+
+const share = a
+  ? (() => {
+      const date = a.status === 'ditangguhkan' && a.tarikhBaharu ? a.tarikhBaharu : a.tarikhMula;
+      const url = new URL(`/aktiviti/${a.slug}`, Astro.site).href;
+      return {
+        url,
+        message: shareActivity(a.tajuk, date, masaLabel(a.masa, prayerDay(date))),
+        calendar: {
+          ics: `/aktiviti/${a.slug}.ics`,
+          google: googleCalendarLink({
+            uid: a._id,
+            title: a.tajuk,
+            date,
+            endDate: a.status === 'ditangguhkan' ? undefined : a.tarikhTamat,
+            masa: a.masa,
+            location: calendarLocation(a.tempat),
+            description: a.penerangan,
+            url,
+          }),
+        },
+      };
+    })()
+  : undefined;
 
 const isPast = a ? (a.tarikhTamat ?? a.tarikhMula) < src.today && a.status === 'dijadualkan' : false;
 const dateText = a
@@ -120,6 +147,7 @@ const dateText = a
         )}
       </dl>
       {a.penerangan && <p>{a.penerangan}</p>}
+      {share && a.status !== 'dibatalkan' && <ShareBar {...share} title={a.tajuk} />}
     </article>
   )}
 </BaseLayout>

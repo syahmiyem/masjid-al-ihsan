@@ -1,6 +1,8 @@
 ---
 // One service = one SEO page (plan 4.3, 6.1): photos, description, facilities, capacity, rates, rules,
 // booking steps, location, contact (WhatsApp-first enquiry, D-13) and FAQ.
+import ShareBar from '../../components/ShareBar.astro';
+import { sharePage } from '../../lib/share';
 import { Check, ChevronLeft, MapPin, MessageCircle, Navigation, Phone } from '@lucide/astro';
 import PortableText from '../../components/PortableText.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
@@ -152,6 +154,10 @@ const kadar =
       </div>
     </section>
   )}
+  <ShareBar
+    url={new URL(Astro.url.pathname, Astro.site).href}
+    message={sharePage(`${s.nama} Masjid Al-Ihsan`)}
+  />
 </BaseLayout>
 
 <style>
