@@ -1,13 +1,10 @@
 // @ts-check
 import { defineConfig, envField } from 'astro/config';
+import { resolveSiteUrl } from './site-url.mjs';
 
 // SITE_URL: the public address. UAT uses the workers.dev URL; production uses the custom domain (D-08, D-02).
-// In Cloudflare Workers Builds (WORKERS_CI=1) a missing SITE_URL fails the build rather than publishing
-// localhost links; set it under Settings → Build → Variables and secrets.
-if (process.env.WORKERS_CI && !process.env.SITE_URL) {
-  throw new Error('SITE_URL is not set. Add it as a Build variable in Cloudflare (Settings → Build).');
-}
-const site = process.env.SITE_URL || 'http://localhost:4321';
+// Required in Cloudflare Workers Builds; see site-url.mjs.
+const site = resolveSiteUrl();
 
 export default defineConfig({
   site,
