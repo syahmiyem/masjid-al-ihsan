@@ -3,10 +3,11 @@
 
 import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { resolveSiteUrl } from '../site-url.mjs';
 
 const dist = join(import.meta.dirname, '..', 'dist');
 const uat = (process.env.UAT_MODE ?? 'true').toLowerCase() !== 'false';
-const site = (process.env.SITE_URL || 'http://localhost:4321').replace(/\/$/, '');
+const site = resolveSiteUrl();
 
 const robots = uat
   ? 'User-agent: *\nDisallow: /\n'
