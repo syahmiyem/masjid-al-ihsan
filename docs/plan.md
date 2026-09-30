@@ -1001,7 +1001,8 @@ Durations assume one developer, part-time to full-time. Before the committee pre
 - ✅ Components (zero JavaScript): site header with a `<details>` "Menu" (keyboard-operable), mobile bottom bar (4 items, icon + label; switches to a 2 × 2 grid when the screen is too narrow for the user's text size, instead of breaking words), status labels, activity rows, Waktu Solat card (real JAKIM data, next prayer marked in text), notice banner, service card, org-chart card, buttons.
 - ✅ Wireframes in code (UAT only, removed from production builds): `/reka-bentuk` (component gallery + contrast table) and `/reka-bentuk/utama` (home page in the 3.3 order).
 - ✅ Checked with real mobile emulation (not headless Chrome's 500px minimum): no horizontal scroll at 300, 320 and 360px, including 130% text; axe-core (WCAG 2.2 A/AA + AAA contrast): **0 violations** on all pages.
-- ⏳ Next: "CONTOH" sample content in Sanity; wireframes for Aktiviti, Kuliah, service page and org chart come with their real pages in Phase 2. axe/Lighthouse cannot run inside Workers Builds (no browser), so they run locally before merging for now.
+- ✅ "CONTOH" sample content: `pnpm contoh:isi` / `pnpm contoh:buang` (IDs `contoh-*`; Tetapan Masjid overwritten with CONTOH values, never deleted). 29 documents (4 venues, 4 kuliah series incl. one monthly, 2 changes, 5 activities incl. one postponed, 3 services with FAQs, 9 org positions incl. one vacant, 1 notice). Loaded into `latihan` and validated: 0 errors, 0 warnings; removal tested. Loading into `production` waits for the webhook to be paused (one rebuild instead of ~29).
+- ⏳ Next: wireframes for Aktiviti, Kuliah, service page and org chart come with their real pages in Phase 2. axe/Lighthouse cannot run inside Workers Builds (no browser), so they run locally before merging for now.
 
 ### Phase 2 — Core site (MVP) on UAT (3–4 weeks)
 
