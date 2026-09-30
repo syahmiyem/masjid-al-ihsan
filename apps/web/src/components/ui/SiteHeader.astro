@@ -1,0 +1,137 @@
+---
+// Header: mosque name (links home) + a labelled "Menu" button (plan 3.2). Uses <details> — no JavaScript.
+import { Menu } from '@lucide/astro';
+import NavIcon from './NavIcon.astro';
+import { MENU_NAV, PRIMARY_NAV, isCurrent } from './nav';
+
+const path = Astro.url.pathname;
+---
+
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="/">
+      <span class="name">Masjid Al-Ihsan</span>
+      <span class="place">Felda Sg Panching Selatan</span>
+    </a>
+    <nav class="desktop-nav" aria-label="Utama">
+      {PRIMARY_NAV.map((item) => (
+        <a href={item.href} aria-current={isCurrent(item.href, path) ? 'page' : undefined}>
+          {item.label}
+        </a>
+      ))}
+    </nav>
+    <details class="menu">
+      <summary class="btn btn-secondary">
+        <Menu size={22} aria-hidden="true" />
+        Menu
+      </summary>
+      <nav class="menu-panel" aria-label="Menu">
+        <ul>
+          {MENU_NAV.map((item) => (
+            <li>
+              <a href={item.href} aria-current={isCurrent(item.href, path) ? 'page' : undefined}>
+                <NavIcon name={item.icon} />
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </details>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    border-bottom: 1px solid var(--c-border);
+    background: var(--c-bg);
+  }
+  .inner {
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .brand {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: var(--c-text);
+    margin-right: auto;
+    min-height: var(--tap);
+    justify-content: center;
+  }
+  .name {
+    font-weight: 700;
+    font-size: 1.2rem;
+    line-height: 1.2;
+  }
+  .place {
+    font-size: 1rem;
+    color: var(--c-text-muted);
+  }
+  .menu {
+    position: relative;
+  }
+  .menu summary {
+    list-style: none;
+  }
+  .menu summary::-webkit-details-marker {
+    display: none;
+  }
+  .menu-panel {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.5rem);
+    z-index: 50;
+    min-width: 16rem;
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: 0 8px 24px rgb(0 0 0 / 0.15);
+    padding: 0.5rem;
+  }
+  .menu-panel ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .menu-panel a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: var(--tap);
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius);
+    color: var(--c-text);
+    text-decoration: none;
+  }
+  .menu-panel a:hover,
+  .menu-panel a[aria-current='page'] {
+    background: var(--c-primary-soft);
+  }
+  .menu-panel a[aria-current='page'] {
+    font-weight: 700;
+  }
+  .desktop-nav {
+    display: none;
+  }
+  @media (min-width: 60rem) {
+    .desktop-nav {
+      display: flex;
+      gap: 0.25rem;
+    }
+    .desktop-nav a {
+      padding: 0.6rem 0.9rem;
+      border-radius: var(--radius);
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .desktop-nav a[aria-current='page'] {
+      background: var(--c-primary-soft);
+      color: var(--c-text);
+    }
+  }
+</style>

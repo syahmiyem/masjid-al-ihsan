@@ -1,0 +1,188 @@
+---
+// Design system showcase (Phase 1). UAT only — removed from production builds by scripts/postbuild.ts.
+import { Download, MessageCircle, Phone, Share2 } from '@lucide/astro';
+import siteConfig from '../../../../../config/site.json';
+import EventItem from '../../components/ui/EventItem.astro';
+import NoticeBanner from '../../components/ui/NoticeBanner.astro';
+import OrgCard from '../../components/ui/OrgCard.astro';
+import PrayerTimesCard from '../../components/ui/PrayerTimesCard.astro';
+import ServiceCard from '../../components/ui/ServiceCard.astro';
+import StatusLabel from '../../components/ui/StatusLabel.astro';
+import { contrastRatio } from '../../design/contrast';
+import { colours, contrastPairs } from '../../design/tokens';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { formatDate, formatTime } from '../../lib/format';
+import { nowMyt, prayerDay, prayerZone } from '../../lib/waktu-solat-data';
+
+const { date, time } = nowMyt();
+const today = prayerDay(date);
+---
+
+<BaseLayout title="Sistem Reka Bentuk – Masjid Al-Ihsan (percubaan)" withNav>
+  <h1>Sistem Reka Bentuk</h1>
+  <p>
+    Halaman dalaman untuk menyemak komponen laman web. Semua kandungan di sini ialah <strong>CONTOH</strong>.
+    Lihat juga <a href="/reka-bentuk/utama">contoh halaman utama</a>.
+  </p>
+
+  <h2>Tipografi</h2>
+  <p>
+    Teks biasa 18px, jarak baris 1.6. Tarikh: {formatDate('2026-10-06')}. Masa: {formatTime('20:30')}.
+  </p>
+  <p class="muted">Teks kecil tidak kurang daripada 16px.</p>
+
+  <h2>Butang</h2>
+  <div class="btn-row">
+    <a class="btn btn-primary" href="#">
+      <MessageCircle size={22} aria-hidden="true" /> Kongsi ke WhatsApp
+    </a>
+    <a class="btn btn-secondary" href="#">
+      <Download size={22} aria-hidden="true" /> Simpan Gambar
+    </a>
+    <a class="btn btn-secondary" href="#">
+      <Share2 size={22} aria-hidden="true" /> Salin Pautan
+    </a>
+    <a class="btn btn-primary" href="#">
+      <Phone size={22} aria-hidden="true" /> Telefon Masjid
+    </a>
+  </div>
+
+  <h2>Label status</h2>
+  <div class="btn-row">
+    <StatusLabel status="dibatalkan" />
+    <StatusLabel status="ditangguhkan" />
+    <StatusLabel status="dipinda" />
+    <StatusLabel status="berlangsung" />
+  </div>
+
+  <h2>Notis</h2>
+  <div class="stack">
+    <NoticeBanner message="CONTOH: Kuliah Maghrib Isnin ini dibatalkan." level="penting" href="#" />
+    <NoticeBanner message="CONTOH: Gotong-royong perdana pada Sabtu ini, 8:00 pagi." />
+  </div>
+
+  <h2>Waktu Solat</h2>
+  {today ? (
+    <PrayerTimesCard day={today} now={time} zone={prayerZone} zoneName={siteConfig.prayerZoneName} />
+  ) : (
+    <p>Tiada data waktu solat untuk hari ini.</p>
+  )}
+
+  <h2>Senarai aktiviti</h2>
+  <EventItem
+    date="2026-10-05"
+    title="CONTOH: Kuliah Maghrib Mingguan"
+    time="Selepas Maghrib (7:02 malam)"
+    place="Dewan Solat Utama"
+    speaker="Ustaz Contoh Satu"
+    href="#"
+  />
+  <EventItem
+    date="2026-10-07"
+    title="CONTOH: Kelas Tajwid Dewasa"
+    time="Selepas Isyak (8:10 malam)"
+    place="Bilik Kuliah"
+    status="dibatalkan"
+    note="Dibatalkan kerana penceramah uzur."
+    href="#"
+  />
+  <EventItem
+    date="2026-10-10"
+    title="CONTOH: Gotong-royong Perdana"
+    time="8:00 pagi – 11:00 pagi"
+    place="Kawasan masjid"
+    status="ditangguhkan"
+    note="Ditangguhkan ke Sabtu, 17 Oktober 2026."
+    href="#"
+  />
+  <EventItem
+    date="2026-09-28"
+    title="CONTOH: Mesyuarat AJK Bulanan"
+    time="Selepas Isyak"
+    place="Bilik Mesyuarat"
+    status="berlangsung"
+  />
+
+  <h2>Kad perkhidmatan</h2>
+  <div class="stack">
+    <ServiceCard
+      name="Dewan Akad Nikah"
+      summary="CONTOH: Dewan berhawa dingin untuk majlis akad nikah."
+      href="#"
+    />
+    <ServiceCard name="Homestay" summary="CONTOH: Penginapan untuk keluarga dan kumpulan." href="#" />
+  </div>
+
+  <h2>Carta organisasi</h2>
+  <div class="org-grid">
+    <OrgCard position="Pengerusi" name="CONTOH Nama Satu" />
+    <OrgCard position="Setiausaha" name="CONTOH Nama Dua" />
+    <OrgCard position="Bendahari" vacant />
+  </div>
+
+  <h2>Warna dan kontras</h2>
+  <p>Semua pasangan disemak secara automatik dalam ujian (sasaran teks ≥ 7:1).</p>
+  <table class="contrast">
+    <thead>
+      <tr>
+        <th scope="col">Kegunaan</th>
+        <th scope="col">Contoh</th>
+        <th scope="col">Nisbah</th>
+      </tr>
+    </thead>
+    <tbody>
+      {contrastPairs.map(([fg, bg, min, what]) => (
+        <tr>
+          <td>{what}</td>
+          <td>
+            {min >= 4.5 ? (
+              <span class="swatch" style={`color:${colours[fg]};background:${colours[bg]}`}>
+                Aa
+              </span>
+            ) : (
+              <span
+                class="swatch line"
+                aria-hidden="true"
+                style={`border:3px solid ${colours[fg]};background:${colours[bg]}`}
+              />
+            )}
+          </td>
+          <td>
+            {contrastRatio(colours[fg], colours[bg]).toFixed(1)}:1 (min {min}:1)
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</BaseLayout>
+
+<style>
+  .org-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: 0.75rem;
+  }
+  .contrast {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .contrast th,
+  .contrast td {
+    text-align: left;
+    padding: 0.4rem;
+    border-top: 1px solid var(--c-border);
+    vertical-align: middle;
+  }
+  .swatch.line {
+    width: 2.5rem;
+    height: 1.6rem;
+    vertical-align: middle;
+  }
+  .swatch {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--c-border);
+    border-radius: 4px;
+    font-weight: 700;
+  }
+</style>

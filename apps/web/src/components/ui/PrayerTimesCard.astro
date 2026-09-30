@@ -1,0 +1,93 @@
+---
+// "Waktu Solat Hari Ini" (plan 4.8). Values are fixed at build time; the nightly rebuild keeps them
+// current. The small "next prayer" script comes in Phase 2.
+import { formatDate, formatHijri, formatTime } from '../../lib/format';
+import { MAIN_PRAYERS, nextPrayer, prayerLabel, type PrayerDay } from '../../lib/waktu-solat';
+
+interface Props {
+  day: PrayerDay;
+  now?: string; // HH:MM, to mark the next prayer
+  zoneName: string;
+  zone: string;
+  showHijri?: boolean;
+}
+const { day, now, zoneName, zone, showHijri = false } = Astro.props;
+const next = now ? nextPrayer(day, now) : null;
+---
+
+<section class="card prayer" aria-labelledby="waktu-solat-heading">
+  <h2 id="waktu-solat-heading">Waktu Solat Hari Ini</h2>
+  <p class="date">
+    {formatDate(day.date)}
+    {showHijri && <> · {formatHijri(day.hijri)}</>}
+  </p>
+  {next && (
+    <p class="next">
+      Seterusnya:{' '}
+      <strong>
+        {prayerLabel(next, day.date)} {formatTime(day[next])}
+      </strong>
+    </p>
+  )}
+  <table>
+    <caption class="visually-hidden">Waktu solat untuk{formatDate(day.date)}</caption>
+    <tbody>
+      {MAIN_PRAYERS.map((key) => (
+        <tr class:list={{ upcoming: key === next }}>
+          <th scope="row">
+            {prayerLabel(key, day.date)}
+            {key === next && <span class="visually-hidden"> (seterusnya)</span>}
+          </th>
+          <td>{formatTime(day[key])}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+  <p class="source">
+    Sumber: JAKIM (e-Solat) · Zon {zone} ({zoneName})
+  </p>
+</section>
+
+<style>
+  .prayer h2 {
+    margin: 0 0 0.25rem;
+  }
+  .date {
+    margin: 0 0 0.5rem;
+    color: var(--c-text-muted);
+  }
+  .next {
+    margin: 0 0 0.5rem;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1.1rem;
+  }
+  th,
+  td {
+    padding: 0.45rem 0.6rem;
+    border-top: 1px solid var(--c-border);
+  }
+  th {
+    text-align: left;
+    font-weight: 400;
+  }
+  td {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  tr.upcoming th,
+  tr.upcoming td {
+    background: var(--c-primary-soft);
+    font-weight: 700;
+  }
+  tr.upcoming th {
+    box-shadow: inset 4px 0 0 var(--c-primary);
+  }
+  .source {
+    margin: 0.75rem 0 0;
+    font-size: 1rem;
+    color: var(--c-text-muted);
+  }
+</style>

@@ -12,7 +12,7 @@
     "studio": "pnpm --filter studio dev",
     "studio:deploy": "pnpm --filter studio run deploy",
     "check": "tsc -p tsconfig.json && pnpm -r check",
-    "test": "node --test \"scripts/**/*.test.ts\"",
+    "test": "node --test \"scripts/**/*.test.ts\" \"apps/web/src/**/*.test.ts\"",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "waktu-solat:sync": "node scripts/waktu-solat/sync.ts",

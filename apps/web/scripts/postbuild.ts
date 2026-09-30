@@ -1,7 +1,7 @@
 // Writes robots.txt and Cloudflare _headers into dist/ after `astro build`.
 // While UAT_MODE is on (the default), the whole site is noindex (plan 6.5, D-08).
 
-import { writeFileSync } from 'node:fs';
+import { rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { resolveSiteUrl } from '../site-url.mjs';
 
@@ -24,6 +24,9 @@ const headers = [
   '  Cache-Control: public, max-age=31536000, immutable',
   '',
 ].join('\n');
+
+// The design-system showcase is for UAT review only (plan Phase 1).
+if (!uat) rmSync(join(dist, 'reka-bentuk'), { recursive: true, force: true });
 
 writeFileSync(join(dist, 'robots.txt'), robots);
 writeFileSync(join(dist, '_headers'), headers);

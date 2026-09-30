@@ -997,7 +997,11 @@ Durations assume one developer, part-time to full-time. Before the committee pre
 **Status (1 Oct 2026):**
 - ✅ Sanity schemas for Section 4, all labels, help text and validation messages in Malay: `aktiviti`, `kuliahSiri` (weekly / nth weekday monthly), `kuliahPerubahan` (per-date exceptions, with a duplicate warning), `perkhidmatan`, `jawatan` (photo requires a consent tick — D-72), `notis` (auto-expiry), `tempat`, `siteSettings` (singleton that can't be duplicated or deleted); shared `masa` (clock or prayer-relative time) and `gambar` (alt text required). Task-based menu per 7.2. Schema validation: 0 errors, 0 warnings.
 - Notes: a one-off kuliah is entered as an Aktiviti with category *Kuliah* (no "Sekali" series type). Ordering uses a number field for now; drag-and-drop with up/down buttons (5.2, 2.5.7) comes with the Phase 2 Studio customisation, as do slug lock (D-26) and archive-not-delete. Enquiry (Phase 3) and gallery (Phase 8) schemas are not built yet.
-- ⏳ Next: design tokens and base components, wireframes, "CONTOH" sample content.
+- ✅ Design system: tokens in `apps/web/src/design/tokens.ts` (single source → CSS variables); **all 19 colour pairs tested automatically** (text ≥ 7:1, borders/focus ≥ 3:1); Atkinson Hyperlegible Next, self-hosted, Latin subset, 400 + 700; 18px base. Malay date/time formatting ("Selasa, 6 Oktober 2026", "8:30 malam", Hijri month names) with tests.
+- ✅ Components (zero JavaScript): site header with a `<details>` "Menu" (keyboard-operable), mobile bottom bar (4 items, icon + label; switches to a 2 × 2 grid when the screen is too narrow for the user's text size, instead of breaking words), status labels, activity rows, Waktu Solat card (real JAKIM data, next prayer marked in text), notice banner, service card, org-chart card, buttons.
+- ✅ Wireframes in code (UAT only, removed from production builds): `/reka-bentuk` (component gallery + contrast table) and `/reka-bentuk/utama` (home page in the 3.3 order).
+- ✅ Checked with real mobile emulation (not headless Chrome's 500px minimum): no horizontal scroll at 300, 320 and 360px, including 130% text; axe-core (WCAG 2.2 A/AA + AAA contrast): **0 violations** on all pages.
+- ⏳ Next: "CONTOH" sample content in Sanity; wireframes for Aktiviti, Kuliah, service page and org chart come with their real pages in Phase 2. axe/Lighthouse cannot run inside Workers Builds (no browser), so they run locally before merging for now.
 
 ### Phase 2 — Core site (MVP) on UAT (3–4 weeks)
 

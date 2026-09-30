@@ -1,14 +1,21 @@
 ---
+import '@fontsource/atkinson-hyperlegible-next/latin-400.css';
+import '@fontsource/atkinson-hyperlegible-next/latin-700.css';
 import { UAT_MODE } from 'astro:env/server';
+import BottomNav from '../components/ui/BottomNav.astro';
+import SiteHeader from '../components/ui/SiteHeader.astro';
 import UatBanner from '../components/UatBanner.astro';
+import { cssVariables } from '../design/tokens';
 import '../styles.css';
 
 interface Props {
   title: string;
   description?: string;
+  /** Site header + mobile bottom bar. Off for pages that exist before the full site does. */
+  withNav?: boolean;
 }
 
-const { title, description } = Astro.props;
+const { title, description, withNav = false } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 
@@ -21,11 +28,28 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     {description && <meta name="description" content={description} />}
     <link rel="canonical" href={canonical} />
     {UAT_MODE && <meta name="robots" content="noindex, nofollow" />}
+    <style is:inline set:html={`:root{${cssVariables()}}`} />
   </head>
-  <body>
+  <body class:list={{ 'has-bottom-nav': withNav }}>
+    <a class="skip-link" href="#kandungan">
+      Langkau ke kandungan
+    </a>
     {UAT_MODE && <UatBanner />}
-    <main>
+    {withNav && <SiteHeader />}
+    <main id="kandungan" class="container">
       <slot />
     </main>
+    {withNav && <BottomNav />}
   </body>
 </html>
+
+<style>
+  .has-bottom-nav {
+    padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom));
+  }
+  @media (min-width: 60rem) {
+    .has-bottom-nav {
+      padding-bottom: 0;
+    }
+  }
+</style>

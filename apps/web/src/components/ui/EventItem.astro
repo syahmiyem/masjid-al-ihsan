@@ -1,0 +1,99 @@
+---
+// One row in an activity / kuliah list (plan 4.1–4.2): big date, then title, time, place, status.
+import { Clock, MapPin } from '@lucide/astro';
+import { dayName } from '../../lib/format';
+import StatusLabel, { type Status } from './StatusLabel.astro';
+
+interface Props {
+  date: string; // YYYY-MM-DD
+  title: string;
+  time: string; // already formatted, e.g. "Selepas Maghrib (7:02 malam)"
+  place: string;
+  href?: string;
+  status?: Status;
+  note?: string;
+  speaker?: string;
+}
+const { date, title, time, place, href, status = 'dijadualkan', note, speaker } = Astro.props;
+const [, m, d] = date.split('-');
+const months = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogo', 'Sep', 'Okt', 'Nov', 'Dis'];
+const past = status === 'berlangsung';
+---
+
+<article class:list={['event', { past, cancelled: status === 'dibatalkan' }]}>
+  <div class="date" aria-hidden="true">
+    <span class="day">{dayName(date)}</span>
+    <span class="num">{Number(d)}</span>
+    <span class="mon">{months[Number(m) - 1]}</span>
+  </div>
+  <div class="body">
+    <h3>
+      {href ? <a href={href}>{title}</a> : title}
+      <span class="visually-hidden">
+        , {dayName(date)} {Number(d)} {months[Number(m) - 1]}
+      </span>
+    </h3>
+    {status !== 'dijadualkan' && <StatusLabel status={status} />}
+    {note && <p class="note">{note}</p>}
+    <p class="meta">
+      <Clock size={18} aria-hidden="true" /> {time}
+    </p>
+    <p class="meta">
+      <MapPin size={18} aria-hidden="true" /> {place}
+    </p>
+    {speaker && <p class="meta speaker">{speaker}</p>}
+  </div>
+</article>
+
+<style>
+  .event {
+    display: grid;
+    grid-template-columns: 4.25rem 1fr;
+    gap: 0.9rem;
+    padding: 0.9rem 0;
+    border-bottom: 1px solid var(--c-border);
+  }
+  .date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--c-primary-soft);
+    border-radius: var(--radius);
+    padding: 0.4rem 0.2rem;
+    line-height: 1.1;
+    align-self: start;
+  }
+  .day,
+  .mon {
+    font-size: 1rem;
+  }
+  .num {
+    font-size: 1.6rem;
+    font-weight: 700;
+  }
+  h3 {
+    margin: 0 0 0.35rem;
+  }
+  h3 a {
+    color: var(--c-text);
+  }
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0.2rem 0 0;
+    color: var(--c-text-muted);
+  }
+  .note {
+    margin: 0.35rem 0;
+    font-weight: 700;
+  }
+  .cancelled h3 {
+    text-decoration: line-through;
+    text-decoration-thickness: 2px;
+  }
+  .past .date {
+    background: var(--c-past-bg);
+  }
+</style>

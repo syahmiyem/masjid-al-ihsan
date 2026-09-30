@@ -1,0 +1,38 @@
+---
+// One position on the org chart as a stacked card (plan 4.5, D-35).
+interface Props {
+  position: string;
+  name?: string;
+  vacant?: boolean;
+}
+const { position, name, vacant = false } = Astro.props;
+---
+
+<div class:list={['org card', { vacant }]}>
+  <span class="position">{position}</span>
+  <span class="name">{vacant ? 'Jawatan kosong' : name}</span>
+</div>
+
+<style>
+  .org {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .position {
+    color: var(--c-text-muted);
+    font-size: 1rem;
+  }
+  .name {
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+  .vacant {
+    border-style: dashed;
+  }
+  .vacant .name {
+    font-weight: 400;
+    font-style: italic;
+    color: var(--c-text-muted);
+  }
+</style>
