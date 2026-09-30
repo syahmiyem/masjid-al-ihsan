@@ -1,5 +1,7 @@
 ---
 // /waktu-solat/2026-11 — one month's table, shareable (plan 4.8).
+import ShareBar from '../../components/ShareBar.astro';
+import { sharePage } from '../../lib/share';
 import WaktuSolatPage from '../../components/WaktuSolatPage.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { monthName } from '../../lib/format';
@@ -21,4 +23,5 @@ const label = `${monthName(Number(bulan.slice(5, 7)))} ${bulan.slice(0, 4)}`;
   withNav
 >
   <WaktuSolatPage month={bulan} today={date} now={time} />
+  <ShareBar url={new URL(Astro.url.pathname, Astro.site).href} message={sharePage(`Waktu Solat ${label}`)} />
 </BaseLayout>

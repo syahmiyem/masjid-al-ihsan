@@ -1,10 +1,13 @@
 ---
 // One kuliah series (plan 4.2 "S"): rule, usual time/place/speaker, and upcoming dates with changes.
 import { ChevronLeft } from '@lucide/astro';
+import ShareBar from '../../components/ShareBar.astro';
 import EventItem from '../../components/ui/EventItem.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { addDays } from '../../lib/dates';
+import { googleCalendarLink, kuliahRrule } from '../../lib/ics';
 import { expandKuliah, ruleLabel } from '../../lib/kuliah';
+import { calendarLocation, shareKuliah } from '../../lib/share';
 import { masaLabel, masaLabelShort } from '../../lib/masa';
 import { getKuliahPerubahan, getKuliahSiri } from '../../lib/sanity';
 import { today } from '../../lib/site';
@@ -21,6 +24,21 @@ const now = today();
 const perubahan = await getKuliahPerubahan();
 const horizon = addDays(now.date, siri.jenis === 'mingguan' ? 56 : 180);
 const dates = expandKuliah([siri], perubahan, now.date, horizon).slice(0, 8);
+const url = new URL(`/kuliah/${siri.slug}`, Astro.site).href;
+const first =
+  expandKuliah([siri], [], siri.aktifDari, addDays(siri.aktifDari, 62))[0]?.date ?? siri.aktifDari;
+const calendar = {
+  ics: `/kuliah/${siri.slug}.ics`,
+  google: googleCalendarLink({
+    uid: siri._id,
+    title: siri.nama,
+    date: first,
+    masa: siri.masa,
+    location: calendarLocation(siri.tempat),
+    url,
+    rrule: kuliahRrule(siri),
+  }),
+};
 const AUDIENCE: Record<string, string> = {
   umum: 'Umum',
   muslimah: 'Muslimah',
@@ -74,6 +92,13 @@ const AUDIENCE: Record<string, string> = {
     )}
   </dl>
   {siri.penerangan && <p>{siri.penerangan}</p>}
+
+  <ShareBar
+    url={url}
+    message={shareKuliah(siri.nama, ruleLabel(siri), masaLabelShort(siri.masa))}
+    title={siri.nama}
+    calendar={calendar}
+  />
 
   <h2>Tarikh Akan Datang</h2>
   {dates.length > 0 ? (

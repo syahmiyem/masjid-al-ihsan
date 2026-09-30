@@ -1,4 +1,6 @@
 ---
+import ShareBar from '../../components/ShareBar.astro';
+import { sharePage } from '../../lib/share';
 import WaktuSolatPage from '../../components/WaktuSolatPage.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { monthName } from '../../lib/format';
@@ -14,4 +16,5 @@ const label = `${monthName(Number(date.slice(5, 7)))} ${date.slice(0, 4)}`;
   withNav
 >
   <WaktuSolatPage month={date.slice(0, 7)} today={date} now={time} />
+  <ShareBar url={new URL(Astro.url.pathname, Astro.site).href} message={sharePage(`Waktu Solat ${label}`)} />
 </BaseLayout>

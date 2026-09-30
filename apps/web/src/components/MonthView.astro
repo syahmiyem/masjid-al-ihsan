@@ -5,6 +5,8 @@ import { ChevronLeft, ChevronRight } from '@lucide/astro';
 import type { CalendarItem } from '../lib/calendar';
 import { addDays, addMonths, weekStart } from '../lib/dates';
 import { monthName } from '../lib/format';
+import { sharePage } from '../lib/share';
+import ShareBar from './ShareBar.astro';
 import EventItem from './ui/EventItem.astro';
 
 interface Props {
@@ -39,6 +41,7 @@ for (const item of upcoming) {
   weeks.set(key, [...(weeks.get(key) ?? []), item]);
 }
 const isCurrent = month === today.slice(0, 7);
+const shareUrl = new URL(`/aktiviti/${month}`, Astro.site).href;
 ---
 
 <h1>Aktiviti {title}</h1>
@@ -99,6 +102,8 @@ const isCurrent = month === today.slice(0, 7);
     ))}
   </section>
 )}
+
+<ShareBar url={shareUrl} message={sharePage(`Aktiviti ${title}`)} title={`Aktiviti ${title}`} />
 
 <style>
   .week {
