@@ -1,0 +1,129 @@
+---
+// One kuliah series (plan 4.2 "S"): rule, usual time/place/speaker, and upcoming dates with changes.
+import { ChevronLeft } from '@lucide/astro';
+import EventItem from '../../components/ui/EventItem.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { addDays } from '../../lib/dates';
+import { expandKuliah, ruleLabel } from '../../lib/kuliah';
+import { masaLabel, masaLabelShort } from '../../lib/masa';
+import { getKuliahPerubahan, getKuliahSiri } from '../../lib/sanity';
+import { today } from '../../lib/site';
+import type { KuliahSiri } from '../../lib/types';
+import { prayerDay } from '../../lib/waktu-solat-data';
+
+export async function getStaticPaths() {
+  const siri = await getKuliahSiri();
+  return siri.map((s) => ({ params: { slug: s.slug }, props: { siri: s } }));
+}
+
+const { siri } = Astro.props as { siri: KuliahSiri };
+const now = today();
+const perubahan = await getKuliahPerubahan();
+const horizon = addDays(now.date, siri.jenis === 'mingguan' ? 56 : 180);
+const dates = expandKuliah([siri], perubahan, now.date, horizon).slice(0, 8);
+const AUDIENCE: Record<string, string> = {
+  umum: 'Umum',
+  muslimah: 'Muslimah',
+  'kanak-kanak': 'Kanak-kanak',
+  remaja: 'Remaja',
+};
+---
+
+<BaseLayout
+  title={`${siri.nama} – Masjid Al-Ihsan Kuantan`}
+  description={`${siri.nama}: ${ruleLabel(siri)}, ${masaLabelShort(siri.masa)} di ${siri.tempat}, Masjid Al-Ihsan Felda Sg Panching Selatan.`}
+  withNav
+>
+  <p>
+    <a href="/kuliah" class="back">
+      <ChevronLeft size={20} aria-hidden="true" /> Kembali ke Jadual Kuliah
+    </a>
+  </p>
+  <h1>{siri.nama}</h1>
+
+  <dl class="card facts">
+    <div>
+      <dt>Bila</dt>
+      <dd>{ruleLabel(siri)}</dd>
+    </div>
+    <div>
+      <dt>Masa</dt>
+      <dd>{masaLabelShort(siri.masa)}</dd>
+    </div>
+    <div>
+      <dt>Tempat</dt>
+      <dd>{siri.tempat}</dd>
+    </div>
+    {siri.penceramah && (
+      <div>
+        <dt>Penceramah</dt>
+        <dd>{siri.penceramah}</dd>
+      </div>
+    )}
+    {siri.topik && (
+      <div>
+        <dt>Topik / Kitab</dt>
+        <dd>{siri.topik}</dd>
+      </div>
+    )}
+    {siri.sasaran && (
+      <div>
+        <dt>Sasaran</dt>
+        <dd>{AUDIENCE[siri.sasaran] ?? siri.sasaran}</dd>
+      </div>
+    )}
+  </dl>
+  {siri.penerangan && <p>{siri.penerangan}</p>}
+
+  <h2>Tarikh Akan Datang</h2>
+  {dates.length > 0 ? (
+    dates.map((o) => (
+      <EventItem
+        date={o.date}
+        title={siri.nama}
+        time={masaLabel(o.masa, prayerDay(o.date))}
+        place={o.tempat}
+        speaker={o.penceramah}
+        status={o.status}
+        label={o.label}
+        note={o.note}
+      />
+    ))
+  ) : (
+    <p>Tiada tarikh akan datang.</p>
+  )}
+</BaseLayout>
+
+<style>
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-height: var(--tap);
+  }
+  .facts {
+    margin: 0 0 var(--s2);
+  }
+  .facts div {
+    display: grid;
+    grid-template-columns: 8rem 1fr;
+    gap: 0.5rem;
+    padding: 0.4rem 0;
+  }
+  .facts div + div {
+    border-top: 1px solid var(--c-border);
+  }
+  dt {
+    color: var(--c-text-muted);
+  }
+  dd {
+    margin: 0;
+    font-weight: 700;
+  }
+  @media (max-width: 22em) {
+    .facts div {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+  }
+</style>

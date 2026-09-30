@@ -1,0 +1,116 @@
+---
+// Monthly calendar (plan 4.1, D-10): list grouped by week on mobile, upcoming first,
+// past items below as "Telah berlangsung". Month switcher uses month names, not bare arrows.
+import { ChevronLeft, ChevronRight } from '@lucide/astro';
+import type { CalendarItem } from '../lib/calendar';
+import { addDays, addMonths, weekStart } from '../lib/dates';
+import { monthName } from '../lib/format';
+import EventItem from './ui/EventItem.astro';
+
+interface Props {
+  month: string; // YYYY-MM
+  items: CalendarItem[];
+  months: string[]; // months that have a page
+  today: string;
+}
+const { month, items, months, today } = Astro.props;
+const [year, m] = month.split('-').map(Number);
+const title = `${monthName(m)} ${year}`;
+
+const prev = addMonths(month, -1);
+const next = addMonths(month, 1);
+const hasPrev = months.includes(prev);
+const hasNext = months.includes(next);
+const nameOf = (mm: string) => monthName(Number(mm.slice(5, 7)));
+
+const upcoming = items.filter((i) => i.date >= today);
+const past = items.filter((i) => i.date < today);
+
+// "Minggu 5 – 11 Oktober" (or "28 September – 4 Oktober" across months)
+function weekLabel(start: string) {
+  const end = addDays(start, 6);
+  const [, sm, sd] = start.split('-').map(Number);
+  const [, em, ed] = end.split('-').map(Number);
+  return sm === em ? `${sd} – ${ed} ${monthName(em)}` : `${sd} ${monthName(sm)} – ${ed} ${monthName(em)}`;
+}
+const weeks = new Map<string, CalendarItem[]>();
+for (const item of upcoming) {
+  const key = weekStart(item.date);
+  weeks.set(key, [...(weeks.get(key) ?? []), item]);
+}
+const isCurrent = month === today.slice(0, 7);
+---
+
+<h1>Aktiviti {title}</h1>
+
+<nav class="month-nav" aria-label="Tukar bulan">
+  {hasPrev ? (
+    <a class="btn btn-secondary" href={`/aktiviti/${prev}`}>
+      <ChevronLeft size={22} aria-hidden="true" /> {nameOf(prev)}
+    </a>
+  ) : (
+    <span />
+  )}
+  {hasNext && (
+    <a class="btn btn-secondary" href={`/aktiviti/${next}`}>
+      {nameOf(next)} <ChevronRight size={22} aria-hidden="true" />
+    </a>
+  )}
+</nav>
+{!isCurrent && month > today.slice(0, 7) && (
+  <p class="muted">Jadual bulan hadapan mungkin masih dikemas kini.</p>
+)}
+
+{items.length === 0 && <p>Tiada aktiviti dijadualkan untuk bulan ini lagi. Sila semak semula nanti.</p>}
+
+{[...weeks.entries()].map(([start, list]) => (
+  <section aria-label={`Minggu ${weekLabel(start)}`}>
+    <h2 class="week">Minggu {weekLabel(start)}</h2>
+    {list.map((i) => (
+      <EventItem
+        date={i.date}
+        title={i.title}
+        time={i.time}
+        place={i.place}
+        speaker={i.speaker}
+        status={i.status}
+        label={i.label}
+        note={i.note}
+        href={i.href}
+      />
+    ))}
+  </section>
+))}
+
+{past.length > 0 && (
+  <section aria-label="Telah berlangsung">
+    <h2 class="week">Telah Berlangsung</h2>
+    {past.map((i) => (
+      <EventItem
+        date={i.date}
+        title={i.title}
+        time={i.time}
+        place={i.place}
+        status={i.status}
+        label={i.label}
+        note={i.note}
+        href={i.href}
+      />
+    ))}
+  </section>
+)}
+
+<style>
+  .month-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: var(--s2);
+  }
+  .week {
+    font-size: 1.15rem;
+    margin: var(--s3) 0 0;
+    padding-bottom: 0.4rem;
+    border-bottom: 2px solid var(--c-primary);
+  }
+</style>
