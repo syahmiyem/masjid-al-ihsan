@@ -6,7 +6,9 @@ import EventItem from '../components/ui/EventItem.astro';
 import NoticeBanner from '../components/ui/NoticeBanner.astro';
 import PrayerTimesCard from '../components/ui/PrayerTimesCard.astro';
 import ServiceCard from '../components/ui/ServiceCard.astro';
+import ShareBar from '../components/ShareBar.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { sharePage } from '../lib/share';
 import { getNotis, getPerkhidmatan, getSettings } from '../lib/sanity';
 import { today, upcoming, zone } from '../lib/site';
 import { prayerDay } from '../lib/waktu-solat-data';
@@ -64,6 +66,8 @@ const todayPrayers = prayerDay(now.date);
   ) : (
     <p>Tiada aktiviti dijadualkan untuk minggu ini. Sila semak semula nanti.</p>
   )}
+
+  <ShareBar url={new URL('/', Astro.site).href} message={sharePage('Aktiviti minggu ini')} />
 
   <div class="btn-row">
     <a class="btn btn-primary" href="/aktiviti">

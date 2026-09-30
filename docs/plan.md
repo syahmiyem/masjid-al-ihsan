@@ -25,6 +25,7 @@
 | 1.3 | 1 Oct 2026 | Account ownership revised: Cloudflare and Sanity are opened with the **mosque's official email** from day one (developer invited as a member); the code repo lives on the **developer's personal GitHub** during the build, with transfer to a mosque-owned GitHub organisation recommended at handover (D-73, D-28, D-75). |
 | 1.4 | 1 Oct 2026 | Phase 0 findings built in: repo now lives at `docs/plan.md` (this file is the SSOT); e-Solat returns 8 daily times (incl. Dhuha) and next year's data only once JAKIM publishes it; content backups go to a private **R2 bucket** (not a private repo); branch-protection settings made explicit; Studio UI language limitation (D-29). Phase 0 status added. |
 | 1.5 | 1 Oct 2026 | **No GitHub Actions** (developer's GitHub account is billing-locked; D-76): build and deploy move to **Cloudflare Workers Builds**; Sanity publish → Workers Builds **deploy hook** (no GitHub token needed); local pre-push checks; build-time Waktu Solat check; scheduled jobs (nightly rebuild, e-Solat check, backups) move to a Cloudflare cron Worker in Phase 2; yearly manual prayer-data sync. |
+| 1.6 | 1 Oct 2026 | **Export to image for all content** brought forward from Phase 3 into Phase 2 (brief: "export selected content as attractive, readable images for WhatsApp and social media"): 10 templates, portrait + WhatsApp Status sizes, per-page link previews, "Simpan Gambar" panel with download + native file share (4.4; D-30, D-31, D-34, D-37). |
 
 ---
 
@@ -400,17 +401,25 @@ Service page
 > *Kuliah Maghrib – Isnin, 6 Okt 2026, selepas Maghrib di Masjid Al-Ihsan, Felda Sg Panching Selatan. Maklumat lanjut: [link]*
 (Content illustrative; real details come from CMS.)
 
-**Image templates (D-31)**
+**Image templates (D-31)** — built (Phase 2, 1 Oct 2026). Every kind of content can be saved as an image:
 
-| Template | Content | Sizes |
-|---|---|---|
-| Kalendar Bulanan | Month title (+ Hijri month if D-17), list of activities by date, mosque name, short URL | 1080×1350 (portrait/feed), 1080×1920 (WhatsApp Status/Stories) |
-| Jadual Kuliah Mingguan | Isnin–Ahad table, time labels, speakers | 1080×1350, 1080×1920 |
-| Aktiviti (single) | Title, date, time, venue, speaker, status label | 1080×1350, 1200×630 (link preview) |
-| Perkhidmatan | Service name, 3–5 key facilities, contact line, photo | 1080×1350, 1200×630 |
-| Waktu Solat Bulanan | Month table (Imsak–Isyak, 8 times per day), zone, "Sumber: JAKIM (e-Solat)"; doubles as Ramadan imsakiyah | 1080×1350, 1080×1920 |
-| Derma | QR, account holder name, bank, account number, safety note | 1080×1350 |
+| Template | Content | Sizes | Page with "Simpan Gambar" |
+|---|---|---|---|
+| Minggu Ini | Next 7 days, grouped by day: title, time, place, speaker | 1080×1350, 1080×1920 | Utama |
+| Kalendar Bulanan | Month's activities + kuliah by date, status labels (DITANGGUHKAN ke …) | 1080×1350, 1080×1920 | Aktiviti (each month) |
+| Aktiviti (single) | Title, status box, date, time, place, speaker, short description | 1080×1350, 1080×1920, 1200×630 link preview | Each activity |
+| Jadual Kuliah | Weekly timetable Isnin → Ahad + monthly series, speaker line | 1080×1350, 1080×1920 | Kuliah |
+| Siri Kuliah (single) | Name, rule ("Setiap Isnin"), time, place, speaker, topic | 1080×1350, 1080×1920, 1200×630 | Each kuliah series |
+| Perkhidmatan | Name, capacity, rate, up to 5 facilities, WhatsApp enquiry line | 1080×1350, 1080×1920, 1200×630 | Each service |
+| Waktu Solat Hari Ini | Imsak → Isyak (Zohor shown as Jumaat on Fridays), Gregorian + Hijri date | 1080×1350, 1080×1920 | Waktu Solat |
+| Waktu Solat Bulanan | Month table (5 prayers), Fridays bold, zone, "Sumber: JAKIM (e-Solat)"; doubles as Ramadan imsakiyah | 1080×1350 (2 parts), 1080×1920 | Waktu Solat (each month) |
+| Derma | QR, account holder name, bank, account number, recipient-name safety note | 1080×1350, 1080×1920 | Derma |
+| Carta Organisasi | Positions grouped by level, vacancies shown | 1080×1350, 1080×1920 | Carta Organisasi |
 
+- **How it's built (D-30 option A):** Satori lays out each template to SVG and resvg renders PNG, at build time (about 100 images in under 10 seconds). Fonts are the site's own (Atkinson Hyperlegible Next). All images are regenerated on every build, so a publish in the Studio or the nightly rebuild keeps them current.
+- **Test-site safety (D-34):** while `UAT_MODE` is on, every image carries a yellow "LAMAN PERCUBAAN — CONTOH, BUKAN RASMI" band, so test images can't circulate as official.
+- **Readability:** text on images keeps the site's rules: ≥ 32px on a 1080px canvas, high contrast, statuses in words, no text over photos. Rows are clipped to one line with "…" rather than shrinking; long lists split into "Bahagian 1/2, 2/2" with day headings never left alone at the bottom.
+- **Custom selection (D-37, Optional):** the brief's "selected content" is met by giving every kind of content its own image. Letting a visitor tick several items and combine them into one image would need on-demand rendering (option B below) and is left for later.
 - **Format:** PNG for text-heavy posters (sharp text, predictable colours); JPEG/WebP only for photo-heavy service cards. Target ≤ 400 KB per image so it sends quickly on WhatsApp.
 - **Automatic overflow:** if a month has too many items for one image, the generator splits into "Bahagian 1/2, 2/2" rather than shrinking text below a minimum size (≥ 32px on a 1080px-wide canvas).
 - **Design rules:** high contrast, large dates, one font family with Malay-friendly glyphs, mosque name and URL on every image, "Dikemas kini: [tarikh]" footer so forwarded images carry their freshness date.
@@ -1033,14 +1042,15 @@ Durations assume one developer, part-time to full-time. Before the committee pre
 - Deviations: kuliah "tabs" are in-page jump links (no JavaScript); the month grid view (D-10 toggle, "S") is not built yet.
 - ✅ Sharing (D-32): "Kongsi ke WhatsApp" with a pre-written Malay message on every main page; device share sheet and "Salin Pautan" appear only where supported; Open Graph + Twitter card tags with a default 1200×630 preview image (per-page share images: Phase 3).
 - ✅ Tambah ke Kalendar (D-33): `.ics` per activity and per kuliah series (RRULE weekly / nth / last weekday; cancelled and postponed dates excluded via EXDATE; prayer-relative times as all-day entries with the label in the title) + Google Calendar links; RFC 5545 escaping and line folding unit-tested.
+- ✅ **Export to image (all content)** — see 4.4: 103 images per build (largest 265 KB), "Simpan Gambar" on every main page (two previews per row, Muat Turun + Kongsi), per-page link previews for activities, kuliah series and services. axe 0 violations and no overflow with the panel open.
 - ⏳ Remaining Phase 2: "next prayer" live script; scheduler Worker (nightly rebuild, e-Solat check, backups); Studio customisation (slug lock, archive-not-delete, ordering).
 
 ### Phase 3 — Share images & technical SEO on UAT (1–2 weeks)
 
 | Tasks |
 |---|
-| Build-time image generator: monthly calendar, weekly kuliah, activity, service, **monthly Waktu Solat, Derma poster**; portrait + status sizes; overflow splitting. The printed URL comes from `SITE_URL` |
-| "Simpan Gambar" bottom sheet with native file share + download fallback |
+| ~~Build-time image generator~~ — **done in Phase 2** (1 Oct 2026), see 4.4 |
+| ~~"Simpan Gambar" with native file share + download fallback~~ — **done in Phase 2**; still to test on real Android (Chrome) and iPhone (Safari) |
 | JSON-LD (Mosque, Service, LodgingBusiness, Event, BreadcrumbList, FAQPage); sitemap; canonical — generated, but only served as indexable when `UAT_MODE` is off |
 | Optional enquiry form Worker + Turnstile + notification, storing enquiries privately (D-45) |
 
@@ -1244,11 +1254,13 @@ Status key: **Decided** (agreed, with date) · **Recommended** (adopt unless obj
 | D-27 | CMS | Live (non-rebuild) urgent banner | Optional | |
 | D-29 | CMS | All our Studio labels, menus, help text and validation messages in Malay. Sanity's built-in interface stays in English, because no Malay locale package exists (checked 1 Oct 2026); revisit if one appears | Recommended | Training materials cover the few English UI words (Publish, etc.) |
 | D-28 | Tech | Main repo is public (free branch protection and required reviews, admin bypass off); backups in a private R2 bucket | Recommended | Needed for D-81; alternative: private repo on GitHub Pro/Team (paid) |
-| D-30 | Sharing | Share images generated at build time | Recommended | Alt: on-demand Worker |
-| D-31 | Sharing | Templates & sizes: 1080×1350, 1080×1920, 1200×630; PNG for text posters | Recommended | |
+| D-30 | Sharing | Share images generated at build time (Satori + resvg) | **Built** 1 Oct 2026 | Alt: on-demand Worker (needed only for D-37) |
+| D-31 | Sharing | 10 templates covering all content; sizes 1080×1350, 1080×1920, 1200×630; PNG ≤ 400 KB | **Built** 1 Oct 2026 | Section 4.4 table |
 | D-32 | Sharing | WhatsApp link share + native share + copy link on every item | Recommended | |
-| D-33 | Calendar | Add to Calendar (.ics + Google Calendar link) | Recommended | |
+| D-33 | Calendar | Add to Calendar (.ics + Google Calendar link) | **Built** 1 Oct 2026 | |
+| D-34 | Sharing | "LAMAN PERCUBAAN — CONTOH, BUKAN RASMI" band on every image while in UAT mode | Recommended | Removed automatically at go-live (`UAT_MODE=false`) |
 | D-35 | Org chart | Grouped stacked cards on mobile; vacancies shown as "Jawatan kosong" | Recommended | |
+| D-37 | Sharing | Visitor picks several items and exports them as one image | Optional | Needs on-demand rendering (D-30 option B); not in launch scope |
 | D-36 | Org chart | Positions and names list | Needs confirmation | Q20 |
 | D-40 | Gallery | R2 for web-optimised copies; originals in Google Drive | Recommended | Phase 8 |
 | D-41 | Gallery | Photo consent & takedown policy | Needs confirmation | Q23; blocks Phase 8; interim answer for facility photos needed in Phase 4 |

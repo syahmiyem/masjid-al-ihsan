@@ -14,6 +14,8 @@ export type CalendarItem = {
   date: string;
   title: string;
   time: string;
+  /** Time without the official prayer time, e.g. "Selepas Isyak" — for images, where space is tight */
+  timePlain: string;
   sortKey: string;
   place: string;
   speaker?: string;
@@ -46,6 +48,7 @@ export function calendarItems(from: string, to: string, src: Sources): CalendarI
         date,
         title: a.tajuk,
         time: masaLabel(a.masa, src.prayerDay(date)),
+        timePlain: masaLabel(a.masa),
         sortKey: masaSortKey(a.masa, src.prayerDay(date)),
         place: a.tempat,
         speaker: a.penceramah,
@@ -65,6 +68,7 @@ export function calendarItems(from: string, to: string, src: Sources): CalendarI
         date: a.tarikhBaharu,
         title: a.tajuk,
         time: masaLabel(a.masa, src.prayerDay(a.tarikhBaharu)),
+        timePlain: masaLabel(a.masa),
         sortKey: masaSortKey(a.masa, src.prayerDay(a.tarikhBaharu)),
         place: a.tempat,
         speaker: a.penceramah,
@@ -83,6 +87,7 @@ export function calendarItems(from: string, to: string, src: Sources): CalendarI
       date: o.date,
       title: o.siri.nama,
       time: masaLabel(o.masa, src.prayerDay(o.date)),
+      timePlain: masaLabel(o.masa),
       sortKey: masaSortKey(o.masa, src.prayerDay(o.date)),
       place: o.tempat,
       speaker: o.penceramah,

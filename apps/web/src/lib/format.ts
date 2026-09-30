@@ -73,3 +73,8 @@ export function formatTime(hhmm: string): string {
   const h12 = h % 12 === 0 ? 12 : h % 12;
   return `${h12}:${match[2]} ${period}`;
 }
+
+/** "Selepas Maghrib" → "selepas Maghrib": lower-cases only the first letter, keeping prayer names capitalised. */
+export function lowerFirst(text: string): string {
+  return text.charAt(0).toLowerCase() + text.slice(1);
+}

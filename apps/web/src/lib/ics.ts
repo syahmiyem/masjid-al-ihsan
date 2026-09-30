@@ -2,6 +2,7 @@
 // Clock times are Asia/Kuala_Lumpur (UTC+8, no DST) and written in UTC. Prayer-relative times become
 // all-day entries with the label in the title (plan 4.1), because the exact time varies by date.
 import { addDays } from './dates.ts';
+import { lowerFirst } from './format.ts';
 import { masaLabelShort } from './masa.ts';
 import type { KuliahSiri, Masa } from './types.ts';
 
@@ -46,7 +47,7 @@ function timing(e: CalEvent): { allDay: boolean; start: string; end: string; tit
     allDay: true,
     start: compact(e.date),
     end: compact(addDays(last, 1)),
-    title: `${e.title} – ${masaLabelShort(e.masa).toLowerCase()}`,
+    title: `${e.title} – ${lowerFirst(masaLabelShort(e.masa))}`,
   };
 }
 

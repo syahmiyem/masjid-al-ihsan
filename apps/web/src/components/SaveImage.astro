@@ -1,0 +1,128 @@
+---
+// "Simpan Gambar" (plan 4.4): preview each generated image with "Muat Turun" (always works) and
+// "Kongsi" (sends the image file via the device share sheet where supported — checked with canShare).
+import { Download, ImageDown, Share2 } from '@lucide/astro';
+import { FORMATS } from '../poster/frame';
+import { postersFor } from '../poster/catalogue';
+
+interface Props {
+  page: string;
+}
+const posters = await postersFor(Astro.props.page);
+const fileName = (path: string) => `masjid-al-ihsan-${path.replace(/^\/gambar\//, '').replace(/\//g, '-')}`;
+const label = (p: (typeof posters)[number]) =>
+  `${FORMATS[p.format].label}${p.parts > 1 ? ` · ${p.part}/${p.parts}` : ''}`;
+---
+
+{posters.length > 0 && (
+  <details class="save-image">
+    <summary class="btn btn-secondary">
+      <ImageDown size={22} aria-hidden="true" /> Simpan Gambar
+    </summary>
+    <p class="muted">
+      Gambar untuk dikongsi di WhatsApp dan media sosial. Pilih <strong>Potret</strong> untuk kiriman biasa
+      atau <strong>Status WhatsApp</strong> untuk status.
+    </p>
+    <ul>
+      {posters.map((p) => (
+        <li>
+          <a href={p.path} class="thumb">
+            <img
+              src={p.path}
+              alt={`Pratonton gambar: ${p.title}, ${label(p)}`}
+              width={FORMATS[p.format].width}
+              height={FORMATS[p.format].height}
+              loading="lazy"
+              decoding="async"
+            />
+          </a>
+          <span class="label">
+            {p.title}
+            <span class="format">{label(p)}</span>
+          </span>
+          <a class="btn btn-secondary small" href={p.path} download={fileName(p.path)}>
+            <Download size={20} aria-hidden="true" /> Muat Turun
+          </a>
+          <button
+            class="btn btn-primary small"
+            type="button"
+            data-share-file={p.path}
+            data-name={fileName(p.path)}
+            hidden
+          >
+            <Share2 size={20} aria-hidden="true" /> Kongsi
+          </button>
+        </li>
+      ))}
+    </ul>
+  </details>
+)}
+
+<script>
+  // Show "Kongsi" only where the browser can share image files (plan 4.4 browser note).
+  const probe = new File([new Uint8Array([0])], 'probe.png', { type: 'image/png' });
+  if (navigator.canShare?.({ files: [probe] })) {
+    for (const button of document.querySelectorAll<HTMLButtonElement>('[data-share-file]')) {
+      button.hidden = false;
+      button.addEventListener('click', async () => {
+        try {
+          const blob = await (await fetch(button.dataset.shareFile!)).blob();
+          const file = new File([blob], button.dataset.name!, { type: 'image/png' });
+          await navigator.share({ files: [file] });
+        } catch {
+          /* cancelled or unsupported: "Muat Turun" remains available */
+        }
+      });
+    }
+  }
+</script>
+
+<style>
+  .save-image {
+    margin-top: var(--s1);
+  }
+  .save-image summary {
+    list-style: none;
+  }
+  .save-image summary::-webkit-details-marker {
+    display: none;
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: var(--s1) 0 0;
+    display: grid;
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(min(100%, 8.25rem), 1fr)
+    ); /* two per row on a 360px phone */
+    gap: var(--s2);
+  }
+  li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .thumb img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+  }
+  .label {
+    display: flex;
+    flex-direction: column;
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1.3;
+  }
+  .format {
+    font-weight: 400;
+    color: var(--c-text-muted);
+  }
+  .small {
+    padding: 0.4rem 0.6rem;
+    font-size: 1rem;
+  }
+</style>
