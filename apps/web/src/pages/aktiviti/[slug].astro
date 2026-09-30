@@ -1,0 +1,163 @@
+---
+// /aktiviti/2026-10 → that month's calendar; /aktiviti/<slug> → one activity (plan 3.1, 4.1).
+import { ChevronLeft } from '@lucide/astro';
+import MonthView from '../../components/MonthView.astro';
+import StatusLabel from '../../components/ui/StatusLabel.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { calendarItems, calendarMonths } from '../../lib/calendar';
+import { monthBounds } from '../../lib/dates';
+import { formatDate, monthName } from '../../lib/format';
+import { masaLabel } from '../../lib/masa';
+import { getAktiviti } from '../../lib/sanity';
+import { calendarSources } from '../../lib/site';
+import type { Aktiviti } from '../../lib/types';
+import { prayerDay } from '../../lib/waktu-solat-data';
+
+export async function getStaticPaths() {
+  const src = await calendarSources();
+  const months = calendarMonths(
+    src.today,
+    src.aktiviti.map((a) => a.tarikhMula),
+  );
+  const aktiviti = await getAktiviti();
+  return [
+    ...months.map((month) => ({ params: { slug: month }, props: { kind: 'month' as const, month, months } })),
+    ...aktiviti.map((a) => ({ params: { slug: a.slug }, props: { kind: 'aktiviti' as const, aktiviti: a } })),
+  ];
+}
+
+type Props = { kind: 'month'; month: string; months: string[] } | { kind: 'aktiviti'; aktiviti: Aktiviti };
+const props = Astro.props as Props;
+const src = await calendarSources();
+
+const CATEGORY: Record<string, string> = {
+  kuliah: 'Kuliah',
+  'program-khas': 'Program Khas',
+  kelas: 'Kelas',
+  'gotong-royong': 'Gotong-royong',
+  'kenduri-majlis': 'Kenduri / Majlis',
+  mesyuarat: 'Mesyuarat',
+  'lain-lain': 'Lain-lain',
+};
+const AUDIENCE: Record<string, string> = {
+  umum: 'Umum',
+  muslimah: 'Muslimah',
+  'kanak-kanak': 'Kanak-kanak',
+  remaja: 'Remaja',
+};
+
+let title = '';
+let description = '';
+let monthData: { month: string; items: ReturnType<typeof calendarItems>; months: string[] } | undefined;
+let a: Aktiviti | undefined;
+
+if (props.kind === 'month') {
+  const { first, last } = monthBounds(props.month);
+  const label = `${monthName(Number(props.month.slice(5)))} ${props.month.slice(0, 4)}`;
+  title = `Aktiviti ${label} – Masjid Al-Ihsan Kuantan`;
+  description = `Senarai aktiviti, kuliah dan program Masjid Al-Ihsan, Felda Sungai Panching Selatan bagi bulan ${label}.`;
+  monthData = { month: props.month, items: calendarItems(first, last, src), months: props.months };
+} else {
+  a = props.aktiviti;
+  title = `${a.tajuk} – Masjid Al-Ihsan Kuantan`;
+  description = `${a.tajuk}, ${formatDate(a.tarikhMula)} di ${a.tempat}, Masjid Al-Ihsan Felda Sg Panching Selatan, Kuantan.`;
+}
+
+const isPast = a ? (a.tarikhTamat ?? a.tarikhMula) < src.today && a.status === 'dijadualkan' : false;
+const dateText = a
+  ? a.tarikhTamat && a.tarikhTamat !== a.tarikhMula
+    ? `${formatDate(a.tarikhMula)} hingga ${formatDate(a.tarikhTamat)}`
+    : formatDate(a.tarikhMula)
+  : '';
+---
+
+<BaseLayout title={title} description={description} withNav>
+  {monthData && <MonthView {...monthData} today={src.today} />}
+  {a && (
+    <article>
+      <p>
+        <a href={`/aktiviti/${a.tarikhMula.slice(0, 7)}`} class="back">
+          <ChevronLeft size={20} aria-hidden="true" /> Kembali ke kalendar{' '}
+          {monthName(Number(a.tarikhMula.slice(5, 7)))}
+        </a>
+      </p>
+      <h1>{a.tajuk}</h1>
+      {a.status !== 'dijadualkan' && <StatusLabel status={a.status} />}
+      {isPast && <StatusLabel status="berlangsung" />}
+      {a.status === 'ditangguhkan' && a.tarikhBaharu && (
+        <p class="change">Ditangguhkan ke {formatDate(a.tarikhBaharu)}.</p>
+      )}
+      {a.notaPerubahan && <p class="change">{a.notaPerubahan}</p>}
+
+      <dl class="card facts">
+        <div>
+          <dt>Tarikh</dt>
+          <dd>{dateText}</dd>
+        </div>
+        <div>
+          <dt>Masa</dt>
+          <dd>{masaLabel(a.masa, prayerDay(a.tarikhMula))}</dd>
+        </div>
+        <div>
+          <dt>Tempat</dt>
+          <dd>{a.tempat}</dd>
+        </div>
+        {a.penceramah && (
+          <div>
+            <dt>Penceramah / Penganjur</dt>
+            <dd>{a.penceramah}</dd>
+          </div>
+        )}
+        <div>
+          <dt>Kategori</dt>
+          <dd>{CATEGORY[a.kategori] ?? a.kategori}</dd>
+        </div>
+        {a.sasaran && (
+          <div>
+            <dt>Sasaran</dt>
+            <dd>{AUDIENCE[a.sasaran] ?? a.sasaran}</dd>
+          </div>
+        )}
+      </dl>
+      {a.penerangan && <p>{a.penerangan}</p>}
+    </article>
+  )}
+</BaseLayout>
+
+<style>
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-height: var(--tap);
+  }
+  .change {
+    font-weight: 700;
+    margin-top: 0.5rem;
+  }
+  .facts {
+    margin: var(--s2) 0;
+  }
+  .facts div {
+    display: grid;
+    grid-template-columns: 8rem 1fr;
+    gap: 0.5rem;
+    padding: 0.4rem 0;
+  }
+  .facts div + div {
+    border-top: 1px solid var(--c-border);
+  }
+  dt {
+    color: var(--c-text-muted);
+  }
+  dd {
+    margin: 0;
+    font-weight: 700;
+  }
+  @media (max-width: 22em) {
+    .facts div {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+  }
+</style>

@@ -1,0 +1,170 @@
+---
+// Jadual Kuliah (plan 4.2): "Minggu Ini" with changes applied, weekly timetable Isnin → Ahad, monthly series.
+import { Clock, MapPin, User } from '@lucide/astro';
+import EventItem from '../../components/ui/EventItem.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { addDays } from '../../lib/dates';
+import { formatDate } from '../../lib/format';
+import { expandKuliah, ruleLabel } from '../../lib/kuliah';
+import { masaLabelShort } from '../../lib/masa';
+import { getKuliahPerubahan, getKuliahSiri } from '../../lib/sanity';
+import { today, upcoming } from '../../lib/site';
+import type { Weekday } from '../../lib/types';
+
+const now = today();
+const [siri, perubahan, minggu] = await Promise.all([
+  getKuliahSiri(),
+  getKuliahPerubahan(),
+  upcoming(7, 'kuliah'),
+]);
+const active = siri.filter((s) => !s.aktifHingga || s.aktifHingga >= now.date);
+
+const DAYS: [Weekday, string][] = [
+  ['isnin', 'Isnin'],
+  ['selasa', 'Selasa'],
+  ['rabu', 'Rabu'],
+  ['khamis', 'Khamis'],
+  ['jumaat', 'Jumaat'],
+  ['sabtu', 'Sabtu'],
+  ['ahad', 'Ahad'],
+];
+const weekly = DAYS.map(([key, label]) => ({
+  label,
+  series: active.filter((s) => s.jenis === 'mingguan' && s.hari === key),
+})).filter((d) => d.series.length > 0);
+
+const monthly = active
+  .filter((s) => s.jenis === 'bulanan')
+  .map((s) => ({
+    siri: s,
+    next: expandKuliah([s], perubahan, now.date, addDays(now.date, 70)).find(
+      (o) => o.status !== 'dibatalkan',
+    ),
+  }));
+---
+
+<BaseLayout
+  title="Jadual Kuliah Mingguan & Bulanan – Masjid Al-Ihsan"
+  description="Jadual kuliah mingguan dan bulanan Masjid Al-Ihsan, Felda Sungai Panching Selatan, Kuantan: hari, masa, penceramah dan topik."
+  withNav
+>
+  <h1>Jadual Kuliah</h1>
+  <nav class="jump" aria-label="Bahagian halaman">
+    <a href="#minggu-ini">Minggu Ini</a>
+    <a href="#mingguan">Mingguan</a>
+    <a href="#bulanan">Bulanan</a>
+  </nav>
+
+  <h2 id="minggu-ini">Minggu Ini</h2>
+  {minggu.length > 0 ? (
+    minggu.map((i) => (
+      <EventItem
+        date={i.date}
+        title={i.title}
+        time={i.time}
+        place={i.place}
+        speaker={i.speaker}
+        status={i.status}
+        label={i.label}
+        note={i.note}
+        href={i.href}
+      />
+    ))
+  ) : (
+    <p>Tiada kuliah dalam 7 hari akan datang.</p>
+  )}
+
+  <h2 id="mingguan">Jadual Mingguan</h2>
+  {weekly.length === 0 && <p>Tiada kuliah mingguan buat masa ini.</p>}
+  <div class="stack">
+    {weekly.map((day) => (
+      <section class="card day" aria-label={day.label}>
+        <h3>{day.label}</h3>
+        <ul>
+          {day.series.map((s) => (
+            <li>
+              <a href={`/kuliah/${s.slug}`}>{s.nama}</a>
+              <span class="meta">
+                <Clock size={18} aria-hidden="true" /> {masaLabelShort(s.masa)}
+              </span>
+              <span class="meta">
+                <MapPin size={18} aria-hidden="true" /> {s.tempat}
+              </span>
+              {s.penceramah && (
+                <span class="meta">
+                  <User size={18} aria-hidden="true" /> {s.penceramah}
+                </span>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+
+  <h2 id="bulanan">Kuliah Bulanan</h2>
+  {monthly.length === 0 && <p>Tiada kuliah bulanan buat masa ini.</p>}
+  <div class="stack">
+    {monthly.map(({ siri: s, next }) => (
+      <section class="card day" aria-label={s.nama}>
+        <h3>
+          <a href={`/kuliah/${s.slug}`}>{s.nama}</a>
+        </h3>
+        <p class="meta">
+          {ruleLabel(s)}, {masaLabelShort(s.masa)}
+        </p>
+        <p class="meta">
+          <MapPin size={18} aria-hidden="true" /> {s.tempat}
+        </p>
+        {next && <p class="next">Seterusnya: {formatDate(next.date)}</p>}
+      </section>
+    ))}
+  </div>
+</BaseLayout>
+
+<style>
+  .jump {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .jump a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    padding: 0.4rem 0.9rem;
+    border: 2px solid var(--c-primary);
+    border-radius: 999px;
+    background: var(--c-primary-soft);
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .day h3 {
+    margin-bottom: 0.5rem;
+  }
+  .day ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .day li + li {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--c-border);
+  }
+  .day li a {
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0.15rem 0 0;
+    color: var(--c-text-muted);
+  }
+  .next {
+    margin: 0.5rem 0 0;
+    font-weight: 700;
+  }
+</style>

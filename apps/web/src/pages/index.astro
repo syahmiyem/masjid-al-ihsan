@@ -1,12 +1,108 @@
 ---
+// Home page (plan 3.3): notices → Waktu Solat → Minggu Ini → buttons → services → derma → contact.
+import { BookOpen, CalendarDays, HandHeart, MapPin } from '@lucide/astro';
+import ContactBlock from '../components/ContactBlock.astro';
+import EventItem from '../components/ui/EventItem.astro';
+import NoticeBanner from '../components/ui/NoticeBanner.astro';
+import PrayerTimesCard from '../components/ui/PrayerTimesCard.astro';
+import ServiceCard from '../components/ui/ServiceCard.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getNotis, getPerkhidmatan, getSettings } from '../lib/sanity';
+import { today, upcoming, zone } from '../lib/site';
+import { prayerDay } from '../lib/waktu-solat-data';
+
+const now = today();
+const [settings, notis, services, minggu] = await Promise.all([
+  getSettings(),
+  getNotis(new Date().toISOString()),
+  getPerkhidmatan(),
+  upcoming(7),
+]);
+const soon = minggu.filter((i) => i.status !== 'berlangsung').slice(0, 5);
+const todayPrayers = prayerDay(now.date);
 ---
 
 <BaseLayout
   title="Masjid Al-Ihsan Felda Sg Panching Selatan, Kuantan"
-  description="Jadual kuliah, aktiviti bulanan dan perkhidmatan Masjid Al-Ihsan, Felda Sungai Panching Selatan, Kuantan, Pahang."
+  description="Jadual kuliah, aktiviti bulanan, waktu solat dan perkhidmatan Masjid Al-Ihsan, Felda Sungai Panching Selatan, Kuantan, Pahang."
+  withNav
 >
   <h1>Masjid Al-Ihsan</h1>
-  <p>Felda Sg Panching Selatan, Kuantan</p>
-  <p>Laman web ini sedang dibina.</p>
+  <p class="lead">
+    <MapPin size={20} aria-hidden="true" /> Felda Sg Panching Selatan, Kuantan
+  </p>
+
+  {notis.length > 0 && (
+    <div class="stack">
+      {notis.map((n) => (
+        <NoticeBanner message={n.mesej} level={n.tahap} href={n.pautan} />
+      ))}
+    </div>
+  )}
+
+  {todayPrayers && (
+    <div class="section">
+      <PrayerTimesCard day={todayPrayers} now={now.time} zone={zone.code} zoneName={zone.name} />
+    </div>
+  )}
+
+  <h2>Minggu Ini di Masjid</h2>
+  {soon.length > 0 ? (
+    soon.map((i) => (
+      <EventItem
+        date={i.date}
+        title={i.title}
+        time={i.time}
+        place={i.place}
+        speaker={i.speaker}
+        status={i.status}
+        label={i.label}
+        note={i.note}
+        href={i.href}
+      />
+    ))
+  ) : (
+    <p>Tiada aktiviti dijadualkan untuk minggu ini. Sila semak semula nanti.</p>
+  )}
+
+  <div class="btn-row">
+    <a class="btn btn-primary" href="/aktiviti">
+      <CalendarDays size={22} aria-hidden="true" /> Lihat Kalendar Bulan Ini
+    </a>
+    <a class="btn btn-secondary" href="/kuliah">
+      <BookOpen size={22} aria-hidden="true" /> Jadual Kuliah
+    </a>
+  </div>
+
+  {services.length > 0 && (
+    <>
+      <h2>Perkhidmatan</h2>
+      <div class="stack">
+        {services.map((s) => (
+          <ServiceCard name={s.nama} summary={s.ringkasan} href={`/perkhidmatan/${s.slug}`} />
+        ))}
+      </div>
+    </>
+  )}
+
+  <h2>Derma untuk Masjid</h2>
+  <p>Sumbangan anda membantu kos operasi dan program masjid.</p>
+  <a class="btn btn-secondary" href="/derma">
+    <HandHeart size={22} aria-hidden="true" /> Cara Menderma
+  </a>
+
+  <ContactBlock settings={settings} />
 </BaseLayout>
+
+<style>
+  .lead {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--c-text-muted);
+    margin-top: -0.5rem;
+  }
+  .section {
+    margin-top: var(--s3);
+  }
+</style>

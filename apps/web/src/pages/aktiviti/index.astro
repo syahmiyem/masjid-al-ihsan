@@ -1,0 +1,27 @@
+---
+// Kalendar Aktiviti: this month (plan 4.1). Each month also has its own shareable page /aktiviti/YYYY-MM.
+import MonthView from '../../components/MonthView.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { calendarItems, calendarMonths } from '../../lib/calendar';
+import { monthBounds } from '../../lib/dates';
+import { monthName } from '../../lib/format';
+import { calendarSources } from '../../lib/site';
+
+const src = await calendarSources();
+const month = src.today.slice(0, 7);
+const { first, last } = monthBounds(month);
+const items = calendarItems(first, last, src);
+const months = calendarMonths(
+  src.today,
+  src.aktiviti.map((a) => a.tarikhMula),
+);
+const label = `${monthName(Number(month.slice(5)))} ${month.slice(0, 4)}`;
+---
+
+<BaseLayout
+  title={`Aktiviti ${label} – Masjid Al-Ihsan Kuantan`}
+  description={`Senarai aktiviti, kuliah dan program Masjid Al-Ihsan, Felda Sungai Panching Selatan bagi bulan ${label}.`}
+  withNav
+>
+  <MonthView month={month} items={items} months={months} today={src.today} />
+</BaseLayout>

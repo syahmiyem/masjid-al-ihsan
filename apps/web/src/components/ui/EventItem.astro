@@ -11,10 +11,12 @@ interface Props {
   place: string;
   href?: string;
   status?: Status;
+  /** Overrides the status badge text, e.g. "PENCERAMAH JEMPUTAN" */
+  label?: string;
   note?: string;
   speaker?: string;
 }
-const { date, title, time, place, href, status = 'dijadualkan', note, speaker } = Astro.props;
+const { date, title, time, place, href, status = 'dijadualkan', label, note, speaker } = Astro.props;
 const [, m, d] = date.split('-');
 const months = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogo', 'Sep', 'Okt', 'Nov', 'Dis'];
 const past = status === 'berlangsung';
@@ -33,7 +35,7 @@ const past = status === 'berlangsung';
         , {dayName(date)} {Number(d)} {months[Number(m) - 1]}
       </span>
     </h3>
-    {status !== 'dijadualkan' && <StatusLabel status={status} />}
+    {status !== 'dijadualkan' && <StatusLabel status={status} text={label} />}
     {note && <p class="note">{note}</p>}
     <p class="meta">
       <Clock size={18} aria-hidden="true" /> {time}

@@ -1,0 +1,47 @@
+---
+// Address + WhatsApp / phone / directions, in the same order on every page (WCAG 3.2.6 consistent help).
+import { MapPin, MessageCircle, Navigation, Phone } from '@lucide/astro';
+import { googleMapsLink, telLink, wazeLink, whatsappLink } from '../lib/links';
+import type { Settings } from '../lib/sanity';
+
+interface Props {
+  settings: Settings;
+  heading?: string;
+}
+const { settings, heading = 'Hubungi Kami' } = Astro.props;
+---
+
+<section aria-labelledby="hubungi-heading">
+  <h2 id="hubungi-heading">{heading}</h2>
+  {settings.address && <address>{settings.address}</address>}
+  {settings.officeHours && <p class="muted">Waktu pejabat: {settings.officeHours}</p>}
+  <div class="btn-row">
+    {settings.whatsapp && (
+      <a
+        class="btn btn-primary"
+        href={whatsappLink(settings.whatsapp, 'Assalamualaikum. Saya ingin bertanya tentang ')}
+      >
+        <MessageCircle size={22} aria-hidden="true" /> WhatsApp Masjid
+      </a>
+    )}
+    {settings.phone && (
+      <a class="btn btn-secondary" href={telLink(settings.phone)}>
+        <Phone size={22} aria-hidden="true" /> Telefon {settings.phone}
+      </a>
+    )}
+    <a class="btn btn-secondary" href={googleMapsLink(settings.mapUrl)}>
+      <MapPin size={22} aria-hidden="true" /> Buka di Google Maps
+    </a>
+    <a class="btn btn-secondary" href={wazeLink()}>
+      <Navigation size={22} aria-hidden="true" /> Buka di Waze
+    </a>
+  </div>
+</section>
+
+<style>
+  address {
+    font-style: normal;
+    white-space: pre-line;
+    margin-bottom: var(--s2);
+  }
+</style>
