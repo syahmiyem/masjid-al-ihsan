@@ -26,7 +26,8 @@ Cloudflare Workers Builds before every deploy.
 ```sh
 pnpm install             # also turns on the pre-push hook
 pnpm dev                 # site at http://localhost:4321
-pnpm studio              # Studio at http://localhost:3333 (needs apps/studio/.env)
+pnpm studio              # Studio at http://localhost:3333
+pnpm studio:deploy       # deploy hosted Studio (not `pnpm --filter studio deploy`, a pnpm built-in)
 pnpm check               # type-check scripts, site and Studio
 pnpm test                # unit tests (prayer-time parsing/validation)
 pnpm format              # Prettier
@@ -85,7 +86,7 @@ Log in to the mosque's Cloudflare account (you can use your own login once it's 
    `sanity.cli.ts`. It isn't secret. Use `apps/studio/.env` only to override it, e.g. `SANITY_STUDIO_DATASET=latihan`.
 
 4. Run `pnpm studio`, open http://localhost:3333, sign in, and accept the CORS prompt for `localhost:3333`.
-5. Deploy the hosted Studio: `pnpm --filter studio exec sanity login`, then `pnpm --filter studio deploy`.
+5. Deploy the hosted Studio: `pnpm --filter studio exec sanity login`, then `pnpm studio:deploy`.
    It will be at `https://masjid-al-ihsan.sanity.studio`. Paste the `appId` it prints into
    `apps/studio/sanity.cli.ts` (`deployment.appId`).
 6. **API → Webhooks** (once there is content, Phase 1–2): `POST` to the Cloudflare deploy hook URL, dataset
