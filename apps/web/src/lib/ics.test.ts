@@ -35,7 +35,7 @@ test('prayer-relative event becomes all-day with the label in the title', () => 
   const ics = buildIcs({ ...clock, masa: { jenis: 'solat', waktuSolat: 'selepas-maghrib' } });
   assert.match(ics, /DTSTART;VALUE=DATE:20261024\r\n/);
   assert.match(ics, /DTEND;VALUE=DATE:20261025\r\n/);
-  assert.match(ics, /SUMMARY:Kursus Pengurusan Jenazah – selepas maghrib/);
+  assert.match(ics, /SUMMARY:Kursus Pengurusan Jenazah – selepas Maghrib/);
 });
 
 test('series with cancelled dates', () => {

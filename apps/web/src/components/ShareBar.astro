@@ -2,6 +2,7 @@
 // Sharing on every page/item (plan 4.4, D-32): WhatsApp link (works everywhere, no JavaScript),
 // device share sheet and copy link (shown only when the browser supports them), and add-to-calendar.
 import { CalendarPlus, Link, MessageCircle, Share2 } from '@lucide/astro';
+import SaveImage from './SaveImage.astro';
 
 interface Props {
   /** Absolute URL of the page being shared */
@@ -10,8 +11,11 @@ interface Props {
   message: string;
   title?: string;
   calendar?: { google: string; ics: string };
+  /** Page whose generated images to offer; defaults to the current page */
+  page?: string;
 }
 const { url, message, title, calendar } = Astro.props;
+const page = Astro.props.page ?? (Astro.url.pathname.replace(/\/$/, '') || '/');
 const whatsapp = `https://wa.me/?text=${encodeURIComponent(`${message} ${url}`)}`;
 ---
 
@@ -34,6 +38,7 @@ const whatsapp = `https://wa.me/?text=${encodeURIComponent(`${message} ${url}`)}
       <Link size={22} aria-hidden="true" /> Salin Pautan
     </button>
   </div>
+  <SaveImage page={page} />
   {calendar && (
     <details class="cal">
       <summary class="btn btn-secondary">

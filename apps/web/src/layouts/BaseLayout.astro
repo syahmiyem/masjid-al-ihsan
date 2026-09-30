@@ -7,6 +7,7 @@ import SiteFooter from '../components/ui/SiteFooter.astro';
 import SiteHeader from '../components/ui/SiteHeader.astro';
 import UatBanner from '../components/UatBanner.astro';
 import { cssVariables } from '../design/tokens';
+import { ogFor } from '../poster/catalogue';
 import '../styles.css';
 
 interface Props {
@@ -19,7 +20,9 @@ interface Props {
   ogType?: 'website' | 'article';
 }
 
-const { title, description, withNav = false, ogImage = '/og-default.png', ogType = 'website' } = Astro.props;
+const { title, description, withNav = false, ogType = 'website' } = Astro.props;
+const ogImage =
+  Astro.props.ogImage ?? (await ogFor(Astro.url.pathname.replace(/\/$/, '') || '/')) ?? '/og-default.png';
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 

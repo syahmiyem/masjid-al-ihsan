@@ -103,7 +103,12 @@ const shareUrl = new URL(`/aktiviti/${month}`, Astro.site).href;
   </section>
 )}
 
-<ShareBar url={shareUrl} message={sharePage(`Aktiviti ${title}`)} title={`Aktiviti ${title}`} />
+<ShareBar
+  page={`/aktiviti/${month}`}
+  url={shareUrl}
+  message={sharePage(`Aktiviti ${title}`)}
+  title={`Aktiviti ${title}`}
+/>
 
 <style>
   .week {
