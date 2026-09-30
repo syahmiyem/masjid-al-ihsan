@@ -81,13 +81,8 @@ Log in to the mosque's Cloudflare account (you can use your own login once it's 
 1. At [sanity.io/manage](https://www.sanity.io/manage) (mosque email): create project **Masjid Al-Ihsan**
    with dataset `production` (public). Then add a second dataset, `latihan`.
 2. **Members:** invite your own login as Administrator.
-3. Copy the **Project ID** into `apps/studio/.env`:
-
-   ```sh
-   SANITY_STUDIO_PROJECT_ID=<project id>
-   SANITY_STUDIO_DATASET=production
-   SANITY_STUDIO_HOST=masjid-al-ihsan
-   ```
+3. Project ID **`1xd617ey`** is already the default in `apps/studio/sanity.config.ts` and
+   `sanity.cli.ts`. It isn't secret. Use `apps/studio/.env` only to override it, e.g. `SANITY_STUDIO_DATASET=latihan`.
 
 4. Run `pnpm studio`, open http://localhost:3333, sign in, and accept the CORS prompt for `localhost:3333`.
 5. Deploy the hosted Studio: `pnpm --filter studio exec sanity login`, then `pnpm --filter studio deploy`.

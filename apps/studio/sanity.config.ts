@@ -3,8 +3,9 @@ import { structureTool } from 'sanity/structure';
 import { schemaTypes } from './schemaTypes';
 import { structure } from './structure';
 
-// Set in apps/studio/.env (SANITY_STUDIO_*) locally, or as CI variables. See .env.example.
-const projectId = process.env.SANITY_STUDIO_PROJECT_ID || 'replace-me';
+// Project ID is public (it appears in every API request), so it is the default here.
+// Override with SANITY_STUDIO_PROJECT_ID / SANITY_STUDIO_DATASET, e.g. to use the "latihan" dataset.
+const projectId = process.env.SANITY_STUDIO_PROJECT_ID || '1xd617ey';
 const dataset = process.env.SANITY_STUDIO_DATASET || 'production';
 
 export default defineConfig({

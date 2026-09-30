@@ -968,7 +968,9 @@ Durations assume one developer, part-time to full-time. Before the committee pre
 - ✅ Local repo scaffolded: Astro site with `UAT_MODE` (banner, `noindex` meta + `X-Robots-Tag`, `robots.txt` Disallow; verified via `wrangler dev`), Sanity Studio with a starter "Tetapan Masjid" schema, prayer-time sync with tests, 2026 PHG02 data committed, placeholder non-payable QR, `CODEOWNERS`, 6 workflows, README.
 - ✅ GitHub repo created (public) with a `main` ruleset (PR required, Code Owner review, no bypass); Cloudflare and Sanity accounts created with the mosque email.
 - ✅ GitHub Actions replaced by Workers Builds + pre-push hook (D-76). The developer's GitHub account is billing-locked, which blocks Actions.
-- ⏳ Next: connect Workers Builds (first deploy to `workers.dev`), create the Sanity project and datasets, deploy the Studio, create the deploy hook.
+- ✅ Workers Builds connected; UAT live on `workers.dev` with the "Laman Percubaan" banner.
+- ✅ Sanity project `1xd617ey` with public datasets `production` and `latihan` (both empty); project ID set as the Studio default.
+- ⏳ Next: sign in to the local Studio, deploy the hosted Studio, create the deploy hook; then Phase 1.
 
 **Acceptance:**
 - A merge to `main` deploys to the UAT URL automatically. A PR gets its own preview URL.
