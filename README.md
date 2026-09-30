@@ -59,15 +59,15 @@ Log in to the mosque's Cloudflare account (you can use your own login once it's 
    Cloudflare app access to `syahmiyem/masjid-al-ihsan` only.
 2. Settings:
 
-   | Setting                              | Value                                                                                                                 |
-   | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
-   | Project / Worker name                | `masjid-al-ihsan` (must match `apps/web/wrangler.jsonc`)                                                              |
-   | Production branch                    | `main`                                                                                                                |
-   | Root directory                       | `/` (repo root)                                                                                                       |
-   | Build command                        | `pnpm install --frozen-lockfile && pnpm ci:build`                                                                     |
-   | Deploy command                       | `pnpm ci:deploy`                                                                                                      |
-   | Non-production branch deploy command | `pnpm ci:preview`                                                                                                     |
-   | Build variables                      | `NODE_VERSION` = `22.23.1`, `PNPM_VERSION` = `11.1.2`, `SITE_URL` = `https://masjid-al-ihsan.<subdomain>.workers.dev` |
+   | Setting                                | Value                                                                                                                                                         |
+   | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+   | Project / Worker name                  | `masjid-al-ihsan` (must match `apps/web/wrangler.jsonc`)                                                                                                      |
+   | Production branch                      | `main`                                                                                                                                                        |
+   | Root directory                         | `/` (repo root)                                                                                                                                               |
+   | Build command                          | `pnpm install --frozen-lockfile && pnpm ci:build`                                                                                                             |
+   | Deploy command                         | `pnpm ci:deploy`                                                                                                                                              |
+   | Non-production branch deploy command   | `pnpm ci:preview`                                                                                                                                             |
+   | Build variables (Settings → **Build**) | `SITE_URL` = `https://masjid-al-ihsan.masjidalihsansps.workers.dev` (the build fails without it). Node/pnpm versions come from `.nvmrc` and `packageManager`. |
 
    Do **not** set `UAT_MODE` until go-live. Enable builds for non-production branches so branches and PRs get
    preview URLs.
