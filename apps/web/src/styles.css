@@ -1,16 +1,16 @@
-/* Design tokens — starting proposal from plan 5.4. Body text contrast ≥ 7:1 (D-51). */
+/* Global styles (plan 5.3–5.4). Colours come from design/tokens.ts as --c-* custom properties. */
 :root {
-  --colour-text: #1a1a1a;
-  --colour-bg: #ffffff;
-  --colour-surface: #f4f7f5;
-  --colour-primary: #0b5d3b;
-  --colour-primary-text: #ffffff;
-  --colour-warning-bg: #fff4c2;
-  --colour-warning-text: #3d2e00;
+  --font: 'Atkinson Hyperlegible Next', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --radius: 8px;
-  --space: 8px;
+  --s1: 0.5rem;
+  --s2: 1rem;
+  --s3: 1.5rem;
+  --s4: 2rem;
   --tap: 44px;
-  font-size: 112.5%; /* 18px base */
+  --measure: 40rem;
+  --nav-h: 4.25rem;
+  color-scheme: light;
+  font-size: 112.5%; /* 18px base (D-51) */
 }
 
 *,
@@ -19,43 +19,156 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-padding-bottom: calc(var(--nav-h) + var(--s2)); /* focus never hidden by the bottom bar (2.4.11) */
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   margin: 0;
-  font-family:
-    system-ui,
-    -apple-system,
-    'Segoe UI',
-    Roboto,
-    'Noto Sans',
-    sans-serif;
+  font-family: var(--font);
+  font-weight: 400;
   line-height: 1.6;
-  color: var(--colour-text);
-  background: var(--colour-bg);
+  color: var(--c-text);
+  background: var(--c-bg);
 }
 
-main {
-  max-width: 40rem;
-  margin: 0 auto;
-  padding: calc(var(--space) * 3) calc(var(--space) * 2);
-}
-
-h1 {
+h1,
+h2,
+h3 {
   line-height: 1.25;
-  margin-top: 0;
+  font-weight: 700;
+  margin: 0 0 var(--s2);
+}
+h1 {
+  font-size: 1.75rem;
+}
+h2 {
+  font-size: 1.375rem;
+  margin-top: var(--s4);
+}
+h3 {
+  font-size: 1.125rem;
+}
+p {
+  margin: 0 0 var(--s2);
+  max-width: 65ch;
+}
+small,
+.muted {
+  color: var(--c-text-muted);
+  font-size: 1rem; /* never below 16px (plan 5.4) */
 }
 
 a {
-  color: var(--colour-primary);
+  color: var(--c-primary);
+  text-underline-offset: 0.15em;
 }
 
 :focus-visible {
-  outline: 3px solid var(--colour-primary);
-  outline-offset: 3px;
+  outline: 3px solid var(--c-focus);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px var(--c-focus-halo);
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--s1);
+  top: -10rem;
+  padding: var(--s1) var(--s2);
+  background: var(--c-bg);
+  z-index: 100;
+}
+.skip-link:focus {
+  top: var(--s1);
+}
+
+.container {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: var(--s3) var(--s2);
+}
+
+/* Buttons look like buttons: filled, labelled, icon + text (plan 5.3) */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s1);
+  min-height: var(--tap);
+  padding: 0.6rem 1.1rem;
+  border-radius: var(--radius);
+  border: 2px solid var(--c-primary);
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn-primary {
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+}
+.btn-primary:hover {
+  background: var(--c-primary-hover);
+  border-color: var(--c-primary-hover);
+}
+.btn-secondary {
+  background: var(--c-primary-soft);
+  color: var(--c-primary);
+}
+.btn-secondary:hover {
+  background: var(--c-bg);
+}
+.btn-block {
+  display: flex;
+  width: 100%;
+}
+.btn svg {
+  flex: none;
+}
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s1);
+  margin: var(--s2) 0;
+}
+
+.card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  padding: var(--s2);
+}
+
+.stack > * + * {
+  margin-top: var(--s2);
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Matches the 2 × 2 bottom bar in BottomNav.astro */
+@media (max-width: 19.5em) {
+  :root {
+    --nav-h: 6.25rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   * {
     animation: none !important;
     transition: none !important;
+    scroll-behavior: auto !important;
   }
 }

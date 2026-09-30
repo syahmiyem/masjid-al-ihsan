@@ -1,0 +1,116 @@
+---
+// Home page wireframe in the order of plan 3.3, using real prayer times and CONTOH content.
+// UAT only — removed from production builds. Becomes the real home page in Phase 2.
+import { BookOpen, CalendarDays, MapPin, MessageCircle, Phone } from '@lucide/astro';
+import siteConfig from '../../../../../config/site.json';
+import EventItem from '../../components/ui/EventItem.astro';
+import NoticeBanner from '../../components/ui/NoticeBanner.astro';
+import PrayerTimesCard from '../../components/ui/PrayerTimesCard.astro';
+import ServiceCard from '../../components/ui/ServiceCard.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { formatTime } from '../../lib/format';
+import { nowMyt, prayerDay, prayerZone } from '../../lib/waktu-solat-data';
+
+const { date, time } = nowMyt();
+const today = prayerDay(date);
+const maghrib = today ? formatTime(today.maghrib) : '';
+---
+
+<BaseLayout title="Contoh Halaman Utama – Masjid Al-Ihsan (percubaan)" withNav>
+  <h1>Masjid Al-Ihsan</h1>
+  <p class="lead">
+    <MapPin size={20} aria-hidden="true" /> Felda Sg Panching Selatan, Kuantan
+  </p>
+
+  <NoticeBanner message="CONTOH: Kuliah Maghrib Isnin ini dibatalkan." level="penting" href="/kuliah" />
+
+  <div class="section">
+    {today && (
+      <PrayerTimesCard day={today} now={time} zone={prayerZone} zoneName={siteConfig.prayerZoneName} />
+    )}
+  </div>
+
+  <h2>Minggu Ini di Masjid</h2>
+  <EventItem
+    date="2026-10-05"
+    title="CONTOH: Kuliah Maghrib Mingguan"
+    time={`Selepas Maghrib${maghrib ? ` (${maghrib})` : ''}`}
+    place="Dewan Solat Utama"
+    speaker="Ustaz Contoh Satu"
+    href="#"
+  />
+  <EventItem
+    date="2026-10-07"
+    title="CONTOH: Kelas Tajwid Dewasa"
+    time="Selepas Isyak"
+    place="Bilik Kuliah"
+    status="dibatalkan"
+    note="Dibatalkan kerana penceramah uzur."
+    href="#"
+  />
+  <EventItem
+    date="2026-10-09"
+    title="CONTOH: Kuliah Dhuha Muslimah"
+    time="10:00 pagi"
+    place="Dewan Serbaguna"
+    speaker="Ustazah Contoh Dua"
+    href="#"
+  />
+
+  <div class="btn-row">
+    <a class="btn btn-primary" href="/aktiviti">
+      <CalendarDays size={22} aria-hidden="true" /> Lihat Kalendar Bulan Ini
+    </a>
+    <a class="btn btn-secondary" href="/kuliah">
+      <BookOpen size={22} aria-hidden="true" /> Jadual Kuliah
+    </a>
+  </div>
+
+  <h2>Perkhidmatan</h2>
+  <div class="stack">
+    <ServiceCard
+      name="Dewan Akad Nikah"
+      summary="CONTOH: Dewan berhawa dingin untuk majlis akad nikah."
+      href="#"
+    />
+    <ServiceCard
+      name="Dewan Serbaguna"
+      summary="CONTOH: Untuk kenduri, mesyuarat dan program komuniti."
+      href="#"
+    />
+    <ServiceCard name="Homestay" summary="CONTOH: Penginapan untuk keluarga dan kumpulan." href="#" />
+  </div>
+
+  <h2>Derma untuk Masjid</h2>
+  <p>CONTOH: Sumbangan anda membantu kos operasi dan program masjid.</p>
+  <a class="btn btn-secondary" href="/derma">
+    Cara menderma
+  </a>
+
+  <h2>Hubungi Kami</h2>
+  <p>CONTOH alamat: Masjid Al-Ihsan, Felda Sungai Panching Selatan, Kuantan, Pahang.</p>
+  <div class="btn-row">
+    <a class="btn btn-primary" href="#">
+      <MessageCircle size={22} aria-hidden="true" /> WhatsApp Masjid
+    </a>
+    <a class="btn btn-secondary" href="#">
+      <Phone size={22} aria-hidden="true" /> Telefon
+    </a>
+    <a class="btn btn-secondary" href="#">
+      <MapPin size={22} aria-hidden="true" /> Buka di Google Maps
+    </a>
+  </div>
+</BaseLayout>
+
+<style>
+  .lead {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--c-text-muted);
+    margin-top: -0.5rem;
+  }
+  .section {
+    margin-top: var(--s3);
+  }
+</style>

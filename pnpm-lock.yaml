@@ -45,6 +45,12 @@ importers:
 
   apps/web:
     dependencies:
+      '@fontsource/atkinson-hyperlegible-next':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@lucide/astro':
+        specifier: ^1.49.0
+        version: 1.49.0(astro@7.3.5(@types/node@22.20.4)(jiti@2.7.0)(yaml@2.9.1))
       astro:
         specifier: ^7.3.5
         version: 7.3.5(@types/node@22.20.4)(jiti@2.7.0)(yaml@2.9.1)
@@ -1431,6 +1437,9 @@ packages:
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
 
+  '@fontsource/atkinson-hyperlegible-next@5.3.0':
+    resolution: {integrity: sha512-8p1tHVoPDo6oYwSO3sMw5snGwFwSf3TmeSF9Gcj792GXdsg6oqvhoItbj6Hj/XZIk0Xs+Cwu6pkLBAl3Q5HrwA==}
+
   '@img/colour@1.1.0':
     resolution: {integrity: sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==}
     engines: {node: '>=18'}
@@ -2045,6 +2054,11 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
+
+  '@lucide/astro@1.49.0':
+    resolution: {integrity: sha512-hBLw14Mou0Or1KmAIiC3W3XW9HVNIFIAY6j++uVe3QLTPzByJ4RwhCvatdUyCJrgNObY6lv/Skm2XMqRsS4c+A==}
+    peerDependencies:
+      astro: ^4 || ^5 || ^6 || ^7
 
   '@module-federation/dts-plugin@2.9.0':
     resolution: {integrity: sha512-uMGqEG/p9odG2BVr7WRbBe2OgrvzBd3LPzcp5WP+bm3djBdUJ4PZ3ozqKp6qpy+NFnlh6vnM815Xn6AXkKy1Vw==}
@@ -7217,6 +7231,8 @@ snapshots:
 
   '@floating-ui/utils@0.2.12': {}
 
+  '@fontsource/atkinson-hyperlegible-next@5.3.0': {}
+
   '@img/colour@1.1.0': {}
 
   '@img/sharp-darwin-arm64@0.35.4':
@@ -7700,6 +7716,10 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.6.0
+
+  '@lucide/astro@1.49.0(astro@7.3.5(@types/node@22.20.4)(jiti@2.7.0)(yaml@2.9.1))':
+    dependencies:
+      astro: 7.3.5(@types/node@22.20.4)(jiti@2.7.0)(yaml@2.9.1)
 
   '@module-federation/dts-plugin@2.9.0(typescript@6.0.3)':
     dependencies:

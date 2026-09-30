@@ -1,0 +1,57 @@
+---
+// Urgent notice from the CMS (plan 3.3, D-18). Text + icon, not colour alone.
+import { Info, TriangleAlert } from '@lucide/astro';
+
+interface Props {
+  message: string;
+  level?: 'makluman' | 'penting';
+  href?: string;
+}
+const { message, level = 'makluman', href } = Astro.props;
+---
+
+<div class:list={['notice', level]} role="status">
+  {level === 'penting' ? (
+    <TriangleAlert size={24} aria-hidden="true" />
+  ) : (
+    <Info size={24} aria-hidden="true" />
+  )}
+  <p>
+    <strong>{level === 'penting' ? 'Penting: ' : 'Makluman: '}</strong>
+    {message}
+    {href && (
+      <>
+        {' '}
+        <a href={href}>Maklumat lanjut</a>
+      </>
+    )}
+  </p>
+</div>
+
+<style>
+  .notice {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    padding: 0.9rem 1rem;
+    border-radius: var(--radius);
+    border: 2px solid var(--c-primary);
+    background: var(--c-primary-soft);
+    color: var(--c-text);
+  }
+  .notice p {
+    margin: 0;
+  }
+  .notice :global(svg) {
+    flex: none;
+    margin-top: 0.1rem;
+  }
+  .penting {
+    background: var(--c-urgent-bg);
+    border-color: var(--c-urgent-bg);
+    color: var(--c-on-urgent);
+  }
+  .penting a {
+    color: var(--c-on-urgent);
+  }
+</style>
