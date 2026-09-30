@@ -14,7 +14,11 @@
     "test": "node --test \"scripts/**/*.test.ts\"",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "waktu-solat:sync": "node scripts/waktu-solat/sync.ts"
+    "waktu-solat:sync": "node scripts/waktu-solat/sync.ts",
+    "prepare": "git config core.hooksPath .githooks || true",
+    "ci:build": "pnpm test && pnpm check && node scripts/waktu-solat/coverage.ts && pnpm build",
+    "ci:deploy": "pnpm --filter web exec wrangler deploy",
+    "ci:preview": "pnpm --filter web exec wrangler versions upload"
   },
   "devDependencies": {
     "@types/node": "^22.18.0",

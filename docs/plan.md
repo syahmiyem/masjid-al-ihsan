@@ -1,7 +1,7 @@
 # Masjid Al-Ihsan Website — Project Plan & Source of Truth
 
 **Mosque:** Masjid Al-Ihsan, Felda Sungai (Sg) Panching Selatan, Kuantan, Pahang, Malaysia
-**Document status:** Draft v1.4 — build-first; Phase 0 in progress; to be presented to the committee alongside a working UAT site
+**Document status:** Draft v1.5 — build-first; Phase 0 in progress; to be presented to the committee alongside a working UAT site
 **Prepared:** 30 September 2026 · **Revised:** 1 October 2026
 **File:** `masjid-al-ihsan-website-plan.md`
 
@@ -24,6 +24,7 @@
 | 1.2 | 1 Oct 2026 | Two MVP features added: **Waktu Solat** from JAKIM e-Solat (4.8; D-16, D-19) and **Derma** page with bank account and DuitNow QR under two-person change control (4.9; D-28, D-80–D-85). Phases, risks, maintenance and register updated to match. |
 | 1.3 | 1 Oct 2026 | Account ownership revised: Cloudflare and Sanity are opened with the **mosque's official email** from day one (developer invited as a member); the code repo lives on the **developer's personal GitHub** during the build, with transfer to a mosque-owned GitHub organisation recommended at handover (D-73, D-28, D-75). |
 | 1.4 | 1 Oct 2026 | Phase 0 findings built in: repo now lives at `docs/plan.md` (this file is the SSOT); e-Solat returns 8 daily times (incl. Dhuha) and next year's data only once JAKIM publishes it; content backups go to a private **R2 bucket** (not a private repo); branch-protection settings made explicit; Studio UI language limitation (D-29). Phase 0 status added. |
+| 1.5 | 1 Oct 2026 | **No GitHub Actions** (developer's GitHub account is billing-locked; D-76): build and deploy move to **Cloudflare Workers Builds**; Sanity publish → Workers Builds **deploy hook** (no GitHub token needed); local pre-push checks; build-time Waktu Solat check; scheduled jobs (nightly rebuild, e-Solat check, backups) move to a Cloudflare cron Worker in Phase 2; yearly manual prayer-data sync. |
 
 ---
 
@@ -483,18 +484,22 @@ Behaviour: albums per event (title, date, cover photo, 10–40 curated photos), 
 **Data pipeline (resilient, no runtime dependency on JAKIM)**
 
 ```
-Scheduled GitHub Action (weekly, plus manual trigger)
+Developer runs `pnpm waktu-solat:sync` (every December once JAKIM publishes, or on an alert)
   → fetch the current year and next year for the configured zone (period=duration, 1 Jan–31 Dec);
     next year returns NO_RECORD until JAKIM publishes it, which is treated as "not yet", not an error
   → validate: every date present, all 8 times present, times in order (Imsak < Subuh < Syuruk < Dhuha < Zohor < Asar < Maghrib < Isyak)
-  → if valid and changed: commit data/waktu-solat/<zone>-<year>.json → triggers normal build/deploy
-  → if the fetch fails or is invalid: keep the last good file, open a GitHub issue/alert; the site keeps working
-Site build
+  → if valid and changed: write data/waktu-solat/<zone>-<year>.json → pull request → merge → normal build/deploy
+  → if the fetch fails or is invalid: keep the last good file; the site keeps working
+Every site build (Workers Builds)
+  → re-validates the current year's file and FAILS if it is missing or invalid (the previous deploy stays live)
+  → from 1 December, warns if next year's file is missing
   → reads the committed JSON only (the build never calls e-Solat)
+Scheduler Worker (Phase 2, Cloudflare cron)
+  → weekly: compares e-Solat with the committed data and alerts on any difference or on next year's data appearing
 ```
 
 - Up to a year of data is always committed, so an e-Solat outage or API change has no visible effect for months.
-- e-Solat is a public government service, but it has no documented, supported public API. **Phase 0 spike (1 Oct 2026):** reachable from Malaysia; full-year PHG02 data for 2026 fetched and validated (365 days; dates use Malay month abbreviations such as `Okt`, `Ogos`). Still to confirm: access from GitHub Actions runners (overseas). If direct access is blocked, run the fetch from a Cloudflare Worker cron instead (same validation, same committed output).
+- e-Solat is a public government service, but it has no documented, supported public API. **Phase 0 spike (1 Oct 2026):** reachable from Malaysia; full-year PHG02 data for 2026 fetched and validated (365 days; dates use Malay month abbreviations such as `Okt`, `Ogos`). Still to confirm (Phase 2): access from Cloudflare's cron Worker, which may run outside Malaysia. If direct access is blocked, run the fetch from a Cloudflare Worker cron instead (same validation, same committed output).
 
 **Display**
 
@@ -538,7 +543,7 @@ QR-code fraud is a real and growing problem in Malaysia, including fake QR stick
 2. **Two-person rule:** changes go by pull request to protected `main` and need approval from a second authorised person (developer + Bendahari/Pentadbir). `CODEOWNERS` covers `config/derma/`; approvers need their own GitHub account with write access to the repo. This needs branch protection with **no admin bypass**, so the repo is public (D-28). Bank details are public on the site anyway.
 3. **Written authority:** each change is backed by a bank letter or statement header in the mosque's name, checked by the Bendahari. The PR records who checked it, but the document itself is not stored in the repo.
 4. **Automated check at build:** the build decodes the QR image and fails if the recipient name in the DuitNow (EMVCo) payload does not match `accountName` in the config. If the bank's QR does not carry the name, the build compares the full decoded payload with an approved value stored in the config instead.
-5. **Change alert:** any change to `config/derma/` notifies the Pengerusi and Bendahari (GitHub notification + email), so an unexpected change is noticed quickly.
+5. **Change alert:** GitHub automatically requests (and emails) a review from the code owners for any pull request touching `config/derma/`, and the Pengerusi and Bendahari **watch** the repo, so they are also notified of merges. An unexpected change is therefore noticed quickly.
 6. **Live test:** after every change and quarterly, a committee member scans the live QR with two different banking apps, confirms the displayed recipient name, and sends RM1.
 
 **Sample content on UAT:** before real details are approved, the page shows a placeholder QR that **cannot be paid to** (it encodes the text "CONTOH — bukan akaun sebenar") and an obviously fake account number.
@@ -838,7 +843,7 @@ Originals already live in Drive (primary archive). R2 web copies can be regenera
 - **Astro** builds every page to plain HTML and ships JavaScript only where needed (share button, filters). Astro is open source (MIT) and its team joined Cloudflare in January 2026, with Cloudflare committing to keep it open source.
 - **Cloudflare**: serves static files from a global network; requests to static assets are free and unlimited, even on the free Workers plan. A small Worker handles the optional enquiry form.
 - **Sanity**: hosted content store + customisable admin ("Studio"). Free plan: 20 seats, 10,000 documents, 2 public datasets, 2 permission roles; hard caps (no surprise bills). Growth is USD 15/seat/month if ever needed.
-- **Publishing:** Sanity webhook → GitHub Actions (or Cloudflare build) → rebuild → deploy (2–5 min).
+- **Publishing:** Sanity webhook → Cloudflare Workers Builds deploy hook → rebuild → deploy (2–5 min).
 - **Images for sharing:** generated at build (Satori + resvg).
 
 **Option 2 — Payload CMS on Cloudflare Workers (D1 database + R2) with Next.js/Astro front end**
@@ -908,10 +913,10 @@ masjid-al-ihsan/
 │                        Panduan Ringkas
 ├── .env.example         SITE_URL, UAT_MODE, SANITY_PROJECT_ID, SANITY_DATASET
 ├── README.md            run, build, deploy, secrets, environments
-└── .github/workflows/   ci (PR checks), deploy (main → UAT/production),
-                         build-on-publish (Sanity webhook), weekly content backup,
-                         waktu-solat-sync (weekly fetch + validate + commit),
-                         daily-rebuild (00:05 MYT), derma-change-alert
+├── workers/jadual/      Cloudflare cron Worker (Phase 2): nightly rebuild via deploy hook,
+│                        weekly e-Solat check, weekly Sanity export to private R2
+├── .githooks/pre-push   format, type-check, tests, Waktu Solat check before every push
+└── .github/CODEOWNERS   two-person rule for config/derma/ (no GitHub Actions — D-76)
 ```
 
 ### 9.6 Environments and Git workflow (D-08)
@@ -926,10 +931,12 @@ masjid-al-ihsan/
 
 - **The UAT becomes production.** It's the same Worker and the same `production` dataset. Going live means attaching the custom domain, changing `SITE_URL`, turning off `UAT_MODE` and rebuilding. No migration is needed.
 - **Repository home and visibility (D-28, D-75):** during the build the main repo lives on the **developer's personal GitHub account** and is **public**. On GitHub Free, branch protection and required reviews are only available for public repos, and the two-person rule for donation details depends on them. Protection on `main` must **include administrators** (no bypass), because the repo owner is otherwise exempt. At handover the repo is transferred to a mosque-owned GitHub organisation (GitHub keeps redirects from the old URL). Nothing sensitive goes in this repo: no secrets, no enquiries, no real access list (only a template). Content backups (which may include enquiries) go to a **private Cloudflare R2 bucket**, never to this repo or to workflow artifacts (both public). Alternative: keep the repo private on GitHub Pro/Team (monthly fee).
-- **Branch protection settings:** pull request required (0 approvals), **review from Code Owners required** (so only `config/derma/` and `CODEOWNERS` need a second person), **no bypass for administrators**. Required status checks stay off so the Waktu Solat bot can merge its data PRs; CI still runs on every PR. Actions may create pull requests (Waktu Solat bot).
+- **Branch protection settings:** pull request required (0 approvals), **review from Code Owners required** (so only `config/derma/` and `CODEOWNERS` need a second person), **no bypass for administrators**. No required status checks (there is no GitHub CI; Workers Builds reports a build check on each commit).
 - **Branching:** `main` is protected and always deployable. Work happens on short-lived branches and is merged by pull request once CI passes (build, type-check, axe, Lighthouse CI). Releases after go-live are tagged (`v1.0.0`, …).
-- **Content publishing:** Sanity webhook → GitHub Actions `repository_dispatch` → build → `wrangler deploy`.
-- **Secrets:** stored in GitHub Actions secrets and Cloudflare Worker secrets, never in the repo. Use tokens owned by the **account/project**, not by a person: a Cloudflare *account* API token scoped to Workers for this account, and a Sanity project (robot) token. Then removing the developer later does not break deployments. All secrets are rotated at handover (Phase 6).
+- **CI/CD (D-76):** Cloudflare **Workers Builds**, connected to the GitHub repo. On every push it runs `pnpm install --frozen-lockfile && pnpm ci:build` (tests, type-checks, Waktu Solat check, build). Then `main` deploys with `wrangler deploy`, and other branches upload a preview version with a preview URL. A failed check means no deploy. The same checks run locally in a pre-push hook. Free plan: 3,000 build minutes/month, 1 concurrent build, 20-minute timeout.
+- **Content publishing:** Sanity webhook → Workers Builds **deploy hook** (a secret URL; no GitHub token) → build → deploy.
+- **Scheduled jobs:** a small Cloudflare Worker with cron triggers (Phase 2) calls the deploy hook nightly at 00:05 MYT, checks e-Solat weekly and exports Sanity weekly to a private R2 bucket.
+- **Secrets:** stored as Cloudflare build variables/secrets and Worker secrets, never in the repo or on GitHub. Use tokens owned by the **account/project**, not by a person: a Cloudflare *account* API token scoped to Workers for this account, and a Sanity project (robot) token. Then removing the developer later does not break deployments. All secrets are rotated at handover (Phase 6).
 - **Access model (D-73):** the mosque's official email is the owner of Cloudflare and Sanity, with 2-step verification on, and recovery details controlled by the mosque. The developer works through their **own login, invited as a member** (Cloudflare: Administrator; Sanity: Administrator), not by using the mosque email's password day-to-day.
 - **Infrastructure as code:** Worker config, routes and CI live in the repo, so the site can be redeployed into a different Cloudflare account if ever needed.
 
@@ -952,14 +959,16 @@ Durations assume one developer, part-time to full-time. Before the committee pre
 | Set up the environment config (`SITE_URL`, `UAT_MODE`, Sanity project/dataset) so going live is a config change, not a code change (9.6) | `.env.example`, GitHub/Cloudflare secrets |
 | UAT safeguards on by default: `X-Robots-Tag: noindex`, `robots.txt` `Disallow: /`, and a visible **"Laman Percubaan"** banner (D-08) | UAT cannot be indexed or mistaken for the official site |
 | Create a Sanity project with datasets `production` and `latihan`; deploy the Studio to `<name>.sanity.studio` | Empty Studio online |
-| GitHub Actions: CI on every PR (build, type-check, axe, Lighthouse CI); deploy on merge to `main`; Sanity publish webhook → rebuild; weekly content backup job | Green pipeline end-to-end |
+| Cloudflare Workers Builds connected to the repo: checks + build on every push, deploy on `main`, preview uploads for other branches; deploy hook for Sanity; local pre-push hook (D-76). axe/Lighthouse checks join `ci:build` in Phase 1–2. Scheduled jobs deferred to the Phase 2 cron Worker job | Green pipeline end-to-end |
 | Write `README.md` (run, build, deploy, secrets, environments) | First handover document |
-| **Spike: JAKIM e-Solat** — call the API from a GitHub Actions runner for zone PHG02, check the `year` period and response format, and build `waktu-solat-sync` with validation (4.8) | First `data/waktu-solat/PHG02-2026.json` committed, or a documented fallback (Worker cron) |
-| Branch protection + `CODEOWNERS` for `config/derma/`; `derma-change-alert` workflow | A test PR touching `config/derma/` cannot merge without a second approval |
+| **Spike: JAKIM e-Solat** — call the API for zone PHG02, check the `year` period and response format, and build `waktu-solat-sync` with validation (4.8) | First `data/waktu-solat/PHG02-2026.json` committed, or a documented fallback (Worker cron) |
+| Branch protection + `CODEOWNERS` for `config/derma/` | A test PR touching `config/derma/` cannot merge without a second approval |
 
 **Status (1 Oct 2026):**
 - ✅ Local repo scaffolded: Astro site with `UAT_MODE` (banner, `noindex` meta + `X-Robots-Tag`, `robots.txt` Disallow; verified via `wrangler dev`), Sanity Studio with a starter "Tetapan Masjid" schema, prayer-time sync with tests, 2026 PHG02 data committed, placeholder non-payable QR, `CODEOWNERS`, 6 workflows, README.
-- ⏳ Waiting on: Cloudflare and Sanity accounts (mosque email) → secrets/variables → first deploy; GitHub repo creation + branch protection; confirming e-Solat access from GitHub runners.
+- ✅ GitHub repo created (public) with a `main` ruleset (PR required, Code Owner review, no bypass); Cloudflare and Sanity accounts created with the mosque email.
+- ✅ GitHub Actions replaced by Workers Builds + pre-push hook (D-76). The developer's GitHub account is billing-locked, which blocks Actions.
+- ⏳ Next: connect Workers Builds (first deploy to `workers.dev`), create the Sanity project and datasets, deploy the Studio, create the deploy hook.
 
 **Acceptance:**
 - A merge to `main` deploys to the UAT URL automatically. A PR gets its own preview URL.
@@ -986,6 +995,7 @@ Durations assume one developer, part-time to full-time. Before the committee pre
 | Pages: Home, Aktiviti (list + month grid), activity detail, Kuliah (weekly/monthly, series detail), Perkhidmatan index + service pages, **Waktu Solat**, **Derma**, Organisasi, Hubungi, Privasi, Aksesibiliti |
 | Waktu Solat: home card + `/waktu-solat` month table from committed data; "next prayer" script (≤ 3 KB); daily rebuild; kuliah "Selepas Maghrib (Maghrib 7:18 malam)" labels (S) |
 | Derma: page, home block, footer link, Salin Nombor Akaun, safety note; build-time QR decode check (D-81) |
+| Scheduler Worker `workers/jadual` (cron): nightly 00:05 MYT deploy-hook call, weekly e-Solat comparison with alert, weekly Sanity export to private R2; alert channel set up (email via Cloudflare Email Routing once the domain is on Cloudflare, until then an agreed fallback) (D-76) |
 | Recurrence expansion + exceptions for kuliah; statuses on activities |
 | Link sharing (WhatsApp, native share, copy link), Open Graph tags, `.ics` + Google Calendar links — all URLs built from `SITE_URL` |
 | Studio customisation in Malay: task-based desk structure, validations, previews, slug lock, archive-not-delete |
@@ -1051,7 +1061,7 @@ Durations assume one developer, part-time to full-time. Before the committee pre
 | Disable the `workers.dev` route (or 301 it to the custom domain) so there is no duplicate site |
 | Google Search Console + Bing Webmaster Tools; submit sitemap; add the website link to GBP; NAP consistency pass |
 | Analytics (D-65), uptime monitor; confirm backup job and do one restore |
-| Repeat the Derma live test on the custom domain; confirm `waktu-solat-sync` and the daily rebuild run under the transferred accounts |
+| Repeat the Derma live test on the custom domain; confirm the scheduler Worker (nightly rebuild, e-Solat check, backups) runs and its alerts reach a mosque contact |
 | Announce: WhatsApp broadcast/group message with the link and a share image |
 
 **Acceptance:** handover checklist (11.5) complete; custom domain live over HTTPS; no UAT banner or `noindex` in production; mobile Lighthouse SEO ≥ 95; home and all service pages indexed within 2–4 weeks.
@@ -1111,6 +1121,8 @@ Photo policy (D-41) ────────────────────
 | Code repo stays on the developer's personal GitHub after handover | Medium | High | Repo transfer is a go-live checklist item (D-75); if the committee prefers not to run a GitHub organisation, at least 2 AJK are added as collaborators and the arrangement is written down |
 | Mosque official email is lost, locked, or controlled by one person | Low–Med | High | 2-step verification; recovery phone/email controlled by the mosque; ≥ 2 AJK know how to access it; recorded in the access list (D-73) |
 | Deployments break when the developer leaves | Low | Medium | Account-owned Cloudflare API token and Sanity project token, not personal tokens (9.6) |
+| Workers Builds loses access to the repo (e.g. GitHub account lock worsens, repo transfer) | Low–Med | Medium | Site stays live (static); reconnect the repo in Cloudflare; manual `wrangler deploy` from a laptop as a fallback |
+| December prayer-data sync forgotten | Medium | High | Builds warn from 1 December and fail on 1 January without data; Phase 2 scheduler Worker alerts; calendar reminder for the Pentadbir |
 | Enquiry personal data exposed via public dataset | Low | High | Private-path document IDs, verified by an anonymous-read test; email-only fallback (D-45) |
 | **Donation details or QR tampered with** (compromised account or malicious change) | Low–Med | **Very high** — donations stolen, trust lost | Details outside the CMS; two-person review with bank letter; build-time QR payload check; change alerts to Pengerusi + Bendahari; safety note to check recipient name; quarterly live test (D-81) |
 | Donation details published for a personal (not institutional) account | Low | High | Launch blocker: account must be in the mosque's name, proven by bank letter (D-82) |
@@ -1141,11 +1153,11 @@ Realistic running cost at launch: **domain fee only**, with a probable ceiling o
 | Monthly | Publish next month (by 25th); check notices; review enquiries inbox; glance at Waktu Solat and Derma pages | AJK |
 | Quarterly | Check service info, prices, org chart; review analytics & Search Console; check free-tier usage; **Derma live test** (scan QR in two banking apps, check recipient name, send RM1) | Pentadbir + Bendahari (+ developer) |
 | Twice a year | Dependency updates, rebuild, a11y/perf re-check; restore test from backup | Developer |
-| Annually | Renew domain; review access list (remove ex-AJK) and Derma approvers in `CODEOWNERS`; review photo retention; confirm next year's Waktu Solat data was fetched in December (automated, with alert) | Pentadbir (+ developer) |
+| Annually | Renew domain; review access list (remove ex-AJK) and Derma approvers in `CODEOWNERS`; review photo retention; **run the Waktu Solat sync in December** once JAKIM publishes next year's data (builds warn from 1 December) | Pentadbir (+ developer) |
 
 ### 11.4 Backups
 
-- **Content:** weekly automated export of the Sanity dataset (JSON + assets) via GitHub Actions to a **private R2 bucket**; keep 12 weekly + 12 monthly copies (R2 lifecycle rule).
+- **Content:** weekly automated export of the Sanity dataset via the Phase 2 scheduler Worker to a **private R2 bucket**; keep 12 weekly + 12 monthly copies (R2 lifecycle rule).
 - **Code & schemas:** Git (GitHub), at least two owners.
 - **Photos:** originals in Google Drive; web copies regenerable.
 - **Restore drill:** twice a year, restore the latest export into a test dataset and build the site from it.
@@ -1199,7 +1211,7 @@ Status key: **Decided** (agreed, with date) · **Recommended** (adopt unless obj
 | D-20 | Tech | Front end: Astro, static output | Recommended | Option 1 |
 | D-21 | Tech | Hosting: Cloudflare (static assets on Workers) | Recommended | |
 | D-22 | Tech | CMS: Sanity (Free plan), Studio customised in Malay | Recommended | Alt: Payload (Option 2) |
-| D-23 | Tech | Publish → webhook → rebuild; 2–5 min to live | Recommended | |
+| D-23 | Tech | Publish → webhook → rebuild; 2–5 min to live | Recommended | Webhook targets the Workers Builds deploy hook (D-76) |
 | D-24 | CMS | Roles: Pentadbir, Penyunting | Recommended | Sanity Free = 2 roles |
 | D-25 | CMS | Approval before publishing | Needs confirmation | Q25; convention first |
 | D-26 | CMS | Slug lock after first publish; archive-not-delete for editors | Recommended | |
@@ -1239,6 +1251,7 @@ Status key: **Decided** (agreed, with date) · **Recommended** (adopt unless obj
 | D-83 | Derma | Tax-exemption wording on the Derma page | Needs confirmation | Q32; show nothing unless confirmed |
 | D-84 | Derma | Separate tabung/accounts shown separately | Needs confirmation | Q29 |
 | D-85 | Waktu Solat | Mosque-specific iqamah times | Optional | Q35; would need a CMS field and an owner |
+| D-76 | Tech | CI/CD on Cloudflare Workers Builds instead of GitHub Actions; local pre-push checks; scheduled jobs in a Cloudflare cron Worker | **Decided** 1 Oct 2026 | Developer's GitHub account billing-locked; also keeps all automation in the mosque's Cloudflare account |
 | D-74 | Plan | Target go-live date | Needs confirmation | Suggest before Ramadan 1448 (expected early February 2027) to catch the pre-Ramadan traffic spike (A1) |
 
 ---
