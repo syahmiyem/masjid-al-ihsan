@@ -1,6 +1,6 @@
 import { defineConfig } from 'sanity';
 import { structureTool } from 'sanity/structure';
-import { schemaTypes } from './schemaTypes';
+import { SINGLETONS, schemaTypes } from './schemaTypes';
 import { structure } from './structure';
 
 // Project ID is public (it appears in every API request), so it is the default here.
@@ -14,5 +14,16 @@ export default defineConfig({
   projectId,
   dataset,
   plugins: [structureTool({ title: 'Kandungan', structure })],
-  schema: { types: schemaTypes },
+  schema: {
+    types: schemaTypes,
+    // Singletons can't be created from the "+" menu
+    templates: (templates) => templates.filter(({ schemaType }) => !SINGLETONS.has(schemaType)),
+  },
+  document: {
+    // Singletons can only be published, discarded or restored — never duplicated or deleted
+    actions: (actions, { schemaType }) =>
+      SINGLETONS.has(schemaType)
+        ? actions.filter(({ action }) => action && ['publish', 'discardChanges', 'restore'].includes(action))
+        : actions,
+  },
 });

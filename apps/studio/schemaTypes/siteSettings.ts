@@ -47,6 +47,23 @@ export const siteSettings = defineType({
       title: 'Waktu pejabat',
       type: 'string',
     }),
+    defineField({
+      name: 'email',
+      title: 'Emel rasmi',
+      type: 'string',
+      validation: (rule) => rule.email().error('Alamat emel tidak sah.'),
+    }),
+    defineField({
+      name: 'sesiOrganisasi',
+      title: 'Sesi carta organisasi',
+      description: 'Dipaparkan pada Carta Organisasi. Contoh: Sesi 2026/2027',
+      type: 'string',
+    }),
+    defineField({
+      name: 'facebook',
+      title: 'Pautan Facebook',
+      type: 'url',
+    }),
   ],
   preview: { prepare: () => ({ title: 'Tetapan Masjid' }) },
 });

@@ -1,7 +1,7 @@
 # Masjid Al-Ihsan Website — Project Plan & Source of Truth
 
 **Mosque:** Masjid Al-Ihsan, Felda Sungai (Sg) Panching Selatan, Kuantan, Pahang, Malaysia
-**Document status:** Draft v1.5 — build-first; Phase 0 in progress; to be presented to the committee alongside a working UAT site
+**Document status:** Draft v1.5 — build-first; Phase 0 complete, Phase 1 in progress; to be presented to the committee alongside a working UAT site
 **Prepared:** 30 September 2026 · **Revised:** 1 October 2026
 **File:** `masjid-al-ihsan-website-plan.md`
 
@@ -973,7 +973,8 @@ Durations assume one developer, part-time to full-time. Before the committee pre
 - ✅ Hosted Studio deployed at `https://masjid-al-ihsan.sanity.studio` (appId in `sanity.cli.ts`).
 - ✅ Live UAT checked (1 Oct 2026) at `https://masjid-al-ihsan.masjidalihsansps.workers.dev`: `X-Robots-Tag: noindex, nofollow`, `robots.txt` Disallow, real 404, banner shown.
 - ✅ `SITE_URL` build variable applied; canonical on UAT is the `workers.dev` address. Builds now normalise `SITE_URL` and fail clearly if it is missing or invalid.
-- ⏳ Open: `sanity-publish` deploy hook + Sanity webhook, tested by publishing in the Studio.
+- ✅ `sanity-publish` deploy hook + Sanity webhook (dataset `production`, published changes only, enquiries excluded): publishing in the Studio triggers a Cloudflare build that succeeds.
+- ✅ **Phase 0 complete (1 Oct 2026).**
 
 **Acceptance:**
 - A merge to `main` deploys to the UAT URL automatically. A PR gets its own preview URL.
@@ -992,6 +993,11 @@ Durations assume one developer, part-time to full-time. Before the committee pre
 | Optional informal hallway test with 2–3 older users | Notes and changes |
 
 **Acceptance:** all colour pairs ≥ 4.5:1 (body text ≥ 7:1). Schemas cover every field in Section 4. The sample content is obviously fictional.
+
+**Status (1 Oct 2026):**
+- ✅ Sanity schemas for Section 4, all labels, help text and validation messages in Malay: `aktiviti`, `kuliahSiri` (weekly / nth weekday monthly), `kuliahPerubahan` (per-date exceptions, with a duplicate warning), `perkhidmatan`, `jawatan` (photo requires a consent tick — D-72), `notis` (auto-expiry), `tempat`, `siteSettings` (singleton that can't be duplicated or deleted); shared `masa` (clock or prayer-relative time) and `gambar` (alt text required). Task-based menu per 7.2. Schema validation: 0 errors, 0 warnings.
+- Notes: a one-off kuliah is entered as an Aktiviti with category *Kuliah* (no "Sekali" series type). Ordering uses a number field for now; drag-and-drop with up/down buttons (5.2, 2.5.7) comes with the Phase 2 Studio customisation, as do slug lock (D-26) and archive-not-delete. Enquiry (Phase 3) and gallery (Phase 8) schemas are not built yet.
+- ⏳ Next: design tokens and base components, wireframes, "CONTOH" sample content.
 
 ### Phase 2 — Core site (MVP) on UAT (3–4 weeks)
 
