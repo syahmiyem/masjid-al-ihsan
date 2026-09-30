@@ -11,6 +11,8 @@
     "build": "pnpm --filter web build",
     "studio": "pnpm --filter studio dev",
     "studio:deploy": "pnpm --filter studio run deploy",
+    "contoh:isi": "pnpm --filter studio exec sanity exec scripts/contoh.ts --with-user-token",
+    "contoh:buang": "pnpm --filter studio exec sanity exec scripts/buang-contoh.ts --with-user-token",
     "check": "tsc -p tsconfig.json && pnpm -r check",
     "test": "node --test \"scripts/**/*.test.ts\" \"apps/web/src/**/*.test.ts\"",
     "format": "prettier --write .",
