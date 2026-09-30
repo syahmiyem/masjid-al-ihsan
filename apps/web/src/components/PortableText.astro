@@ -1,0 +1,34 @@
+---
+// Minimal renderer for the service description (normal paragraphs, bullet lists, bold) — the only
+// options the Studio offers editors (schemaTypes/perkhidmatan.ts).
+type Span = { text: string; marks?: string[] };
+type Block = { _key: string; style?: string; listItem?: string; children: Span[] };
+
+interface Props {
+  value?: Block[];
+}
+const { value = [] } = Astro.props;
+
+// Group consecutive list items into one <ul>
+const groups: { list: boolean; blocks: Block[] }[] = [];
+for (const block of value) {
+  const list = block.listItem === 'bullet';
+  const last = groups.at(-1);
+  if (last && last.list && list) last.blocks.push(block);
+  else groups.push({ list, blocks: [block] });
+}
+---
+
+{groups.map((g) =>
+  g.list ? (
+    <ul>
+      {g.blocks.map((b) => (
+        <li>{b.children.map((s) => (s.marks?.includes('strong') ? <strong>{s.text}</strong> : s.text))}</li>
+      ))}
+    </ul>
+  ) : (
+    g.blocks.map((b) => (
+      <p>{b.children.map((s) => (s.marks?.includes('strong') ? <strong>{s.text}</strong> : s.text))}</p>
+    ))
+  ),
+)}

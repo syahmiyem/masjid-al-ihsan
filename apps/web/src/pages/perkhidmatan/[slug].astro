@@ -1,0 +1,240 @@
+---
+// One service = one SEO page (plan 4.3, 6.1): photos, description, facilities, capacity, rates, rules,
+// booking steps, location, contact (WhatsApp-first enquiry, D-13) and FAQ.
+import { Check, ChevronLeft, MapPin, MessageCircle, Navigation, Phone } from '@lucide/astro';
+import PortableText from '../../components/PortableText.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { googleMapsLink, telLink, wazeLink, whatsappLink } from '../../lib/links';
+import { getPerkhidmatan, getSettings, type Perkhidmatan } from '../../lib/sanity';
+
+export async function getStaticPaths() {
+  const services = await getPerkhidmatan();
+  return services.map((s) => ({ params: { slug: s.slug }, props: { service: s } }));
+}
+
+const { service: s } = Astro.props as { service: Perkhidmatan };
+const settings = await getSettings();
+const whatsapp = s.whatsapp || settings.whatsapp;
+const enquiry = `Assalamualaikum. Saya ingin bertanya tentang tempahan ${s.nama} Masjid Al-Ihsan pada tarikh: ____. Bilangan tetamu: ____.`;
+
+const money = (n: number) => `RM${n.toLocaleString('ms-MY')}`;
+const kadar =
+  s.kadar?.cara === 'tepat' && s.kadar.jumlah != null
+    ? `${money(s.kadar.jumlah)}${s.kadar.nota ? ` ${s.kadar.nota}` : ''}`
+    : s.kadar?.cara === 'bermula' && s.kadar.jumlah != null
+      ? `Bermula dari ${money(s.kadar.jumlah)}${s.kadar.nota ? ` ${s.kadar.nota}` : ''}`
+      : 'Sila hubungi kami untuk maklumat kadar.';
+---
+
+<BaseLayout title={`${s.nama} – Masjid Al-Ihsan, Sg Panching, Kuantan`} description={s.ringkasan} withNav>
+  <p>
+    <a href="/perkhidmatan" class="back">
+      <ChevronLeft size={20} aria-hidden="true" /> Semua perkhidmatan
+    </a>
+  </p>
+  <h1>{s.nama} Masjid Al-Ihsan</h1>
+  <p class="lead">{s.ringkasan}</p>
+
+  {whatsapp && (
+    <a class="btn btn-primary btn-block" href={whatsappLink(whatsapp, enquiry)}>
+      <MessageCircle size={22} aria-hidden="true" /> Tanya Tarikh Melalui WhatsApp
+    </a>
+  )}
+
+  {s.gambar && s.gambar.length > 0 && (
+    <div class="photos">
+      {s.gambar.map((g, i) => (
+        <img
+          src={`${g.url}?w=800&auto=format`}
+          alt={g.alt}
+          width={g.width}
+          height={g.height}
+          loading={i === 0 ? 'eager' : 'lazy'}
+          decoding="async"
+        />
+      ))}
+    </div>
+  )}
+
+  {s.penerangan && (
+    <section>
+      <h2>Penerangan</h2>
+      <PortableText value={s.penerangan} />
+    </section>
+  )}
+
+  {s.kemudahan && s.kemudahan.length > 0 && (
+    <section>
+      <h2>Kemudahan Disediakan</h2>
+      <ul class="checks">
+        {s.kemudahan.map((k) => (
+          <li>
+            <Check size={22} aria-hidden="true" /> {k}
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  <dl class="card facts">
+    {s.kapasiti && (
+      <div>
+        <dt>Kapasiti</dt>
+        <dd>{s.kapasiti}</dd>
+      </div>
+    )}
+    <div>
+      <dt>Kadar / Sumbangan</dt>
+      <dd>{kadar}</dd>
+    </div>
+  </dl>
+
+  {s.syarat && s.syarat.length > 0 && (
+    <section>
+      <h2>Syarat & Peraturan</h2>
+      <ul>
+        {s.syarat.map((x) => (
+          <li>{x}</li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  {s.caraTempah && s.caraTempah.length > 0 && (
+    <section>
+      <h2>Cara Menempah</h2>
+      <ol class="steps">
+        {s.caraTempah.map((x) => (
+          <li>{x}</li>
+        ))}
+      </ol>
+    </section>
+  )}
+
+  <section>
+    <h2>Lokasi & Hubungi</h2>
+    {settings.address && <address>{settings.address}</address>}
+    {s.hubungi && (
+      <p>
+        Hubungi: <strong>{s.hubungi}</strong>
+      </p>
+    )}
+    <div class="btn-row">
+      {whatsapp && (
+        <a class="btn btn-primary" href={whatsappLink(whatsapp, enquiry)}>
+          <MessageCircle size={22} aria-hidden="true" /> WhatsApp
+        </a>
+      )}
+      {settings.phone && (
+        <a class="btn btn-secondary" href={telLink(settings.phone)}>
+          <Phone size={22} aria-hidden="true" /> Hubungi Pejabat Masjid
+        </a>
+      )}
+      <a class="btn btn-secondary" href={googleMapsLink(settings.mapUrl)}>
+        <MapPin size={22} aria-hidden="true" /> Buka di Google Maps
+      </a>
+      <a class="btn btn-secondary" href={wazeLink()}>
+        <Navigation size={22} aria-hidden="true" /> Buka di Waze
+      </a>
+    </div>
+  </section>
+
+  {s.soalanLazim && s.soalanLazim.length > 0 && (
+    <section>
+      <h2>Soalan Lazim</h2>
+      <div class="faq">
+        {s.soalanLazim.map((q) => (
+          <details>
+            <summary>{q.soalan}</summary>
+            <p>{q.jawapan}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+  )}
+</BaseLayout>
+
+<style>
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-height: var(--tap);
+  }
+  .lead {
+    font-size: 1.1rem;
+  }
+  .photos {
+    display: grid;
+    gap: 0.5rem;
+    margin: var(--s2) 0;
+  }
+  .photos img {
+    width: 100%;
+    border-radius: var(--radius);
+  }
+  .checks {
+    list-style: none;
+    padding: 0;
+  }
+  .checks li {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+    padding: 0.3rem 0;
+  }
+  .checks :global(svg) {
+    flex: none;
+    color: var(--c-primary);
+    margin-top: 0.15rem;
+  }
+  .facts {
+    margin: var(--s3) 0;
+  }
+  .facts div {
+    display: grid;
+    grid-template-columns: 9rem 1fr;
+    gap: 0.5rem;
+    padding: 0.4rem 0;
+  }
+  .facts div + div {
+    border-top: 1px solid var(--c-border);
+  }
+  dt {
+    color: var(--c-text-muted);
+  }
+  dd {
+    margin: 0;
+    font-weight: 700;
+  }
+  .steps li {
+    padding: 0.25rem 0;
+  }
+  address {
+    font-style: normal;
+    white-space: pre-line;
+    margin-bottom: var(--s2);
+  }
+  .faq details {
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    margin-bottom: 0.5rem;
+    background: var(--c-surface);
+  }
+  .faq summary {
+    cursor: pointer;
+    font-weight: 700;
+    padding: 0.75rem 1rem;
+    min-height: var(--tap);
+  }
+  .faq details p {
+    padding: 0 1rem 0.75rem;
+    margin: 0;
+  }
+  @media (max-width: 22em) {
+    .facts div {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+  }
+</style>

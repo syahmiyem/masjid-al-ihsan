@@ -1,0 +1,65 @@
+---
+// Hubungi Kami (plan 4.7): contact, directions, and a map that loads only when tapped (speed + privacy).
+import { MapPinned } from '@lucide/astro';
+import ContactBlock from '../components/ContactBlock.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getSettings } from '../lib/sanity';
+
+const settings = await getSettings();
+const embed = `https://www.google.com/maps?q=${encodeURIComponent('Masjid Al-Ihsan Felda Sungai Panching Selatan Kuantan')}&output=embed`;
+---
+
+<BaseLayout
+  title="Hubungi Kami – Masjid Al-Ihsan Felda Sg Panching Selatan, Kuantan"
+  description="Alamat, nombor telefon, WhatsApp dan arah ke Masjid Al-Ihsan, Felda Sungai Panching Selatan, Kuantan, Pahang."
+  withNav
+>
+  <h1>Hubungi Kami</h1>
+  {settings.officialName && <p>{settings.officialName}</p>}
+  <ContactBlock settings={settings} heading="Alamat & Hubungi" />
+  {settings.email && (
+    <p>
+      Emel: <a href={`mailto:${settings.email}`}>{settings.email}</a>
+    </p>
+  )}
+  {settings.facebook && (
+    <p>
+      <a href={settings.facebook}>Facebook masjid</a>
+    </p>
+  )}
+
+  <details class="map">
+    <summary class="btn btn-secondary">
+      <MapPinned size={22} aria-hidden="true" /> Tunjuk Peta
+    </summary>
+    <iframe
+      src={embed}
+      title="Peta lokasi Masjid Al-Ihsan"
+      loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade"
+      width="600"
+      height="400"
+    ></iframe>
+    <p class="muted">Peta dipaparkan oleh Google Maps.</p>
+  </details>
+</BaseLayout>
+
+<style>
+  .map {
+    margin-top: var(--s3);
+  }
+  .map summary {
+    list-style: none;
+  }
+  .map summary::-webkit-details-marker {
+    display: none;
+  }
+  iframe {
+    display: block;
+    width: 100%;
+    height: 22rem;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    margin-top: var(--s2);
+  }
+</style>

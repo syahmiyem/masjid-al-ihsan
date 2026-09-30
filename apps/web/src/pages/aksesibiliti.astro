@@ -1,0 +1,53 @@
+---
+// Kenyataan Aksesibiliti (plan 5.6).
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { telLink, whatsappLink } from '../lib/links';
+import { getSettings } from '../lib/sanity';
+
+const settings = await getSettings();
+---
+
+<BaseLayout
+  title="Kenyataan Aksesibiliti – Masjid Al-Ihsan"
+  description="Usaha Masjid Al-Ihsan untuk menjadikan laman web ini mudah digunakan oleh semua, termasuk warga emas."
+  withNav
+>
+  <h1>Kenyataan Aksesibiliti</h1>
+  <p>
+    Kami mahu laman web ini mudah digunakan oleh semua jemaah, termasuk warga emas dan orang kurang upaya.
+  </p>
+
+  <h2>Sasaran kami</h2>
+  <p>
+    Laman ini dibina mengikut Garis Panduan Aksesibiliti Kandungan Web (WCAG) 2.2 Tahap AA, dengan beberapa
+    langkah tambahan untuk warga emas:
+  </p>
+  <ul>
+    <li>Tulisan besar (18px) dan kontras warna yang tinggi</li>
+    <li>Butang besar yang mudah ditekan, dengan perkataan dan bukan ikon sahaja</li>
+    <li>Tarikh dan masa ditulis penuh, contohnya "Isnin, 5 Oktober 2026, 8:30 malam"</li>
+    <li>Status seperti DIBATALKAN ditulis dengan perkataan, bukan warna sahaja</li>
+    <li>Boleh digunakan dengan papan kekunci dan pembaca skrin</li>
+    <li>Tiada gambar bergerak, tetingkap timbul atau had masa</li>
+  </ul>
+
+  <h2>Had yang diketahui</h2>
+  <ul>
+    <li>
+      Gambar poster yang dikongsi di WhatsApp ialah gambar teks. Maklumat yang sama sentiasa ada di laman ini.
+    </li>
+    <li>Peta Google Maps dan perkhidmatan luar lain mungkin tidak sepenuhnya mudah diakses.</li>
+  </ul>
+
+  <h2>Beritahu kami</h2>
+  <p>
+    Jika ada bahagian laman ini yang sukar digunakan, sila beritahu kami melalui{' '}
+    {settings.whatsapp && (
+      <a href={whatsappLink(settings.whatsapp, 'Assalamualaikum. Masalah menggunakan laman web:')}>
+        WhatsApp
+      </a>
+    )}
+    {settings.whatsapp && settings.phone && ' atau '}
+    {settings.phone && <a href={telLink(settings.phone)}>telefon {settings.phone}</a>}.
+  </p>
+</BaseLayout>

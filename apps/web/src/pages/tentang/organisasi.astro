@@ -1,0 +1,50 @@
+---
+// Carta Organisasi (plan 4.5, D-35): grouped stacked cards on mobile, vacancies shown.
+import OrgCard from '../../components/ui/OrgCard.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getJawatan, getSettings } from '../../lib/sanity';
+
+const [jawatan, settings] = await Promise.all([getJawatan(), getSettings()]);
+const GROUPS = [
+  ['penaung', 'Penaung'],
+  ['pengurusan-utama', 'Pengurusan Utama'],
+  ['pegawai-masjid', 'Pegawai Masjid'],
+  ['ajk-biro', 'AJK Biro'],
+] as const;
+const groups = GROUPS.map(([key, label]) => ({
+  label,
+  people: jawatan.filter((j) => j.kumpulan === key).sort((a, b) => a.susunan - b.susunan),
+})).filter((g) => g.people.length > 0);
+---
+
+<BaseLayout
+  title="Carta Organisasi – Masjid Al-Ihsan Felda Sg Panching Selatan"
+  description="Ahli Jawatankuasa dan pegawai Masjid Al-Ihsan, Felda Sungai Panching Selatan, Kuantan."
+  withNav
+>
+  <h1>Carta Organisasi</h1>
+  {settings.sesiOrganisasi && <p class="muted">{settings.sesiOrganisasi}</p>}
+  {groups.length === 0 && <p>Carta organisasi akan dikemas kini tidak lama lagi.</p>}
+  {groups.map((g) => (
+    <section aria-labelledby={`g-${g.label}`}>
+      <h2 id={`g-${g.label}`}>{g.label}</h2>
+      <div class="grid">
+        {g.people.map((p) => (
+          <OrgCard
+            position={p.biro ? `${p.jawatan} (${p.biro})` : p.jawatan}
+            name={p.nama}
+            vacant={p.kosong}
+          />
+        ))}
+      </div>
+    </section>
+  ))}
+</BaseLayout>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+    gap: 0.75rem;
+  }
+</style>

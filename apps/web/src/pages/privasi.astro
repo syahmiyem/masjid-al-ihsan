@@ -1,0 +1,51 @@
+---
+// Notis Privasi (plan 4.7, 8.5). DRAFT for committee review — wording to be confirmed (D-43).
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { telLink, whatsappLink } from '../lib/links';
+import { getSettings } from '../lib/sanity';
+
+const settings = await getSettings();
+---
+
+<BaseLayout
+  title="Notis Privasi – Masjid Al-Ihsan"
+  description="Bagaimana laman web Masjid Al-Ihsan mengendalikan maklumat anda."
+  withNav
+>
+  <h1>Notis Privasi</h1>
+  <p class="muted">Draf untuk semakan Ahli Jawatankuasa (AJK) masjid.</p>
+
+  <h2>Maklumat yang kami kumpul</h2>
+  <p>
+    Laman web ini tidak meminta anda mendaftar atau log masuk. Kami tidak menggunakan kuki pengiklanan dan
+    tidak menjual maklumat anda.
+  </p>
+  <p>
+    Jika anda menghubungi kami melalui WhatsApp atau telefon, maklumat yang anda berikan (seperti nama, nombor
+    telefon dan tarikh yang dikehendaki) hanya digunakan untuk menjawab pertanyaan dan menguruskan tempahan
+    anda.
+  </p>
+
+  <h2>Pautan ke perkhidmatan lain</h2>
+  <p>
+    Butang WhatsApp, Google Maps dan Waze membuka perkhidmatan pihak ketiga yang mempunyai dasar privasi
+    sendiri. Peta di halaman Hubungi Kami hanya dimuatkan apabila anda menekan "Tunjuk Peta".
+  </p>
+
+  <h2>Gambar</h2>
+  <p>
+    Gambar ahli jawatankuasa hanya dipaparkan dengan kebenaran mereka. Jika anda mahu gambar yang melibatkan
+    anda dikeluarkan, sila hubungi kami.
+  </p>
+
+  <h2>Hubungi kami tentang privasi</h2>
+  <p>
+    {settings.whatsapp && (
+      <a href={whatsappLink(settings.whatsapp, 'Assalamualaikum. Pertanyaan tentang privasi:')}>
+        WhatsApp masjid
+      </a>
+    )}
+    {settings.whatsapp && settings.phone && ' atau '}
+    {settings.phone && <a href={telLink(settings.phone)}>telefon {settings.phone}</a>}.
+  </p>
+</BaseLayout>

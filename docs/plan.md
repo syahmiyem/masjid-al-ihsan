@@ -1025,6 +1025,14 @@ Durations assume one developer, part-time to full-time. Before the committee pre
 - Waktu Solat: the times for 5 sample dates match e-Solat exactly; the next prayer is correct either side of midnight MYT; with the API blocked, the sync fails safely and the site still shows the committed data.
 - Derma: the placeholder QR cannot be paid to; a QR whose payload does not match `config/derma/derma.json` fails the build.
 
+**Status (1 Oct 2026):**
+- ✅ Data layer: build-time GROQ (published only), kuliah recurrence engine (weekly; nth/last weekday monthly; active windows; cancel / postpone + replacement date / guest speaker / venue / time changes), Malay time labels with the official prayer time ("Selepas Maghrib (Maghrib 7:00 malam)"). The plan's acceptance case (Setiap Isnin + one cancellation) is a unit test.
+- ✅ Pages from Sanity: Home (3.3 order), Kuliah (Minggu Ini, weekly timetable Isnin→Ahad, monthly; series pages), Aktiviti (this month + `/aktiviti/YYYY-MM`, grouped by week, past items under "Telah Berlangsung"; detail pages), Perkhidmatan (index + one SEO page per service, WhatsApp-first enquiry with pre-filled message, FAQ), Waktu Solat (today's 8 times + month tables; all 5 prayers fit at 360px), Derma (CONTOH warning, QR, grouped account number, copy button as progressive enhancement, safety note), Carta Organisasi, Hubungi (map loads only on tap), Notis Privasi (draft for AJK), Kenyataan Aksesibiliti; footer on every page.
+- ✅ Derma build check (D-81): QR decoded at build and compared with `config/derma/derma.json` (EMV tag 59 recipient name, or exact payload); runs in `ci:build` and pre-push.
+- ✅ Checked: no page-level horizontal scroll at 300/320/360px; axe 0 violations on all pages.
+- Deviations: kuliah "tabs" are in-page jump links (no JavaScript); the month grid view (D-10 toggle, "S") is not built yet.
+- ⏳ Remaining Phase 2: sharing (WhatsApp / copy link / native share), Open Graph tags, `.ics` + Google Calendar links; "next prayer" live script; scheduler Worker (nightly rebuild, e-Solat check, backups); Studio customisation (slug lock, archive-not-delete, ordering).
+
 ### Phase 3 — Share images & technical SEO on UAT (1–2 weeks)
 
 | Tasks |

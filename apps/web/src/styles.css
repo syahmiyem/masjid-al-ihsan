@@ -158,6 +158,21 @@ img {
   white-space: nowrap;
 }
 
+/* Previous / next month buttons (Aktiviti, Waktu Solat). Wraps rather than overflowing on narrow screens. */
+.month-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: var(--s2);
+}
+.month-nav > :last-child {
+  margin-left: auto;
+}
+.month-nav .btn {
+  padding-inline: 0.8rem;
+}
+
 /* Matches the 2 × 2 bottom bar in BottomNav.astro */
 @media (max-width: 19.5em) {
   :root {

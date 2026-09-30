@@ -1,0 +1,185 @@
+---
+// Derma (plan 4.9, D-80): display-only bank details + DuitNow QR. Details come from config/derma/ in Git
+// (two-person review), never from the CMS. The build fails if the QR doesn't match (scripts/check-derma.ts).
+import { Copy, TriangleAlert } from '@lucide/astro';
+import dermaConfig from '../../../../config/derma/derma.json';
+import qrUrl from '../../../../config/derma/duitnow-qr.png?url';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { groupDigits, type DermaConfig } from '../lib/derma';
+import { telLink, whatsappLink } from '../lib/links';
+import { getSettings } from '../lib/sanity';
+
+const derma = dermaConfig as DermaConfig;
+const contoh = derma.status === 'contoh';
+const settings = await getSettings();
+---
+
+<BaseLayout
+  title="Derma untuk Masjid Al-Ihsan – Akaun Bank & DuitNow QR"
+  description="Cara menderma kepada Masjid Al-Ihsan, Felda Sungai Panching Selatan, Kuantan melalui akaun bank rasmi atau DuitNow QR."
+  withNav
+>
+  <h1>Derma untuk Masjid</h1>
+  <p>
+    Sumbangan anda membantu kos operasi masjid dan program untuk jemaah. Semoga Allah membalas kebaikan anda.
+  </p>
+
+  {contoh && (
+    <div class="contoh" role="note">
+      <TriangleAlert size={24} aria-hidden="true" />
+      <p>
+        <strong>CONTOH SAHAJA — jangan buat bayaran.</strong> Butiran di bawah bukan akaun sebenar dan akan
+        diganti dengan akaun rasmi masjid.
+      </p>
+    </div>
+  )}
+
+  <section class="card qr-card" aria-labelledby="qr-heading">
+    <h2 id="qr-heading">Imbas DuitNow QR</h2>
+    <img src={qrUrl} width="240" height="240" alt={`Kod QR DuitNow untuk ${derma.accountName}`} class="qr" />
+    <p class="muted">Buka aplikasi bank anda, pilih DuitNow QR / Imbas, dan imbas kod ini.</p>
+  </section>
+
+  <section class="card" aria-labelledby="akaun-heading">
+    <h2 id="akaun-heading">Atau pindahan ke akaun bank</h2>
+    <dl class="facts">
+      <div>
+        <dt>Nama pemegang akaun</dt>
+        <dd>{derma.accountName}</dd>
+      </div>
+      <div>
+        <dt>Bank</dt>
+        <dd>{derma.bank}</dd>
+      </div>
+      <div>
+        <dt>Nombor akaun</dt>
+        <dd class="acct">{groupDigits(derma.accountNumber)}</dd>
+      </div>
+    </dl>
+    <button class="btn btn-secondary copy" type="button" data-copy={derma.accountNumber} hidden>
+      <Copy size={22} aria-hidden="true" /> Salin Nombor Akaun
+    </button>
+    <p class="copied" role="status" aria-live="polite"></p>
+  </section>
+
+  <div class="safety" role="note">
+    <TriangleAlert size={24} aria-hidden="true" />
+    <p>
+      <strong>Sebelum mengesahkan pemindahan,</strong> pastikan nama penerima yang dipaparkan oleh aplikasi
+      bank anda ialah <strong>{derma.accountName}</strong>. Kod QR rasmi masjid hanya dipaparkan di laman ini
+      dan di papan kenyataan masjid.
+    </p>
+  </div>
+
+  <h2>Resit</h2>
+  <p>
+    Untuk mendapatkan resit sumbangan, sila hubungi pejabat masjid
+    {settings.whatsapp ? (
+      <>
+        {' '}
+        melalui{' '}
+        <a href={whatsappLink(settings.whatsapp, 'Assalamualaikum. Saya ingin mendapatkan resit sumbangan.')}>
+          WhatsApp
+        </a>
+      </>
+    ) : null}
+    {settings.phone ? (
+      <>
+        {' '}
+        atau <a href={telLink(settings.phone)}>telefon {settings.phone}</a>
+      </>
+    ) : null}
+    .
+  </p>
+</BaseLayout>
+
+<script>
+  // Progressive enhancement: the account number is always visible as text; this only adds a copy button.
+  const button = document.querySelector<HTMLButtonElement>('button[data-copy]');
+  const status = document.querySelector<HTMLElement>('.copied');
+  if (button && status && navigator.clipboard) {
+    button.hidden = false;
+    button.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(button.dataset.copy ?? '');
+        status.textContent = 'Nombor akaun telah disalin.';
+      } catch {
+        status.textContent = 'Tidak dapat menyalin. Sila salin nombor secara manual.';
+      }
+    });
+  }
+</script>
+
+<style>
+  .contoh,
+  .safety {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    padding: 1rem;
+    border-radius: var(--radius);
+    margin: var(--s2) 0;
+  }
+  .contoh {
+    background: var(--c-urgent-bg);
+    color: var(--c-on-urgent);
+  }
+  .safety {
+    background: var(--c-postponed-bg);
+    color: var(--c-postponed-text);
+    border: 2px solid var(--c-postponed-text);
+  }
+  .contoh p,
+  .safety p {
+    margin: 0;
+  }
+  .contoh :global(svg),
+  .safety :global(svg) {
+    flex: none;
+    margin-top: 0.1rem;
+  }
+  .card + .card {
+    margin-top: var(--s2);
+  }
+  .qr-card {
+    text-align: center;
+  }
+  .qr {
+    display: block;
+    margin: 0 auto var(--s1);
+    width: 240px;
+    height: 240px;
+    background: #fff;
+    padding: 8px;
+    border-radius: var(--radius);
+    image-rendering: pixelated;
+  }
+  .facts {
+    margin: 0 0 var(--s2);
+  }
+  .facts div {
+    padding: 0.4rem 0;
+  }
+  .facts div + div {
+    border-top: 1px solid var(--c-border);
+  }
+  dt {
+    color: var(--c-text-muted);
+  }
+  dd {
+    margin: 0;
+    font-weight: 700;
+  }
+  .acct {
+    font-size: 1.4rem;
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+  .copied {
+    margin: 0.5rem 0 0;
+    font-weight: 700;
+  }
+  .copied:empty {
+    display: none;
+  }
+</style>

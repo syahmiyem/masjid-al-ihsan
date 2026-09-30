@@ -22,3 +22,14 @@ export function nowMyt(): { date: string; time: string } {
   const iso = new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString();
   return { date: iso.slice(0, 10), time: iso.slice(11, 16) };
 }
+
+/** Months with data, e.g. ["2026-01", …, "2026-12"]. */
+export function prayerMonths(): string[] {
+  return [...new Set([...byDate.keys()].map((d) => d.slice(0, 7)))].sort();
+}
+
+export function prayerDaysOfMonth(month: string): PrayerDay[] {
+  return [...byDate.values()]
+    .filter((d) => d.date.startsWith(month))
+    .sort((a, b) => a.date.localeCompare(b.date));
+}

@@ -7,4 +7,5 @@ pnpm -s format:check
 pnpm -s check >/dev/null
 pnpm -s test >/dev/null
 node scripts/waktu-solat/coverage.ts
+node apps/web/scripts/check-derma.ts
 echo "pre-push: OK"

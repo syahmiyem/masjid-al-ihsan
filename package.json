@@ -19,7 +19,7 @@
     "format:check": "prettier --check .",
     "waktu-solat:sync": "node scripts/waktu-solat/sync.ts",
     "prepare": "git config core.hooksPath .githooks || true",
-    "ci:build": "pnpm test && pnpm check && node scripts/waktu-solat/coverage.ts && pnpm build",
+    "ci:build": "pnpm test && pnpm check && node scripts/waktu-solat/coverage.ts && node apps/web/scripts/check-derma.ts && pnpm build",
     "ci:deploy": "pnpm --filter web exec wrangler deploy",
     "ci:preview": "pnpm --filter web exec wrangler versions upload"
   },

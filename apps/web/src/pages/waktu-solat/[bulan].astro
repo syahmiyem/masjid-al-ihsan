@@ -1,0 +1,24 @@
+---
+// /waktu-solat/2026-11 — one month's table, shareable (plan 4.8).
+import WaktuSolatPage from '../../components/WaktuSolatPage.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { monthName } from '../../lib/format';
+import { today } from '../../lib/site';
+import { prayerMonths } from '../../lib/waktu-solat-data';
+
+export function getStaticPaths() {
+  return prayerMonths().map((bulan) => ({ params: { bulan } }));
+}
+
+const { bulan } = Astro.params as { bulan: string };
+const { date, time } = today();
+const label = `${monthName(Number(bulan.slice(5, 7)))} ${bulan.slice(0, 4)}`;
+---
+
+<BaseLayout
+  title={`Waktu Solat Kuantan ${label} – Masjid Al-Ihsan`}
+  description={`Jadual waktu solat bulan ${label} bagi zon Kuantan, Pekan dan Muadzam Shah, daripada JAKIM (e-Solat).`}
+  withNav
+>
+  <WaktuSolatPage month={bulan} today={date} now={time} />
+</BaseLayout>
