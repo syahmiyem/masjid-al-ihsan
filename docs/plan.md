@@ -972,7 +972,8 @@ Durations assume one developer, part-time to full-time. Before the committee pre
 - ✅ Sanity project `1xd617ey` with public datasets `production` and `latihan` (both empty); project ID set as the Studio default.
 - ✅ Hosted Studio deployed at `https://masjid-al-ihsan.sanity.studio` (appId in `sanity.cli.ts`).
 - ✅ Live UAT checked (1 Oct 2026) at `https://masjid-al-ihsan.masjidalihsansps.workers.dev`: `X-Robots-Tag: noindex, nofollow`, `robots.txt` Disallow, real 404, banner shown.
-- ⏳ Open: `SITE_URL` build variable not yet applied (canonical shows localhost); `sanity-publish` deploy hook.
+- ✅ `SITE_URL` build variable applied; canonical on UAT is the `workers.dev` address. Builds now normalise `SITE_URL` and fail clearly if it is missing or invalid.
+- ⏳ Open: `sanity-publish` deploy hook + Sanity webhook, tested by publishing in the Studio.
 
 **Acceptance:**
 - A merge to `main` deploys to the UAT URL automatically. A PR gets its own preview URL.
