@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Static-assets-only Worker (plan 9.1, 9.6). The account is set by CLOUDFLARE_ACCOUNT_ID in CI.
+  "name": "masjid-al-ihsan",
+  "compatibility_date": "2026-09-30",
+  // UAT lives on masjid-al-ihsan.<subdomain>.workers.dev until go-live (D-08).
+  // At go-live: add the custom domain under "routes" and set workers_dev to false.
+  "workers_dev": true,
+  "preview_urls": true,
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page",
+    "html_handling": "drop-trailing-slash",
+  },
+}

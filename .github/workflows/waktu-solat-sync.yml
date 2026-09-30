@@ -1,0 +1,64 @@
+# Weekly fetch of official prayer times from JAKIM e-Solat (docs/plan.md 4.8).
+# Valid, changed data is merged via a bot pull request; failures open an issue and leave the
+# committed data untouched, so the site keeps working.
+# Needs: Settings → Actions → General → "Allow GitHub Actions to create and approve pull requests".
+name: Waktu Solat sync
+
+on:
+  schedule:
+    - cron: '0 20 * * 0' # Monday 04:00 Asia/Kuala_Lumpur
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  actions: write
+
+concurrency:
+  group: waktu-solat-sync
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      - name: Fetch and validate
+        id: sync
+        run: node scripts/waktu-solat/sync.ts
+
+      - name: Merge changed data
+        if: steps.sync.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          branch="bot/waktu-solat-$(date -u +%Y%m%d)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add data/waktu-solat
+          git commit -m "Kemas kini data Waktu Solat daripada JAKIM e-Solat"
+          git push -u origin "$branch"
+          gh pr create --title "Kemas kini data Waktu Solat" \
+            --body "Automatik: data JAKIM e-Solat telah disahkan (tarikh lengkap, susunan waktu betul)." \
+            --base main --head "$branch"
+          gh pr merge "$branch" --squash --delete-branch
+          # Merges made with GITHUB_TOKEN do not trigger other workflows, so start the deploy explicitly.
+          gh workflow run deploy.yml --ref main
+
+      - name: Report failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="Waktu Solat sync gagal"
+          body="Penyegerakan data JAKIM e-Solat gagal pada $(date -u +%F). Data sedia ada tidak diubah dan laman masih berfungsi. Log: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          existing=$(gh issue list --state open --search "in:title \"$title\"" --json number -q '.[0].number')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body "$body"
+          else
+            gh issue create --title "$title" --body "$body"
+          fi

@@ -1,0 +1,20 @@
+{
+  "name": "web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && node --env-file-if-exists=.env scripts/postbuild.ts",
+    "check": "astro check",
+    "preview": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "astro": "^7.3.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "typescript": "^6.0.3",
+    "wrangler": "^4.145.0"
+  }
+}

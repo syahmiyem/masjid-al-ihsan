@@ -1,0 +1,6 @@
+# Donation details need approval from a code owner other than the PR author (docs/plan.md 4.9, D-81).
+# Add the Bendahari (and Pengerusi) GitHub usernames here once they have accounts.
+/config/derma/ @syahmiyem
+
+# Changes to this file are equally sensitive.
+/.github/CODEOWNERS @syahmiyem

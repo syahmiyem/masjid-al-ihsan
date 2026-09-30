@@ -1,0 +1,25 @@
+{
+  "name": "masjid-al-ihsan",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.1.2",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "build": "pnpm --filter web build",
+    "studio": "pnpm --filter studio dev",
+    "check": "tsc -p tsconfig.json && pnpm -r check",
+    "test": "node --test \"scripts/**/*.test.ts\"",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "waktu-solat:sync": "node scripts/waktu-solat/sync.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.18.0",
+    "prettier": "^3.9.9",
+    "prettier-plugin-astro": "^1.1.0",
+    "typescript": "^6.0.3"
+  }
+}

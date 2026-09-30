@@ -1,0 +1,10 @@
+{
+  "$comment": "Donation details (docs/plan.md 4.9, D-81). Changes only by pull request approved by a second code owner (.github/CODEOWNERS). Real values only after the Bendahari checks them against a bank letter.",
+  "status": "contoh",
+  "accountName": "CONTOH — BUKAN AKAUN SEBENAR",
+  "bank": "Bank Contoh",
+  "accountNumber": "000000000000",
+  "qrImage": "duitnow-qr.png",
+  "expectedQrPayload": "CONTOH - bukan akaun sebenar. Laman percubaan Masjid Al-Ihsan. Jangan buat bayaran.",
+  "funds": []
+}

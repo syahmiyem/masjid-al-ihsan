@@ -1,0 +1,53 @@
+# Weekly export of Sanity content to a private Cloudflare R2 bucket (docs/plan.md 11.4).
+# Backups may contain enquiries (personal data), so they never go to this public repo or to
+# workflow artifacts. Retention (12 weekly + 12 monthly) is set as an R2 lifecycle rule.
+name: Content backup
+
+on:
+  schedule:
+    - cron: '0 19 * * 6' # Sunday 03:00 Asia/Kuala_Lumpur
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Skip if Sanity/Cloudflare are not set up yet
+        id: gate
+        env:
+          SANITY: ${{ secrets.SANITY_AUTH_TOKEN }}
+          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          PROJECT: ${{ vars.SANITY_PROJECT_ID }}
+        run: |
+          if [ -z "$SANITY" ] || [ -z "$CF" ] || [ -z "$PROJECT" ]; then
+            echo "::notice::Secrets not set — backup skipped."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.gate.outputs.ready == 'true'
+        uses: actions/checkout@v7
+      - if: steps.gate.outputs.ready == 'true'
+        uses: pnpm/action-setup@v6
+      - if: steps.gate.outputs.ready == 'true'
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - if: steps.gate.outputs.ready == 'true'
+        run: pnpm install --frozen-lockfile
+      - name: Export and upload
+        if: steps.gate.outputs.ready == 'true'
+        env:
+          SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
+          SANITY_STUDIO_PROJECT_ID: ${{ vars.SANITY_PROJECT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          BUCKET: ${{ vars.BACKUP_BUCKET || 'masjid-al-ihsan-backups' }}
+        run: |
+          file="sanity-production-$(date -u +%F).tar.gz"
+          pnpm --filter studio exec sanity dataset export production "$RUNNER_TEMP/$file" --overwrite
+          pnpm --filter web exec wrangler r2 object put "$BUCKET/sanity/$file" --file "$RUNNER_TEMP/$file" --remote
