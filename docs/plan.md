@@ -970,7 +970,9 @@ Durations assume one developer, part-time to full-time. Before the committee pre
 - ✅ GitHub Actions replaced by Workers Builds + pre-push hook (D-76). The developer's GitHub account is billing-locked, which blocks Actions.
 - ✅ Workers Builds connected; UAT live on `workers.dev` with the "Laman Percubaan" banner.
 - ✅ Sanity project `1xd617ey` with public datasets `production` and `latihan` (both empty); project ID set as the Studio default.
-- ⏳ Next: sign in to the local Studio, deploy the hosted Studio, create the deploy hook; then Phase 1.
+- ✅ Hosted Studio deployed at `https://masjid-al-ihsan.sanity.studio` (appId in `sanity.cli.ts`).
+- ✅ Live UAT checked (1 Oct 2026) at `https://masjid-al-ihsan.masjidalihsansps.workers.dev`: `X-Robots-Tag: noindex, nofollow`, `robots.txt` Disallow, real 404, banner shown.
+- ⏳ Open: `SITE_URL` build variable not yet applied (canonical shows localhost); `sanity-publish` deploy hook.
 
 **Acceptance:**
 - A merge to `main` deploys to the UAT URL automatically. A PR gets its own preview URL.

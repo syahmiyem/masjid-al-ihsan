@@ -7,5 +7,5 @@ export default defineCliConfig({
   },
   // Hosted at https://<studioHost>.sanity.studio (plan 9.6)
   studioHost: process.env.SANITY_STUDIO_HOST || 'masjid-al-ihsan',
-  deployment: { autoUpdates: true },
+  deployment: { appId: 'k1y9kieyg11twqyt3dnlsqpc', autoUpdates: true },
 });
