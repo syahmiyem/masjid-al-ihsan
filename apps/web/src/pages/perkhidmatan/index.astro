@@ -1,0 +1,23 @@
+---
+// All services (plan 4.3). Each service also has its own SEO page.
+import ServiceCard from '../../components/ui/ServiceCard.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPerkhidmatan } from '../../lib/sanity';
+
+const services = await getPerkhidmatan();
+---
+
+<BaseLayout
+  title="Perkhidmatan – Masjid Al-Ihsan Felda Sg Panching Selatan, Kuantan"
+  description="Dewan akad nikah, dewan serbaguna, homestay dan perkhidmatan lain di Masjid Al-Ihsan, Felda Sungai Panching Selatan, Kuantan, Pahang."
+  withNav
+>
+  <h1>Perkhidmatan</h1>
+  <p>Kemudahan dan perkhidmatan masjid untuk jemaah dan orang ramai.</p>
+  {services.length === 0 && <p>Maklumat perkhidmatan akan dikemas kini tidak lama lagi.</p>}
+  <div class="stack">
+    {services.map((s) => (
+      <ServiceCard name={s.nama} summary={s.ringkasan} href={`/perkhidmatan/${s.slug}`} />
+    ))}
+  </div>
+</BaseLayout>

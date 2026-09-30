@@ -1,0 +1,192 @@
+---
+// Waktu Solat page body (plan 4.8): today's full times + a month table from JAKIM e-Solat data.
+import { ChevronLeft, ChevronRight } from '@lucide/astro';
+import siteConfig from '../../../../config/site.json';
+import { addMonths } from '../lib/dates';
+import { dayName, formatDate, formatHijri, formatTime, monthName } from '../lib/format';
+import { prayerLabel, type PrayerDay } from '../lib/waktu-solat';
+import { prayerDay, prayerDaysOfMonth, prayerMonths, prayerZone } from '../lib/waktu-solat-data';
+
+interface Props {
+  month: string;
+  today: string;
+  now: string;
+}
+const { month, today, now } = Astro.props;
+const days = prayerDaysOfMonth(month);
+const months = prayerMonths();
+const todayData = prayerDay(today);
+const [y, m] = month.split('-').map(Number);
+const prev = addMonths(month, -1);
+const next = addMonths(month, 1);
+
+const ALL: { key: keyof PrayerDay; label: string }[] = [
+  { key: 'imsak', label: 'Imsak' },
+  { key: 'subuh', label: 'Subuh' },
+  { key: 'syuruk', label: 'Syuruk' },
+  { key: 'dhuha', label: 'Dhuha' },
+  { key: 'zohor', label: 'Zohor' },
+  { key: 'asar', label: 'Asar' },
+  { key: 'maghrib', label: 'Maghrib' },
+  { key: 'isyak', label: 'Isyak' },
+];
+const COLS = ['subuh', 'zohor', 'asar', 'maghrib', 'isyak'] as const;
+// Compact h:mm for the month table; the column headings say which prayer it is
+const short = (hhmm: string) => formatTime(hhmm).split(' ')[0];
+const nextKey = todayData ? COLS.find((k) => todayData[k] > now) : undefined;
+---
+
+<h1>Waktu Solat</h1>
+<p class="muted">
+  Zon {prayerZone}: {siteConfig.prayerZoneName}. Sumber: JAKIM (e-Solat).
+</p>
+
+{todayData && month === today.slice(0, 7) && (
+  <section class="card" aria-labelledby="hari-ini">
+    <h2 id="hari-ini">Hari Ini</h2>
+    <p class="muted">
+      {formatDate(today)} · {formatHijri(todayData.hijri)}
+    </p>
+    <table class="today">
+      <caption class="visually-hidden">Waktu solat hari ini</caption>
+      <tbody>
+        {ALL.map(({ key, label }) => (
+          <tr class:list={{ upcoming: key === nextKey }}>
+            <th scope="row">
+              {key === 'zohor' ? prayerLabel('zohor', today) : label}
+              {key === nextKey && <span class="visually-hidden"> (seterusnya)</span>}
+            </th>
+            <td>{formatTime(todayData[key] as string)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </section>
+)}
+
+<h2 id="bulan">
+  {monthName(m)} {y}
+</h2>
+<nav class="month-nav" aria-label="Tukar bulan">
+  {months.includes(prev) ? (
+    <a class="btn btn-secondary" href={`/waktu-solat/${prev}#bulan`}>
+      <ChevronLeft size={22} aria-hidden="true" /> {monthName(Number(prev.slice(5)))}
+    </a>
+  ) : (
+    <span />
+  )}
+  {months.includes(next) && (
+    <a class="btn btn-secondary" href={`/waktu-solat/${next}#bulan`}>
+      {monthName(Number(next.slice(5)))} <ChevronRight size={22} aria-hidden="true" />
+    </a>
+  )}
+</nav>
+
+<div class="table-scroll" role="region" aria-label={`Jadual waktu solat ${monthName(m)} ${y}`} tabindex="0">
+  <table class="month">
+    <caption class="visually-hidden">
+      Waktu solat{monthName(m)}
+      {y}. Subuh waktu pagi; Zohor tengah hari; Asar petang; Maghrib dan Isyak malam.
+    </caption>
+    <thead>
+      <tr>
+        <th scope="col">
+          <span class="visually-hidden">Tarikh</span>
+        </th>
+        <th scope="col">Subuh</th>
+        <th scope="col">Zohor</th>
+        <th scope="col">Asar</th>
+        <th scope="col">Maghrib</th>
+        <th scope="col">Isyak</th>
+      </tr>
+    </thead>
+    <tbody>
+      {days.map((d) => (
+        <tr class:list={{ now: d.date === today, friday: dayName(d.date) === 'Jumaat' }}>
+          <th scope="row">
+            <span class="num">{Number(d.date.slice(8))}</span>
+            <span class="dn">{dayName(d.date).slice(0, 3)}</span>
+            {d.date === today && <span class="visually-hidden"> (hari ini)</span>}
+          </th>
+          {COLS.map((k) => (
+            <td>{short(d[k])}</td>
+          ))}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+<p class="muted">Masa dalam format 12 jam. Hari Jumaat ditebalkan (waktu Zohor ialah waktu solat Jumaat).</p>
+
+<style>
+  .today {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1.1rem;
+  }
+  .today th,
+  .today td {
+    padding: 0.4rem 0.6rem;
+    border-top: 1px solid var(--c-border);
+  }
+  .today th {
+    text-align: left;
+    font-weight: 400;
+  }
+  .today td {
+    text-align: right;
+  }
+  .upcoming th,
+  .upcoming td {
+    background: var(--c-primary-soft);
+    font-weight: 700;
+  }
+  .table-scroll {
+    overflow-x: auto;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+  }
+  .month {
+    width: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.889rem; /* 16px (root is 18px) — the plan 5.4 minimum — so all five prayers fit at 360px */
+  }
+  .month th,
+  .month td {
+    padding: 0.4rem 0.25rem;
+    text-align: center;
+    border-bottom: 1px solid var(--c-border);
+    white-space: nowrap;
+  }
+  .month thead th {
+    background: var(--c-surface);
+    position: sticky;
+    top: 0;
+  }
+  .month tbody th {
+    text-align: left;
+    font-weight: 700;
+  }
+  .month tbody th {
+    line-height: 1.15;
+  }
+  .num,
+  .dn {
+    display: block;
+  }
+  .dn {
+    font-weight: 400;
+    color: var(--c-text-muted);
+  }
+  .month tr.now th,
+  .month tr.now td {
+    background: var(--c-primary-soft);
+    box-shadow:
+      inset 0 2px 0 var(--c-primary),
+      inset 0 -2px 0 var(--c-primary);
+  }
+  .month tr.friday td:nth-child(3) {
+    font-weight: 700;
+  }
+</style>

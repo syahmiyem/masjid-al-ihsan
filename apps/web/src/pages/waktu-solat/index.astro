@@ -1,0 +1,17 @@
+---
+import WaktuSolatPage from '../../components/WaktuSolatPage.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { monthName } from '../../lib/format';
+import { today } from '../../lib/site';
+
+const { date, time } = today();
+const label = `${monthName(Number(date.slice(5, 7)))} ${date.slice(0, 4)}`;
+---
+
+<BaseLayout
+  title={`Waktu Solat Kuantan ${label} – Masjid Al-Ihsan`}
+  description={`Waktu solat hari ini dan jadual bulan ${label} bagi zon Kuantan, Pekan dan Muadzam Shah, daripada JAKIM (e-Solat).`}
+  withNav
+>
+  <WaktuSolatPage month={date.slice(0, 7)} today={date} now={time} />
+</BaseLayout>
