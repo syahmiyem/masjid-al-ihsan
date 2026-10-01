@@ -1,6 +1,14 @@
 {
-  "$comment": "Settings kept in Git rather than the CMS. See docs/plan.md, Sections 4.8 and 9.5.",
+  "$comment": "Settings kept in Git rather than the CMS. See docs/plan.md, Sections 4.8, 6.3 and 9.5.",
   "prayerZone": "PHG02",
   "prayerZoneName": "Kuantan, Pekan, Muadzam Shah",
-  "timeZone": "Asia/Kuala_Lumpur"
+  "timeZone": "Asia/Kuala_Lumpur",
+  "address": {
+    "$comment": "Fixed parts of the mosque address for structured data; the street address comes from Tetapan Masjid. Postcode and map coordinates: Needs confirmation (Q2).",
+    "locality": "Kuantan",
+    "region": "Pahang",
+    "country": "MY",
+    "postalCode": null,
+    "geo": null
+  }
 }

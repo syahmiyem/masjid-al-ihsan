@@ -8,6 +8,7 @@ import PortableText from '../../components/PortableText.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { googleMapsLink, telLink, wazeLink, whatsappLink } from '../../lib/links';
 import { getPerkhidmatan, getSettings, type Perkhidmatan } from '../../lib/sanity';
+import { faq, service } from '../../lib/schema';
 
 export async function getStaticPaths() {
   const services = await getPerkhidmatan();
@@ -28,7 +29,12 @@ const kadar =
       : 'Sila hubungi kami untuk maklumat kadar.';
 ---
 
-<BaseLayout title={`${s.nama} – Masjid Al-Ihsan, Sg Panching, Kuantan`} description={s.ringkasan} withNav>
+<BaseLayout
+  title={`${s.nama} – Masjid Al-Ihsan, Sg Panching, Kuantan`}
+  description={s.ringkasan}
+  withNav
+  schema={[service(s, settings, Astro.site!), ...(s.soalanLazim?.length ? [faq(s.soalanLazim)] : [])]}
+>
   <p>
     <a href="/perkhidmatan" class="back">
       <ChevronLeft size={20} aria-hidden="true" /> Semua perkhidmatan

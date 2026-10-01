@@ -9,7 +9,8 @@ import { googleCalendarLink, kuliahRrule } from '../../lib/ics';
 import { expandKuliah, ruleLabel } from '../../lib/kuliah';
 import { calendarLocation, shareKuliah } from '../../lib/share';
 import { masaLabel, masaLabelShort } from '../../lib/masa';
-import { getKuliahPerubahan, getKuliahSiri } from '../../lib/sanity';
+import { getKuliahPerubahan, getKuliahSiri, getSettings } from '../../lib/sanity';
+import { kuliahSeries } from '../../lib/schema';
 import { today } from '../../lib/site';
 import type { KuliahSiri } from '../../lib/types';
 import { prayerDay } from '../../lib/waktu-solat-data';
@@ -39,6 +40,22 @@ const calendar = {
     rrule: kuliahRrule(siri),
   }),
 };
+const schema = [
+  kuliahSeries(
+    siri.nama,
+    `/kuliah/${siri.slug}`,
+    `${ruleLabel(siri)}, ${masaLabelShort(siri.masa)}, ${siri.tempat}`,
+    dates.map((o) => ({
+      date: o.date,
+      masa: o.masa,
+      status: o.status,
+      place: o.tempat,
+      speaker: o.penceramah,
+    })),
+    await getSettings(),
+    Astro.site!,
+  ),
+];
 const AUDIENCE: Record<string, string> = {
   umum: 'Umum',
   muslimah: 'Muslimah',
@@ -51,6 +68,7 @@ const AUDIENCE: Record<string, string> = {
   title={`${siri.nama} – Masjid Al-Ihsan Kuantan`}
   description={`${siri.nama}: ${ruleLabel(siri)}, ${masaLabelShort(siri.masa)} di ${siri.tempat}, Masjid Al-Ihsan Felda Sg Panching Selatan.`}
   withNav
+  schema={schema}
 >
   <p>
     <a href="/kuliah" class="back">

@@ -8,6 +8,9 @@ import SiteHeader from '../components/ui/SiteHeader.astro';
 import UatBanner from '../components/UatBanner.astro';
 import { cssVariables } from '../design/tokens';
 import { ogFor } from '../poster/catalogue';
+import { getSettings } from '../lib/sanity';
+import { breadcrumbs, jsonLd, mosque, website } from '../lib/schema';
+import type { Thing } from 'schema-dts';
 import '../styles.css';
 
 interface Props {
@@ -18,9 +21,40 @@ interface Props {
   /** Link-preview image (plan 4.4); per-page share images arrive in Phase 3 */
   ogImage?: string;
   ogType?: 'website' | 'article';
+  /** Page-specific structured data (plan 6.3); the mosque and website are added on every page */
+  schema?: Thing[];
 }
 
 const { title, description, withNav = false, ogType = 'website' } = Astro.props;
+const settings = await getSettings();
+// Breadcrumbs from the URL: section name from this table, then the page's own title (before " – ")
+const SECTIONS: Record<string, string> = {
+  '/aktiviti': 'Aktiviti',
+  '/kuliah': 'Jadual Kuliah',
+  '/perkhidmatan': 'Perkhidmatan',
+  '/waktu-solat': 'Waktu Solat',
+  '/derma': 'Derma',
+  '/tentang/organisasi': 'Carta Organisasi',
+  '/hubungi': 'Hubungi Kami',
+  '/privasi': 'Notis Privasi',
+  '/aksesibiliti': 'Kenyataan Aksesibiliti',
+};
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const section = Object.keys(SECTIONS).find((s) => path === s || path.startsWith(`${s}/`));
+const trail: [string, string][] = section
+  ? path === section
+    ? [[SECTIONS[section], section]]
+    : [
+        [SECTIONS[section], section],
+        [title.split(' – ')[0], path],
+      ]
+  : [];
+const structured = jsonLd([
+  mosque(settings, Astro.site!),
+  website(Astro.site!),
+  ...(trail.length ? [breadcrumbs(Astro.site!, trail)] : []),
+  ...(Astro.props.schema ?? []),
+]);
 const ogImage =
   Astro.props.ogImage ?? (await ogFor(Astro.url.pathname.replace(/\/$/, '') || '/')) ?? '/og-default.png';
 const canonical = new URL(Astro.url.pathname, Astro.site);
@@ -45,6 +79,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="Masjid Al-Ihsan, Felda Sg Panching Selatan, Kuantan" />
     <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json" is:inline set:html={structured} />
     {UAT_MODE && <meta name="robots" content="noindex, nofollow" />}
     <style is:inline set:html={`:root{${cssVariables()}}`} />
   </head>
