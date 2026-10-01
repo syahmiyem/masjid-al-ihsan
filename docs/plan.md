@@ -1,7 +1,7 @@
 # Masjid Al-Ihsan Website — Project Plan & Source of Truth
 
 **Mosque:** Masjid Al-Ihsan, Felda Sungai (Sg) Panching Selatan, Kuantan, Pahang, Malaysia
-**Document status:** Draft v1.5 — build-first; Phase 0 complete, Phase 1 in progress; to be presented to the committee alongside a working UAT site
+**Document status:** Draft v1.6 — build-first; Phases 0–3 complete (enquiry form deferred); ready for Phase 4 committee presentation; to be presented to the committee alongside a working UAT site
 **Prepared:** 30 September 2026 · **Revised:** 1 October 2026
 **File:** `masjid-al-ihsan-website-plan.md`
 
@@ -1057,13 +1057,21 @@ Durations assume one developer, part-time to full-time. Before the committee pre
 | ~~Build-time image generator~~ — **done in Phase 2** (1 Oct 2026), see 4.4 |
 | ~~"Simpan Gambar" with native file share + download fallback~~ — **done in Phase 2**; still to test on real Android (Chrome) and iPhone (Safari) |
 | JSON-LD (Mosque, Service, LodgingBusiness, Event, BreadcrumbList, FAQPage); sitemap; canonical — generated, but only served as indexable when `UAT_MODE` is off |
-| Optional enquiry form Worker + Turnstile + notification, storing enquiries privately (D-45) |
+| Optional enquiry form Worker + Turnstile + notification, storing enquiries privately (D-45) — **deferred to the committee (Phase 4)**: WhatsApp-first enquiry already works; a form also needs a notification channel (D-77) and Turnstile keys |
 
 **Acceptance criteria:**
 - Images are generated for every month, kuliah and service on each build. Text on images is ≥ 32px at 1080px width, and each image is ≤ 400 KB.
 - Image share works on current Chrome (Android) and Safari (iOS); the download fallback works where file sharing is not supported.
 - Rich Results Test (code-paste mode): no errors on service and event pages.
 - If the form is enabled, an unauthenticated query to the Sanity API returns **no** enquiry documents.
+
+**Status (1 Oct 2026):**
+- ✅ JSON-LD on every page, typed with `schema-dts`: Mosque (`@id` referenced by everything else) + WebSite on all pages; BreadcrumbList on every page except home (built from the URL and page title); Event per activity (status → EventScheduled / Cancelled / Postponed, a postponement with a new date → EventRescheduled with `previousStartDate`; clock times with +08:00, prayer-relative times as dates); EventSeries with upcoming sub-events per kuliah series; Service per service, LodgingBusiness for the homestay (with address, `containedInPlace` the mosque); FAQPage where FAQs exist. `offers` only when a price is published (D-15).
+- ✅ Checked: all required properties present on all 38 pages; schema.org validator: 0 errors, 0 warnings on home, event, kuliah series, service and homestay pages. Google's Rich Results Test to be run on the custom domain at go-live (Phase 6).
+- ✅ Sitemap (`@astrojs/sitemap`): 38 URLs; excludes `/reka-bentuk`, `/gambar/*`, `.ics` files and month pages older than 12 months (D-64). `robots.txt` points to it only when `UAT_MODE` is off.
+- ✅ Share images and Simpan Gambar: done earlier in Phase 2 (4.4).
+- Address for structured data: street from Tetapan Masjid; locality/region/country in `config/site.json`; postcode and map coordinates still Needs confirmation (Q2).
+- Phase 3 complete except the deferred enquiry form.
 
 ### Phase 4 — Committee presentation & UAT (1–2 weeks, committee-paced)
 
@@ -1242,7 +1250,7 @@ Status key: **Decided** (agreed, with date) · **Recommended** (adopt unless obj
 | D-10 | Calendar | Mobile default = weekly-grouped list; month grid as toggle | Recommended | |
 | D-11 | Kuliah | Series + recurrence rules + per-date exceptions | Recommended | |
 | D-12 | Calendar | Store prayer-relative time labels with optional approximate clock time | Recommended | A8; approximate time filled automatically from Waktu Solat data (4.8, Should) |
-| D-13 | Services | WhatsApp-first enquiry with pre-filled message; optional short web form | Recommended (form: Optional) | Q3, Q16 |
+| D-13 | Services | WhatsApp-first enquiry with pre-filled message; optional short web form | WhatsApp: **Built**; form: Needs confirmation | Q3, Q16; form deferred to Phase 4 (needs D-77 and Turnstile) |
 | D-14 | Services | Public "booked dates" list; online payments | Optional | Only with a committed owner; payments later phase |
 | D-15 | Services | Publish exact rates / "bermula dari" / "hubungi kami" | Needs confirmation | Q14 |
 | D-16 | Content | Waktu Solat in the MVP, from JAKIM e-Solat only (never calculated); scheduled fetch → validate → commit; site reads committed data | Recommended | [Confirmed] requirement 1 Oct 2026; Section 4.8 |
@@ -1279,8 +1287,8 @@ Status key: **Decided** (agreed, with date) · **Recommended** (adopt unless obj
 | D-60 | SEO | One page per service with FAQ and local wording | Recommended | |
 | D-61 | SEO | Claim/verify Google Business Profile for the mosque | Recommended | Q6 ownership; start in Phase 4, website link added in Phase 6 |
 | D-62 | SEO | Separate GBP listing for homestay | Needs confirmation | Likely ineligible under Google's rules |
-| D-63 | SEO | JSON-LD: Mosque, Service, LodgingBusiness, Event, BreadcrumbList, FAQPage | Recommended | |
-| D-64 | SEO | Search Console + sitemap; exclude months > 12 months old from sitemap | Recommended | |
+| D-63 | SEO | JSON-LD: Mosque, Service, LodgingBusiness, Event, EventSeries, BreadcrumbList, FAQPage, WebSite | **Built** 1 Oct 2026 | schema.org validator: 0 errors |
+| D-64 | SEO | Search Console + sitemap; exclude months > 12 months old from sitemap | Sitemap **Built**; Search Console at go-live | |
 | D-65 | Analytics | Cookieless analytics (Cloudflare Web Analytics) | Recommended | |
 | D-66 | Social | Link to official WhatsApp Channel / Facebook page | Optional | Q4 |
 | D-70 | Accounts | Institutional ownership, ≥ 2 owners per account | Recommended | Q6; Cloudflare/Sanity institutional from day one (D-73); GitHub from handover (D-75) |

@@ -11,7 +11,8 @@ import { formatDate, monthName } from '../../lib/format';
 import { googleCalendarLink } from '../../lib/ics';
 import { masaLabel } from '../../lib/masa';
 import { calendarLocation, shareActivity } from '../../lib/share';
-import { getAktiviti } from '../../lib/sanity';
+import { getAktiviti, getSettings } from '../../lib/sanity';
+import { activityEvent } from '../../lib/schema';
 import { calendarSources } from '../../lib/site';
 import type { Aktiviti } from '../../lib/types';
 import { prayerDay } from '../../lib/waktu-solat-data';
@@ -98,7 +99,12 @@ const dateText = a
   : '';
 ---
 
-<BaseLayout title={title} description={description} withNav>
+<BaseLayout
+  title={title}
+  description={description}
+  withNav
+  schema={a ? [activityEvent(a, await getSettings(), Astro.site!)] : []}
+>
   {monthData && <MonthView {...monthData} today={src.today} />}
   {a && (
     <article>

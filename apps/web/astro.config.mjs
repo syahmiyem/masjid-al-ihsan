@@ -1,4 +1,5 @@
 // @ts-check
+import sitemap from '@astrojs/sitemap';
 import { defineConfig, envField } from 'astro/config';
 import { resolveSiteUrl } from './site-url.mjs';
 
@@ -6,8 +7,19 @@ import { resolveSiteUrl } from './site-url.mjs';
 // Required in Cloudflare Workers Builds; see site-url.mjs.
 const site = resolveSiteUrl();
 
+// Month pages older than 12 months stay online but leave the sitemap (plan 6.5)
+const cutoff = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().slice(0, 7);
+/** @param {string} page */
+const inSitemap = (page) => {
+  const { pathname } = new URL(page);
+  if (pathname.startsWith('/reka-bentuk') || pathname.startsWith('/gambar/')) return false;
+  const month = pathname.match(/^\/(?:aktiviti|waktu-solat)\/(\d{4}-\d{2})\/?$/)?.[1];
+  return !month || month >= cutoff;
+};
+
 export default defineConfig({
   site,
+  integrations: [sitemap({ filter: inSitemap })],
   output: 'static',
   trailingSlash: 'never',
   build: { format: 'directory' },
