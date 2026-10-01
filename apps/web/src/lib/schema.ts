@@ -138,8 +138,8 @@ export function kuliahSeries(
 }
 
 export function service(s: Perkhidmatan, settings: Settings, site: URL): Service | LodgingBusiness {
-  const url = new URL(`/perkhidmatan/${s.slug}`, site).href;
-  const image = s.gambar?.[0]?.url ?? new URL(`/gambar/perkhidmatan/${s.slug}/og.png`, site).href;
+  const url = new URL(`/khidmat/${s.slug}`, site).href;
+  const image = s.gambar?.[0]?.url ?? new URL(`/gambar/khidmat/${s.slug}/og.png`, site).href;
   const price =
     s.kadar?.jumlah != null && (s.kadar.cara === 'tepat' || s.kadar.cara === 'bermula')
       ? {

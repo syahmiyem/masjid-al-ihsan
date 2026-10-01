@@ -1,7 +1,7 @@
 # Masjid Al-Ihsan Website — Project Plan & Source of Truth
 
 **Mosque:** Masjid Al-Ihsan, Felda Sungai (Sg) Panching Selatan, Kuantan, Pahang, Malaysia
-**Document status:** Draft v1.7 — build-first; Phases 0–3 complete (enquiry form deferred); ready for Phase 4 committee presentation; to be presented to the committee alongside a working UAT site
+**Document status:** Draft v1.8 — build-first; Phases 0–3 complete (enquiry form deferred); ready for Phase 4 committee presentation; to be presented to the committee alongside a working UAT site
 **Prepared:** 30 September 2026 · **Revised:** 1 October 2026
 **File:** `masjid-al-ihsan-website-plan.md`
 
@@ -27,6 +27,7 @@
 | 1.5 | 1 Oct 2026 | **No GitHub Actions** (developer's GitHub account is billing-locked; D-76): build and deploy move to **Cloudflare Workers Builds**; Sanity publish → Workers Builds **deploy hook** (no GitHub token needed); local pre-push checks; build-time Waktu Solat check; scheduled jobs (nightly rebuild, e-Solat check, backups) move to a Cloudflare cron Worker in Phase 2; yearly manual prayer-data sync. |
 | 1.6 | 1 Oct 2026 | **Export to image for all content** brought forward from Phase 3 into Phase 2 (brief: "export selected content as attractive, readable images for WhatsApp and social media"): 10 templates, portrait + WhatsApp Status sizes, per-page link previews, "Simpan Gambar" panel with download + native file share (4.4; D-30, D-31, D-34, D-37). |
 | 1.7 | 1 Oct 2026 | Brand refresh: official colours (navy / cream / gold), Nunito Sans as an open-licence Avenir-style typeface, full-screen menu, gentle site-wide animations (5.4; D-53 – D-56). |
+| 1.8 | 1 Oct 2026 | Renamed sections to Khidmat and Sumbangan (D-57); Studio practice workspace "Latihan" (7.6). |
 
 ---
 
@@ -789,6 +790,7 @@ Note: Sanity's Free plan provides a limited number of permission roles (two), wh
 
 - 60–90 minute hands-on session (in person, on their own phones and a laptop) covering J5/J6 and service edits.
 - **"Panduan Ringkas"** — 2-page Malay PDF with screenshots, plus 5 short screen-recorded videos (≤ 2 min each): Tambah Aktiviti · Batal Kuliah · Tambah Notis · Kemas Kini Perkhidmatan · Muat Naik Gambar.
+- **Two Studio workspaces (built 1 Oct 2026):** "Laman Web Masjid (sebenar)" at `/kandungan` (dataset `production`) and "Latihan (praktis sahaja)" at `/latihan` (dataset `latihan`, pre-loaded with CONTOH content, no webhook — nothing reaches the site). The workspace switcher is at the top left of the Studio.
 - A **practice dataset `latihan`** alongside `production` (Sanity Free allows two datasets). Both are public-read on the Free plan, which is acceptable for published content, but not for enquiries — see D-45. AJK first try the Studio on `latihan` during the UAT presentation (Phase 4).
 - Named "Pentadbir Laman Web" role on the committee; handover checklist in Section 11.5.
 
@@ -1314,6 +1316,7 @@ Status key: **Decided** (agreed, with date) · **Recommended** (adopt unless obj
 | D-54 | Design | Nunito Sans (open licence, Avenir-style) instead of Avenir Next; bold for headings/buttons/menus/images, regular body text | **Decided** 1 Oct 2026 | Avenir Next needs a commercial web + embedding licence; drop-in replacement possible |
 | D-55 | Design | Full-screen menu from the header Menu button | **Decided** 1 Oct 2026 | Keyboard: Escape closes; background inert |
 | D-56 | Design | Smooth, gentle CSS animations site-wide; off under prefers-reduced-motion | **Decided** 1 Oct 2026 | 5.4 |
+| D-57 | Content | Section names: **"Khidmat"** (was Perkhidmatan) and **"Sumbangan"** (was Derma) in all visible text, Studio labels and share images; URLs `/khidmat`, `/sumbangan` with 301 redirects from the old paths. Internal code names unchanged | **Decided** 1 Oct 2026 | |
 | D-74 | Plan | Target go-live date | Needs confirmation | Suggest before Ramadan 1448 (expected early February 2027) to catch the pre-Ramadan traffic spike (A1) |
 
 ---

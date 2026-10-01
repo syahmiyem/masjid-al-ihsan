@@ -1,0 +1,4 @@
+# Section renames (plan D-57): old test-site links keep working
+/perkhidmatan        /khidmat        301
+/perkhidmatan/*      /khidmat/:splat 301
+/derma               /sumbangan      301

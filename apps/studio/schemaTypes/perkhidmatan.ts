@@ -5,7 +5,7 @@ import { arkibField } from './objects/arkib';
 // One service = one SEO page (plan 4.3, D-60). Structured fields only, so layout can't break (plan 7.5).
 export const perkhidmatan = defineType({
   name: 'perkhidmatan',
-  title: 'Perkhidmatan',
+  title: 'Khidmat',
   type: 'document',
   groups: [
     { name: 'utama', title: 'Utama', default: true },
@@ -16,7 +16,7 @@ export const perkhidmatan = defineType({
   fields: [
     defineField({
       name: 'nama',
-      title: 'Nama perkhidmatan',
+      title: 'Nama khidmat',
       description: 'Contoh: Dewan Akad Nikah',
       type: 'string',
       group: 'utama',
@@ -35,7 +35,7 @@ export const perkhidmatan = defineType({
     defineField({
       name: 'ringkasan',
       title: 'Ringkasan satu ayat',
-      description: 'Dipaparkan pada kad perkhidmatan dan hasil carian Google (maksimum 160 aksara).',
+      description: 'Dipaparkan pada kad khidmat dan hasil carian Google (maksimum 160 aksara).',
       type: 'string',
       group: 'utama',
       validation: (rule) => rule.required().max(160),
@@ -151,7 +151,7 @@ export const perkhidmatan = defineType({
     }),
     defineField({
       name: 'whatsapp',
-      title: 'Nombor WhatsApp untuk perkhidmatan ini',
+      title: 'Nombor WhatsApp untuk khidmat ini',
       description: 'Kosongkan untuk menggunakan nombor WhatsApp masjid. Format 60xxxxxxxxx.',
       type: 'string',
       group: 'tempahan',

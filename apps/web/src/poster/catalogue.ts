@@ -317,7 +317,7 @@ async function build(): Promise<Poster[]> {
           : 'Sila hubungi kami';
     const whatsapp = s.whatsapp || settings.whatsapp;
     const item = {
-      kicker: 'Perkhidmatan',
+      kicker: 'Khidmat',
       title: s.nama,
       facts: [...(s.kapasiti ? [['Kapasiti', s.kapasiti]] : []), ['Kadar / Sumbangan', kadar]] as [
         string,
@@ -330,13 +330,13 @@ async function build(): Promise<Poster[]> {
         : 'Maklumat lanjut di laman web masjid',
     };
     for (const f of SHARE)
-      add(out, `/perkhidmatan/${s.slug}`, `perkhidmatan/${s.slug}`, f, [itemPoster(f, info, item)], s.nama);
+      add(out, `/khidmat/${s.slug}`, `khidmat/${s.slug}`, f, [itemPoster(f, info, item)], s.nama);
     add(
       out,
-      `/perkhidmatan/${s.slug}`,
-      `perkhidmatan/${s.slug}`,
+      `/khidmat/${s.slug}`,
+      `khidmat/${s.slug}`,
       'og',
-      [ogPoster(info, 'Perkhidmatan', s.nama, [s.ringkasan])],
+      [ogPoster(info, 'Khidmat', s.nama, [s.ringkasan])],
       s.nama,
     );
   }
@@ -381,7 +381,7 @@ async function build(): Promise<Poster[]> {
     }
   }
 
-  // Derma
+  // Sumbangan (formerly Derma)
   const derma = dermaConfig as DermaConfig;
   const qrFiles = import.meta.glob<string>('../../../../config/derma/*.png', {
     query: '?inline',
@@ -393,8 +393,8 @@ async function build(): Promise<Poster[]> {
   for (const f of SHARE) {
     add(
       out,
-      '/derma',
-      'derma',
+      '/sumbangan',
+      'sumbangan',
       f,
       [
         dermaPoster(f, info, {
@@ -405,7 +405,7 @@ async function build(): Promise<Poster[]> {
           accountNumber: groupDigits(derma.accountNumber),
         }),
       ],
-      'Derma untuk Masjid',
+      'Sumbangan untuk Masjid',
     );
   }
 

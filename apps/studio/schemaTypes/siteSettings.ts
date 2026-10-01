@@ -1,7 +1,7 @@
 import { defineField, defineType } from 'sanity';
 
 // Singleton: mosque identity and contact details (plan 7.2, "Tetapan Masjid" — Pentadbir only).
-// Waktu Solat and Derma are deliberately NOT here (plan 4.8, 4.9).
+// Waktu Solat and Sumbangan (donation details) are deliberately NOT here (plan 4.8, 4.9).
 export const siteSettings = defineType({
   name: 'siteSettings',
   title: 'Tetapan Masjid',

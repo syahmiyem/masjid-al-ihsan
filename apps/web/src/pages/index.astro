@@ -1,5 +1,5 @@
 ---
-// Home page (plan 3.3): notices → Waktu Solat → Minggu Ini → buttons → services → derma → contact.
+// Home page (plan 3.3): notices → Waktu Solat → Minggu Ini → buttons → services → sumbangan → contact.
 import { BookOpen, CalendarDays, HandHeart, MapPin } from '@lucide/astro';
 import ContactBlock from '../components/ContactBlock.astro';
 import EventItem from '../components/ui/EventItem.astro';
@@ -26,7 +26,7 @@ const todayPrayers = prayerDay(now.date);
 
 <BaseLayout
   title="Masjid Al-Ihsan Felda Sg Panching Selatan, Kuantan"
-  description="Jadual kuliah, aktiviti bulanan, waktu solat dan perkhidmatan Masjid Al-Ihsan, Felda Sungai Panching Selatan, Kuantan, Pahang."
+  description="Jadual kuliah, aktiviti bulanan, waktu solat dan khidmat Masjid Al-Ihsan, Felda Sungai Panching Selatan, Kuantan, Pahang."
   withNav
 >
   <h1>Masjid Al-Ihsan</h1>
@@ -80,19 +80,19 @@ const todayPrayers = prayerDay(now.date);
 
   {services.length > 0 && (
     <>
-      <h2>Perkhidmatan</h2>
+      <h2>Khidmat</h2>
       <div class="stack">
         {services.map((s) => (
-          <ServiceCard name={s.nama} summary={s.ringkasan} href={`/perkhidmatan/${s.slug}`} />
+          <ServiceCard name={s.nama} summary={s.ringkasan} href={`/khidmat/${s.slug}`} />
         ))}
       </div>
     </>
   )}
 
-  <h2>Derma untuk Masjid</h2>
+  <h2>Sumbangan untuk Masjid</h2>
   <p>Sumbangan anda membantu kos operasi dan program masjid.</p>
-  <a class="btn btn-secondary" href="/derma">
-    <HandHeart size={22} aria-hidden="true" /> Cara Menderma
+  <a class="btn btn-secondary" href="/sumbangan">
+    <HandHeart size={22} aria-hidden="true" /> Cara Menyumbang
   </a>
 
   <ContactBlock settings={settings} />
