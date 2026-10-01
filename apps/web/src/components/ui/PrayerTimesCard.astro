@@ -104,6 +104,9 @@ const days = [day, prayerDay(addDays(day.date, 1)), prayerDay(addDays(day.date, 
 </script>
 
 <style>
+  .prayer {
+    border-top: 5px solid var(--c-primary);
+  }
   .prayer h2 {
     margin: 0 0 0.25rem;
   }
@@ -134,11 +137,18 @@ const days = [day, prayerDay(addDays(day.date, 1)), prayerDay(addDays(day.date, 
   }
   tr.upcoming th,
   tr.upcoming td {
-    background: var(--c-primary-soft);
+    background: var(--c-accent);
+    color: var(--c-primary);
     font-weight: 700;
   }
   tr.upcoming th {
-    box-shadow: inset 4px 0 0 var(--c-primary);
+    box-shadow: inset 5px 0 0 var(--c-primary);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    th,
+    td {
+      transition: background-color var(--med) var(--ease);
+    }
   }
   .source {
     margin: 0.75rem 0 0;

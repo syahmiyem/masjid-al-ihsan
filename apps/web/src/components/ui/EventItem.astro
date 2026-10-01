@@ -22,7 +22,7 @@ const months = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogo', 'Sep', '
 const past = status === 'berlangsung';
 ---
 
-<article class:list={['event', { past, cancelled: status === 'dibatalkan' }]}>
+<article class:list={['event', 'reveal', { past, cancelled: status === 'dibatalkan' }]}>
   <div class="date" aria-hidden="true">
     <span class="day">{dayName(date)}</span>
     <span class="num">{Number(d)}</span>

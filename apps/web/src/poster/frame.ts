@@ -34,7 +34,7 @@ export function frame(
   const { width, height } = FORMATS[format];
   return h(
     'div',
-    { width, height, flexDirection: 'column', background: c.bg, color: c.text, fontFamily: 'Atkinson' },
+    { width, height, flexDirection: 'column', background: c.bg, color: c.text, fontFamily: 'Nunito Sans' },
     info.uat &&
       h(
         'div',
@@ -55,6 +55,7 @@ export function frame(
       {
         height: HEADER,
         background: c.primary,
+        borderBottom: `6px solid ${c.accent}`,
         color: c.onPrimary,
         flexDirection: 'column',
         justifyContent: 'center',
@@ -72,7 +73,7 @@ export function frame(
         padding: `0 ${PAD}px`,
         borderBottom: `3px solid ${c.primary}`,
       },
-      h('div', { fontSize: 56, fontWeight: 700, lineHeight: 1.1 }, title),
+      h('div', { fontSize: 56, fontWeight: 700, lineHeight: 1.1, color: c.primary }, title),
       subtitle ? h('div', { fontSize: 34, color: c.textMuted, marginTop: 8 }, subtitle) : null,
     ),
     // overflow hidden: an over-long body is cut off rather than pushing the footer off the image

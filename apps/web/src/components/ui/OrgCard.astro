@@ -8,7 +8,7 @@ interface Props {
 const { position, name, vacant = false } = Astro.props;
 ---
 
-<div class:list={['org card', { vacant }]}>
+<div class:list={['org card reveal', { vacant }]}>
   <span class="position">{position}</span>
   <span class="name">{vacant ? 'Jawatan kosong' : name}</span>
 </div>

@@ -10,7 +10,7 @@ interface Props {
 const { name, summary, href } = Astro.props;
 ---
 
-<a class="service card" href={href}>
+<a class="service card reveal" href={href}>
   <span class="text">
     <span class="name">{name}</span>
     <span class="summary">{summary}</span>
@@ -29,7 +29,18 @@ const { name, summary, href } = Astro.props;
   }
   .service:hover {
     border-color: var(--c-primary);
-    box-shadow: inset 0 0 0 1px var(--c-primary);
+    box-shadow: inset 4px 0 0 var(--c-accent);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .service {
+      transition:
+        box-shadow var(--med) var(--ease),
+        border-color var(--med) var(--ease),
+        transform var(--med) var(--ease);
+    }
+    .service:hover {
+      transform: translateY(-2px);
+    }
   }
   .text {
     display: flex;

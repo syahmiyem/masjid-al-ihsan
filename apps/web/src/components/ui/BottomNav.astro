@@ -21,6 +21,7 @@ const path = Astro.url.pathname;
 
 <style>
   .bottom-nav {
+    view-transition-name: bottom-nav; /* stays put during page transitions */
     position: fixed;
     inset: auto 0 0 0;
     z-index: 40;
@@ -49,6 +50,7 @@ const path = Astro.url.pathname;
     color: var(--c-text);
     text-decoration: none;
     font-size: 1rem;
+    font-weight: 400; /* only the current tab is bold, so four labels fit on narrow phones */
     line-height: 1.2;
   }
   a[aria-current='page'] {
@@ -58,7 +60,7 @@ const path = Astro.url.pathname;
   }
   /* Too narrow for the text size (e.g. 320px phone with the largest system font): 2 × 2 grid,
      icon beside label, rather than breaking words. Em-based so it follows the user's font size. */
-  @media (max-width: 19.5em) {
+  @media (max-width: 20.5em) {
     ul {
       display: grid;
       grid-template-columns: 1fr 1fr;
