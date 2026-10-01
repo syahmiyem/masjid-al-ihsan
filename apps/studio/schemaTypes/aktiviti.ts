@@ -31,12 +31,17 @@ export const aktiviti = defineType({
       title: 'Tarikh',
       type: 'date',
       options: { dateFormat: 'D MMMM YYYY' },
-      validation: (rule) =>
-        rule.required().custom((value) => {
-          if (!value) return true;
-          const today = new Date().toISOString().slice(0, 10);
-          return value >= today || { message: 'Tarikh ini telah berlalu.', level: 'warning' as const };
-        }),
+      validation: (rule) => [
+        rule.required(),
+        // A warning only: past activities may still be recorded or corrected
+        rule
+          .custom((value) => {
+            if (!value) return true;
+            const today = new Date().toISOString().slice(0, 10);
+            return value >= today || 'Tarikh ini telah berlalu.';
+          })
+          .warning(),
+      ],
     }),
     defineField({
       name: 'tarikhTamat',
