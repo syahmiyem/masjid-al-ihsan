@@ -1,7 +1,7 @@
 # Masjid Al-Ihsan Website — Project Plan & Source of Truth
 
 **Mosque:** Masjid Al-Ihsan, Felda Sungai (Sg) Panching Selatan, Kuantan, Pahang, Malaysia
-**Document status:** Draft v1.6 — build-first; Phases 0–3 complete (enquiry form deferred); ready for Phase 4 committee presentation; to be presented to the committee alongside a working UAT site
+**Document status:** Draft v1.7 — build-first; Phases 0–3 complete (enquiry form deferred); ready for Phase 4 committee presentation; to be presented to the committee alongside a working UAT site
 **Prepared:** 30 September 2026 · **Revised:** 1 October 2026
 **File:** `masjid-al-ihsan-website-plan.md`
 
@@ -26,6 +26,7 @@
 | 1.4 | 1 Oct 2026 | Phase 0 findings built in: repo now lives at `docs/plan.md` (this file is the SSOT); e-Solat returns 8 daily times (incl. Dhuha) and next year's data only once JAKIM publishes it; content backups go to a private **R2 bucket** (not a private repo); branch-protection settings made explicit; Studio UI language limitation (D-29). Phase 0 status added. |
 | 1.5 | 1 Oct 2026 | **No GitHub Actions** (developer's GitHub account is billing-locked; D-76): build and deploy move to **Cloudflare Workers Builds**; Sanity publish → Workers Builds **deploy hook** (no GitHub token needed); local pre-push checks; build-time Waktu Solat check; scheduled jobs (nightly rebuild, e-Solat check, backups) move to a Cloudflare cron Worker in Phase 2; yearly manual prayer-data sync. |
 | 1.6 | 1 Oct 2026 | **Export to image for all content** brought forward from Phase 3 into Phase 2 (brief: "export selected content as attractive, readable images for WhatsApp and social media"): 10 templates, portrait + WhatsApp Status sizes, per-page link previews, "Simpan Gambar" panel with download + native file share (4.4; D-30, D-31, D-34, D-37). |
+| 1.7 | 1 Oct 2026 | Brand refresh: official colours (navy / cream / gold), Nunito Sans as an open-licence Avenir-style typeface, full-screen menu, gentle site-wide animations (5.4; D-53 – D-56). |
 
 ---
 
@@ -608,16 +609,21 @@ There is **no formal standard called "WCAG Elderly."** The term usually refers t
 - **Optional text-size control (C):** browsers already provide zoom; a site-level "A A+" toggle is Optional and must not replace proper responsive design.
 - **Dark mode (C):** not necessary; if added, keep contrast ≥ 7:1.
 
-### 5.4 Design system basics (starting point for the designer)
+### 5.4 Design system basics
 
-| Token | Value (starting proposal) |
+Revised 1 Oct 2026 to the mosque's official identity (D-53 – D-56). Single source: `apps/web/src/design/tokens.ts`; every colour pair is tested automatically (`contrast.test.ts`).
+
+| Token | Value |
 |---|---|
-| Font | A highly legible sans-serif with full Latin + Malay coverage (e.g. *Atkinson Hyperlegible* or *Inter*/*Noto Sans*); self-hosted, subset, ≤ 2 weights |
+| Brand colours (D-53) | **Navy `#172061`** (primary: header, headings, links, primary buttons), **Cream `#FDF1D3`** (secondary buttons, active tab, text on navy), **Gold `#FFD38B`** (Menu button, next-prayer highlight, accents, focus halo). Derived tints: card surface `#FFF9EC`, hover navy `#0E1440`, border `#7A7F99`. Status colours unchanged (red / amber / blue, always with words). |
+| Contrast | All 24 pairs pass: text ≥ 7:1 (AAA), borders and focus rings ≥ 3:1. E.g. white on navy and navy on cream/gold are all above 7:1. |
+| Typeface (D-54) | **Nunito Sans** (open licence, Avenir-style geometric sans), self-hosted Latin subset, 400 + 700. Bold for headings, buttons, menus, links and share images (matching the mosque's Avenir Next Bold documents); regular for running text, for readability. **Avenir Next** itself is commercial (Monotype): it can be swapped in by replacing the two font files once a web + image-embedding licence is bought. |
 | Base size | 18px (1.125rem); small text never below 16px |
-| Colours | Deep green or teal primary on white/near-white; text near-black (#1a1a1a); status colours red/amber/green each paired with a text label; all pairs checked for contrast |
-| Radius / spacing | 8px radius; 8px spacing scale |
+| Radius / spacing | 10px radius; 8px spacing scale |
 | Touch targets | Min 44×44px, 8px gap |
-| Icons | Simple outline icons always with text labels |
+| Icons | Simple outline icons always with text labels; gold on navy in the menu |
+| Menu (D-55) | Gold "Menu" pill in the header (same position); opens a **full-screen navy menu** with large cream links; the button becomes "✕ Tutup". Works without JavaScript (`<details>`); with it, Escape closes, the page behind is inert (focus stays in the menu) and doesn't scroll. |
+| Motion (D-56) | CSS only, no library: page crossfade (View Transitions), content settling in on load, cards fading up as they scroll into view, smooth opening panels, menu reveal with staggered links, gentle button feedback. 150–350 ms, small movements, nothing that flashes or loops. **Completely off when the device asks for reduced motion** (WCAG 2.3.3). Browsers without support show the page normally. |
 
 ### 5.5 Performance budget (mobile-first)
 
@@ -1304,6 +1310,10 @@ Status key: **Decided** (agreed, with date) · **Recommended** (adopt unless obj
 | D-85 | Waktu Solat | Mosque-specific iqamah times | Optional | Q35; would need a CMS field and an owner |
 | D-76 | Tech | CI/CD on Cloudflare Workers Builds instead of GitHub Actions; local pre-push checks; scheduled jobs in a Cloudflare cron Worker | **Decided** 1 Oct 2026 | Developer's GitHub account billing-locked; also keeps all automation in the mosque's Cloudflare account |
 | D-77 | Ops | Where scheduler alerts go before the domain exists (e.g. Discord/Telegram webhook, or Worker logs only); email via Cloudflare Email Routing after go-live | Needs confirmation | README → Scheduler Worker |
+| D-53 | Design | Official colours navy #172061, cream #FDF1D3, gold #FFD38B across site and share images | **Decided** 1 Oct 2026 | 5.4; all contrast pairs tested |
+| D-54 | Design | Nunito Sans (open licence, Avenir-style) instead of Avenir Next; bold for headings/buttons/menus/images, regular body text | **Decided** 1 Oct 2026 | Avenir Next needs a commercial web + embedding licence; drop-in replacement possible |
+| D-55 | Design | Full-screen menu from the header Menu button | **Decided** 1 Oct 2026 | Keyboard: Escape closes; background inert |
+| D-56 | Design | Smooth, gentle CSS animations site-wide; off under prefers-reduced-motion | **Decided** 1 Oct 2026 | 5.4 |
 | D-74 | Plan | Target go-live date | Needs confirmation | Suggest before Ramadan 1448 (expected early February 2027) to catch the pre-Ramadan traffic spike (A1) |
 
 ---

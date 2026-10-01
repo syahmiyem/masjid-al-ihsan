@@ -1,7 +1,10 @@
-/* Global styles (plan 5.3–5.4). Colours come from design/tokens.ts as --c-* custom properties. */
+/* Global styles (plan 5.3–5.4). Colours come from design/tokens.ts as --c-* custom properties.
+   Brand (D-53): navy #172061, cream #FDF1D3, gold #FFD38B. Typeface (D-54): Nunito Sans — an open-licence
+   Avenir-style face; bold for headings, buttons and menus, regular for running text. Motion (D-56): CSS only,
+   gentle, and fully off under prefers-reduced-motion. */
 :root {
-  --font: 'Atkinson Hyperlegible Next', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --radius: 8px;
+  --font: 'Nunito Sans', 'Avenir Next', Avenir, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --radius: 10px;
   --s1: 0.5rem;
   --s2: 1rem;
   --s3: 1.5rem;
@@ -9,6 +12,9 @@
   --tap: 44px;
   --measure: 40rem;
   --nav-h: 4.25rem;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --fast: 160ms;
+  --med: 280ms;
   color-scheme: light;
   font-size: 112.5%; /* 18px base (D-51) */
 }
@@ -36,15 +42,17 @@ body {
 h1,
 h2,
 h3 {
-  line-height: 1.25;
+  line-height: 1.2;
   font-weight: 700;
+  color: var(--c-primary);
   margin: 0 0 var(--s2);
+  letter-spacing: -0.01em;
 }
 h1 {
-  font-size: 1.75rem;
+  font-size: 1.85rem;
 }
 h2 {
-  font-size: 1.375rem;
+  font-size: 1.4rem;
   margin-top: var(--s4);
 }
 h3 {
@@ -54,6 +62,10 @@ p {
   margin: 0 0 var(--s2);
   max-width: 65ch;
 }
+strong,
+b {
+  font-weight: 700;
+}
 small,
 .muted {
   color: var(--c-text-muted);
@@ -62,7 +74,9 @@ small,
 
 a {
   color: var(--c-primary);
-  text-underline-offset: 0.15em;
+  font-weight: 700;
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 0.08em;
 }
 
 :focus-visible {
@@ -122,7 +136,7 @@ img {
   color: var(--c-primary);
 }
 .btn-secondary:hover {
-  background: var(--c-bg);
+  background: var(--c-accent);
 }
 .btn-block {
   display: flex;
@@ -174,9 +188,108 @@ img {
 }
 
 /* Matches the 2 × 2 bottom bar in BottomNav.astro */
-@media (max-width: 19.5em) {
+@media (max-width: 20.5em) {
   :root {
     --nav-h: 6.25rem;
+  }
+}
+
+/* ── Motion (D-56) ─────────────────────────────────────────────────────────────────────────────
+   Everything below only runs when the visitor hasn't asked their device to reduce motion. */
+@media (prefers-reduced-motion: no-preference) {
+  /* Page-to-page crossfade (cross-document View Transitions; browsers without support just load the page) */
+  @view-transition {
+    navigation: auto;
+  }
+  ::view-transition-old(root) {
+    animation: 180ms var(--ease) both vt-fade-out;
+  }
+  ::view-transition-new(root) {
+    animation: 320ms var(--ease) both vt-fade-in;
+  }
+
+  /* Interactive feedback */
+  a,
+  .btn,
+  summary {
+    transition:
+      background-color var(--fast) var(--ease),
+      color var(--fast) var(--ease),
+      border-color var(--fast) var(--ease),
+      box-shadow var(--fast) var(--ease),
+      transform var(--fast) var(--ease);
+  }
+  .btn:active {
+    transform: scale(0.97);
+  }
+
+  /* Page content settles in on load */
+  main > * {
+    animation: rise var(--med) var(--ease) both;
+  }
+  main > *:nth-child(2) {
+    animation-delay: 40ms;
+  }
+  main > *:nth-child(3) {
+    animation-delay: 80ms;
+  }
+  main > *:nth-child(n + 4) {
+    animation-delay: 110ms;
+  }
+
+  /* Cards and list rows fade up as they scroll into view (scroll-driven; ignored where unsupported) */
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: rise linear both;
+    }
+    /* Separate, more specific rule: the minifier would otherwise fold the timeline into the
+       'animation' shorthand, which browsers reject (dropping the whole rule) */
+    html .reveal {
+      animation-timeline: view();
+      animation-range: entry 0% entry 35%;
+    }
+  }
+
+  /* <details> panels (Simpan Gambar, calendar, FAQ) open smoothly where supported */
+  @supports (interpolate-size: allow-keywords) {
+    :root {
+      interpolate-size: allow-keywords;
+    }
+    details::details-content {
+      block-size: 0;
+      overflow: clip;
+      opacity: 0;
+      transition:
+        block-size var(--med) var(--ease),
+        opacity var(--med) var(--ease),
+        content-visibility var(--med) allow-discrete;
+    }
+    details[open]::details-content {
+      block-size: auto;
+      opacity: 1;
+    }
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes vt-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@keyframes vt-fade-out {
+  to {
+    opacity: 0;
   }
 }
 

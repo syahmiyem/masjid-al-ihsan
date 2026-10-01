@@ -228,7 +228,7 @@ export function ogPoster(info: FrameInfo, kicker: string, title: string, lines: 
       flexDirection: 'column',
       background: c.primary,
       color: c.onPrimary,
-      fontFamily: 'Atkinson',
+      fontFamily: 'Nunito Sans',
     },
     info.uat &&
       h(

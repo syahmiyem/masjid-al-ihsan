@@ -1,6 +1,6 @@
 ---
-import '@fontsource/atkinson-hyperlegible-next/latin-400.css';
-import '@fontsource/atkinson-hyperlegible-next/latin-700.css';
+import '@fontsource/nunito-sans/latin-400.css';
+import '@fontsource/nunito-sans/latin-700.css';
 import { UAT_MODE } from 'astro:env/server';
 import BottomNav from '../components/ui/BottomNav.astro';
 import SiteFooter from '../components/ui/SiteFooter.astro';
@@ -65,6 +65,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#172061" />
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
     <link rel="canonical" href={canonical} />
