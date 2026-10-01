@@ -46,14 +46,13 @@ export const perkhidmatan = defineType({
       type: 'array',
       of: [defineArrayMember({ type: 'gambar' })],
       group: 'utama',
-      validation: (rule) =>
+      validation: (rule) => [
+        rule.max(8),
+        // A warning only: fewer photos are allowed, just not recommended
         rule
-          .max(8)
-          .custom((value) =>
-            !value || value.length >= 3
-              ? true
-              : { message: 'Disyorkan sekurang-kurangnya 3 gambar.', level: 'warning' as const },
-          ),
+          .custom((value) => (!value || value.length >= 3 ? true : 'Disyorkan sekurang-kurangnya 3 gambar.'))
+          .warning(),
+      ],
     }),
     defineField({
       name: 'susunan',
