@@ -469,6 +469,13 @@
         "name": "notaPerubahan",
         "type": "string",
         "title": "Nota perubahan"
+      },
+      {
+        "initialValue": false,
+        "description": "Gunakan ini dan bukannya memadam. Item akan hilang dari laman web tetapi boleh dipulihkan dari senarai \"Arkib\".",
+        "name": "diarkibkan",
+        "type": "boolean",
+        "title": "Arkibkan (sembunyikan daripada laman web)"
       }
     ],
     "name": "aktiviti",
@@ -775,6 +782,13 @@
         "rows": 3,
         "name": "penerangan",
         "type": "text"
+      },
+      {
+        "initialValue": false,
+        "description": "Gunakan ini dan bukannya memadam. Item akan hilang dari laman web tetapi boleh dipulihkan dari senarai \"Arkib\".",
+        "name": "diarkibkan",
+        "type": "boolean",
+        "title": "Arkibkan (sembunyikan daripada laman web)"
       }
     ],
     "name": "kuliahSiri",
@@ -954,6 +968,13 @@
         "name": "sebab",
         "type": "string",
         "title": "Sebab / nota untuk jemaah"
+      },
+      {
+        "initialValue": false,
+        "description": "Gunakan ini dan bukannya memadam. Item akan hilang dari laman web tetapi boleh dipulihkan dari senarai \"Arkib\".",
+        "name": "diarkibkan",
+        "type": "boolean",
+        "title": "Arkibkan (sembunyikan daripada laman web)"
       }
     ],
     "name": "kuliahPerubahan",
@@ -1061,6 +1082,13 @@
         "name": "pautan",
         "type": "string",
         "title": "Pautan (pilihan)"
+      },
+      {
+        "initialValue": false,
+        "description": "Gunakan ini dan bukannya memadam. Item akan hilang dari laman web tetapi boleh dipulihkan dari senarai \"Arkib\".",
+        "name": "diarkibkan",
+        "type": "boolean",
+        "title": "Arkibkan (sembunyikan daripada laman web)"
       }
     ],
     "name": "notis",
@@ -1380,6 +1408,13 @@
         "name": "soalanLazim",
         "type": "array",
         "title": "Soalan lazim"
+      },
+      {
+        "initialValue": false,
+        "description": "Gunakan ini dan bukannya memadam. Item akan hilang dari laman web tetapi boleh dipulihkan dari senarai \"Arkib\".",
+        "name": "diarkibkan",
+        "type": "boolean",
+        "title": "Arkibkan (sembunyikan daripada laman web)"
       }
     ],
     "name": "perkhidmatan",
@@ -1514,6 +1549,13 @@
         "name": "susunan",
         "type": "number",
         "title": "Susunan dalam kumpulan"
+      },
+      {
+        "initialValue": false,
+        "description": "Gunakan ini dan bukannya memadam. Item akan hilang dari laman web tetapi boleh dipulihkan dari senarai \"Arkib\".",
+        "name": "diarkibkan",
+        "type": "boolean",
+        "title": "Arkibkan (sembunyikan daripada laman web)"
       }
     ],
     "name": "jawatan",

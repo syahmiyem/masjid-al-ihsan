@@ -115,10 +115,35 @@ Source: JAKIM e-Solat, zone set in `config/site.json` (`PHG02`). The site reads 
 - **Every December:** run `pnpm waktu-solat:sync` once JAKIM publishes next year's data, and merge the PR.
   Builds in December print a warning until the file exists.
 
-## Scheduled jobs (Phase 2, not built yet)
+## Scheduler Worker (`workers/jadual`)
 
-A small Cloudflare Worker with cron triggers (`workers/jadual`) will replace the scheduled GitHub workflows:
+A small Cloudflare Worker with cron triggers (plan D-76). It has no public URL.
 
-- nightly rebuild at 00:05 MYT (calls the deploy hook)
-- weekly e-Solat check (alerts if JAKIM's data differs from the committed data)
-- weekly Sanity export to a private R2 bucket
+| When (MYT)   | What                                                                                                           |
+| ------------ | -------------------------------------------------------------------------------------------------------------- |
+| 00:05 daily  | Calls the `sanity-publish` deploy hook, so "today", "Minggu Ini", expired notices and share images update      |
+| 04:00 Monday | Compares JAKIM e-Solat (this year and next) with the committed data; alerts if they differ or next year is out |
+| 03:00 Sunday | Exports the Sanity dataset to the private R2 bucket (once R2 is set up)                                        |
+
+Try it locally: `pnpm --filter jadual dev`, then open `http://localhost:8787/__scheduled?cron=5+16+*+*+*`.
+
+### One-time setup (Cloudflare dashboard)
+
+1. **Workers & Pages → Create application → Import a repository** → the same GitHub repo, with:
+
+   | Setting        | Value                            |
+   | -------------- | -------------------------------- |
+   | Worker name    | `masjid-al-ihsan-jadual`         |
+   | Root directory | `workers/jadual`                 |
+   | Build command  | `pnpm install --frozen-lockfile` |
+   | Deploy command | `pnpm exec wrangler deploy`      |
+
+   Turn off builds for non-production branches for this Worker.
+
+2. **masjid-al-ihsan-jadual → Settings → Variables and Secrets** (these are runtime secrets, not build variables):
+   - `DEPLOY_HOOK_URL` (Secret): the `sanity-publish` deploy hook URL from the main Worker.
+   - `ALERT_WEBHOOK_URL` (Secret, optional): where alerts go, e.g. a Discord channel webhook. Alerts always
+     appear in the Worker's **Logs** as well.
+   - `SANITY_READ_TOKEN` (Secret, optional): a Sanity _Viewer_ token, so backups include private documents.
+3. **Backups (optional, later):** enable R2, create the private bucket `masjid-al-ihsan-backups`, add a lifecycle
+   rule (delete after 90 days), then uncomment `r2_buckets` in `workers/jadual/wrangler.jsonc`.

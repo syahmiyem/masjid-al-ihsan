@@ -1046,7 +1046,8 @@ Durations assume one developer, part-time to full-time. Before the committee pre
 - ✅ **Export to image (all content)** — see 4.4: 103 images per build (largest 265 KB), "Simpan Gambar" on every main page (two previews per row, Muat Turun + Kongsi), per-page link previews for activities, kuliah series and services. axe 0 violations and no overflow with the panel open.
 - ✅ Live "Seterusnya": the Waktu Solat card embeds today + the next two days and updates every minute (next prayer highlight, "Subuh esok" after Isyak, switches day after midnight — Jumaat label included) without a rebuild. All JavaScript on the home page: 1.8 KB gzipped.
 - ✅ Studio safety (plan 7.5, D-26): published URLs are **locked** (shown read-only with an explanation; a Pentadbir can unlock); **archive instead of delete** — an "Arkibkan" switch on activities, kuliah series and changes, services, org positions and notices hides the item from the website and moves it to an "Arkib" list; only a Pentadbir (administrator) sees Delete. Ordering stays a number field (no dragging needed — WCAG 2.5.7).
-- ⏳ Remaining Phase 2: scheduler Worker (nightly rebuild, weekly e-Solat check, weekly backups).
+- ✅ Scheduler Worker `workers/jadual` built and tested locally: nightly 00:05 MYT deploy-hook call; weekly e-Solat comparison for this year and next (reuses the sync script's parser/validator; reads the committed copy back from the repo; tested live: 2026 identical, 2027 not yet published); weekly Sanity export to R2 when bound. Alerts → optional `ALERT_WEBHOOK_URL` + Worker logs.
+- ⏳ To deploy (needs the mosque's Cloudflare account): connect `workers/jadual` as a second Workers Builds project, set `DEPLOY_HOOK_URL`; decide the alert channel (D-77); enable R2 for backups (may require a payment method on the Cloudflare account even within the free tier).
 
 ### Phase 3 — Share images & technical SEO on UAT (1–2 weeks)
 
@@ -1293,6 +1294,7 @@ Status key: **Decided** (agreed, with date) · **Recommended** (adopt unless obj
 | D-84 | Derma | Separate tabung/accounts shown separately | Needs confirmation | Q29 |
 | D-85 | Waktu Solat | Mosque-specific iqamah times | Optional | Q35; would need a CMS field and an owner |
 | D-76 | Tech | CI/CD on Cloudflare Workers Builds instead of GitHub Actions; local pre-push checks; scheduled jobs in a Cloudflare cron Worker | **Decided** 1 Oct 2026 | Developer's GitHub account billing-locked; also keeps all automation in the mosque's Cloudflare account |
+| D-77 | Ops | Where scheduler alerts go before the domain exists (e.g. Discord/Telegram webhook, or Worker logs only); email via Cloudflare Email Routing after go-live | Needs confirmation | README → Scheduler Worker |
 | D-74 | Plan | Target go-live date | Needs confirmation | Suggest before Ramadan 1448 (expected early February 2027) to catch the pre-Ramadan traffic spike (A1) |
 
 ---

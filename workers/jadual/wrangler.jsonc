@@ -1,0 +1,27 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  // Scheduler (docs/plan.md D-76): nightly rebuild, weekly e-Solat check, weekly Sanity backup.
+  // No public URL: it only runs on its cron triggers.
+  "name": "masjid-al-ihsan-jadual",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-30",
+  "workers_dev": false,
+  "preview_urls": false,
+  "triggers": {
+    "crons": [
+      "5 16 * * *", // 00:05 MYT daily — rebuild the site
+      "0 20 * * 0", // 04:00 MYT Monday — compare JAKIM e-Solat with committed data
+      "0 19 * * 6", //  03:00 MYT Sunday — export Sanity to R2
+    ],
+  },
+  "vars": {
+    "PRAYER_ZONE": "PHG02",
+    "SANITY_PROJECT_ID": "1xd617ey",
+    "SANITY_DATASET": "production",
+    // Committed prayer data, read back to compare with e-Solat (update if the repo moves at handover)
+    "DATA_BASE_URL": "https://raw.githubusercontent.com/syahmiyem/masjid-al-ihsan/main/data/waktu-solat",
+  },
+  // Uncomment once R2 is enabled and the bucket exists (README → Scheduler):
+  // "r2_buckets": [{ "binding": "BACKUPS", "bucket_name": "masjid-al-ihsan-backups" }],
+  "observability": { "enabled": true },
+}
