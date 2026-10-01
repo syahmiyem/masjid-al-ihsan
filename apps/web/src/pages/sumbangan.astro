@@ -1,5 +1,5 @@
 ---
-// Derma (plan 4.9, D-80): display-only bank details + DuitNow QR. Details come from config/derma/ in Git
+// Sumbangan (formerly "Derma"; plan 4.9, D-80, D-57): display-only bank details + DuitNow QR. Details come from config/derma/ in Git
 // (two-person review), never from the CMS. The build fails if the QR doesn't match (scripts/check-derma.ts).
 import ShareBar from '../components/ShareBar.astro';
 import { sharePage } from '../lib/share';
@@ -17,11 +17,11 @@ const settings = await getSettings();
 ---
 
 <BaseLayout
-  title="Derma untuk Masjid Al-Ihsan – Akaun Bank & DuitNow QR"
-  description="Cara menderma kepada Masjid Al-Ihsan, Felda Sungai Panching Selatan, Kuantan melalui akaun bank rasmi atau DuitNow QR."
+  title="Sumbangan untuk Masjid Al-Ihsan – Akaun Bank & DuitNow QR"
+  description="Cara menyumbang kepada Masjid Al-Ihsan, Felda Sungai Panching Selatan, Kuantan melalui akaun bank rasmi atau DuitNow QR."
   withNav
 >
-  <h1>Derma untuk Masjid</h1>
+  <h1>Sumbangan untuk Masjid</h1>
   <p>
     Sumbangan anda membantu kos operasi masjid dan program untuk jemaah. Semoga Allah membalas kebaikan anda.
   </p>
@@ -95,7 +95,7 @@ const settings = await getSettings();
   </p>
   <ShareBar
     url={new URL(Astro.url.pathname, Astro.site).href}
-    message={sharePage('Derma untuk Masjid Al-Ihsan')}
+    message={sharePage('Sumbangan untuk Masjid Al-Ihsan')}
   />
 </BaseLayout>
 

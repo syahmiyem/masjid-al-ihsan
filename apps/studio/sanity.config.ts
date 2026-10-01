@@ -1,18 +1,13 @@
-import { defineConfig } from 'sanity';
+import { defineConfig, type WorkspaceOptions } from 'sanity';
 import { structureTool } from 'sanity/structure';
 import { SINGLETONS, schemaTypes } from './schemaTypes';
 import { structure } from './structure';
 
 // Project ID is public (it appears in every API request), so it is the default here.
-// Override with SANITY_STUDIO_PROJECT_ID / SANITY_STUDIO_DATASET, e.g. to use the "latihan" dataset.
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID || '1xd617ey';
-const dataset = process.env.SANITY_STUDIO_DATASET || 'production';
 
-export default defineConfig({
-  name: 'default',
-  title: 'Masjid Al-Ihsan — Pentadbiran',
+const shared: Omit<WorkspaceOptions, 'name' | 'title' | 'basePath' | 'dataset'> = {
   projectId,
-  dataset,
   plugins: [structureTool({ title: 'Kandungan', structure })],
   schema: {
     types: schemaTypes,
@@ -32,4 +27,25 @@ export default defineConfig({
       return isAdmin ? actions : actions.filter(({ action }) => action !== 'delete');
     },
   },
-});
+};
+
+// Two workspaces (plan 7.6): the real website content, and a practice copy that never reaches the site
+// (the "latihan" dataset has no webhook, so nothing is rebuilt or published from it).
+export default defineConfig([
+  {
+    ...shared,
+    name: 'kandungan',
+    title: 'Laman Web Masjid (sebenar)',
+    subtitle: 'Kandungan yang dipaparkan di laman web',
+    basePath: '/kandungan',
+    dataset: process.env.SANITY_STUDIO_DATASET || 'production',
+  },
+  {
+    ...shared,
+    name: 'latihan',
+    title: 'Latihan (praktis sahaja)',
+    subtitle: 'Tidak dipaparkan di laman web — selamat untuk mencuba',
+    basePath: '/latihan',
+    dataset: 'latihan',
+  },
+]);

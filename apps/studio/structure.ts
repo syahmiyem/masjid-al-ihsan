@@ -36,7 +36,7 @@ export const structure: StructureResolver = (S) =>
         ),
       active(S, 'notis', 'Notis Penting', [{ field: 'paparDari', direction: 'desc' }]),
       S.divider(),
-      active(S, 'perkhidmatan', 'Perkhidmatan', [{ field: 'susunan', direction: 'asc' }]),
+      active(S, 'perkhidmatan', 'Khidmat', [{ field: 'susunan', direction: 'asc' }]),
       active(S, 'jawatan', 'Carta Organisasi', [
         { field: 'kumpulan', direction: 'asc' },
         { field: 'susunan', direction: 'asc' },

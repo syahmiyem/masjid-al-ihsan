@@ -148,7 +148,7 @@ export function listPosters(
 // ─── Single item (activity, kuliah series, service) ─────────────────────────────────────────────
 
 export type ItemPoster = {
-  kicker: string; // "Aktiviti", "Kuliah Mingguan", "Perkhidmatan"
+  kicker: string; // "Aktiviti", "Kuliah Mingguan", "Khidmat"
   title: string;
   status?: { kind: string; text: string; note?: string };
   facts: [label: string, value: string][];
@@ -341,7 +341,7 @@ export function prayerTodayPoster(
   );
 }
 
-// ─── Derma ──────────────────────────────────────────────────────────────────────────────────────
+// ─── Sumbangan (Derma) ──────────────────────────────────────────────────────────────────────────────────
 
 export type DermaPoster = {
   contoh: boolean;
@@ -356,7 +356,7 @@ export function dermaPoster(format: FormatKey, info: FrameInfo, d: DermaPoster):
   return frame(
     format,
     info,
-    'Derma untuk Masjid',
+    'Sumbangan untuk Masjid',
     d.contoh ? 'CONTOH SAHAJA — JANGAN BUAT BAYARAN' : 'Imbas DuitNow QR atau pindahan bank',
     h(
       'div',

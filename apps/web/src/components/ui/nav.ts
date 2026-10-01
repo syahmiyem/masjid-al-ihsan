@@ -3,13 +3,13 @@ export const PRIMARY_NAV = [
   { href: '/', label: 'Utama', icon: 'House' },
   { href: '/aktiviti', label: 'Aktiviti', icon: 'CalendarDays' },
   { href: '/kuliah', label: 'Kuliah', icon: 'BookOpen' },
-  { href: '/perkhidmatan', label: 'Perkhidmatan', icon: 'Landmark' },
+  { href: '/khidmat', label: 'Khidmat', icon: 'Landmark' },
 ] as const;
 
 export const MENU_NAV = [
   ...PRIMARY_NAV,
   { href: '/waktu-solat', label: 'Waktu Solat', icon: 'Clock' },
-  { href: '/derma', label: 'Derma', icon: 'HandHeart' },
+  { href: '/sumbangan', label: 'Sumbangan', icon: 'HandHeart' },
   { href: '/tentang/organisasi', label: 'Carta Organisasi', icon: 'Users' },
   { href: '/hubungi', label: 'Hubungi Kami', icon: 'Phone' },
 ] as const;
