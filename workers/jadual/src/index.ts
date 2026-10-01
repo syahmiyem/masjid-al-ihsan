@@ -81,9 +81,9 @@ export default {
     switch (controller.cron) {
       case '5 16 * * *':
         return ctx.waitUntil(nightlyRebuild(env));
-      case '0 20 * * 0':
+      case '0 20 * * SUN':
         return ctx.waitUntil(prayerCheck(env));
-      case '0 19 * * 6':
+      case '0 19 * * SAT':
         return ctx.waitUntil(backup(env));
       default:
         console.warn(`Unknown cron ${controller.cron}`);
