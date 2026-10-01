@@ -1,5 +1,5 @@
 {
-  "createdAt": "2026-09-30T18:59:09.182Z",
+  "createdAt": "2026-10-01T00:32:45.379Z",
   "studioVersion": "6.17.0",
   "version": 3,
   "workspaces": [
@@ -13,7 +13,7 @@
       },
       "name": "default",
       "projectId": "1xd617ey",
-      "schema": "291ea08e.create-schema.json",
+      "schema": "b08f13a9.create-schema.json",
       "title": "Masjid Al-Ihsan — Pentadbiran",
       "tools": "6d71d79e.create-tools.json"
     }

@@ -4,9 +4,59 @@ import {
   defineField as n,
   defineType as r,
   renderStudio as i,
+  useCurrentUser as a,
+  useEditState as o,
+  useFormValue as s,
 } from 'sanity';
-import { structureTool as a } from 'sanity/structure';
-var o = [
+import { structureTool as c } from 'sanity/structure';
+import { useState as l } from 'react';
+import { jsx as u, jsxs as d } from 'react/jsx-runtime';
+function f(e) {
+  let t = String(s([`_id`]) ?? ``).replace(/^drafts\./, ``),
+    n = String(s([`_type`]) ?? ``),
+    { published: r } = o(t, n),
+    i = r?.slug?.current,
+    c = !!a()?.roles?.some((e) => e.name === `administrator`),
+    [f, p] = l(!1);
+  return !i || f
+    ? e.renderDefault(e)
+    : d(`div`, {
+        style: { border: `1px solid var(--card-border-color, #ccc)`, borderRadius: 6, padding: 12 },
+        children: [
+          d(`p`, {
+            style: { margin: 0, fontWeight: 600 },
+            children: [u(`span`, { 'aria-hidden': `true`, children: `🔒 ` }), i],
+          }),
+          u(`p`, {
+            style: { margin: `8px 0 0`, fontSize: 13, opacity: 0.8 },
+            children: `Pautan ini dikunci kerana halaman telah diterbitkan dan mungkin sudah dikongsi. Mengubahnya akan merosakkan pautan lama.`,
+          }),
+          c &&
+            u(`button`, {
+              type: `button`,
+              onClick: () => p(!0),
+              style: {
+                marginTop: 10,
+                padding: `6px 10px`,
+                borderRadius: 4,
+                border: `1px solid #b26b00`,
+                background: `transparent`,
+                color: `inherit`,
+                cursor: `pointer`,
+              },
+              children: `Buka kunci (Pentadbir sahaja)`,
+            }),
+        ],
+      });
+}
+var p = n({
+    name: `diarkibkan`,
+    title: `Arkibkan (sembunyikan daripada laman web)`,
+    description: `Gunakan ini dan bukannya memadam. Item akan hilang dari laman web tetapi boleh dipulihkan dari senarai "Arkib".`,
+    type: `boolean`,
+    initialValue: !1,
+  }),
+  m = [
     { title: `Kuliah`, value: `kuliah` },
     { title: `Program Khas`, value: `program-khas` },
     { title: `Kelas`, value: `kelas` },
@@ -15,19 +65,19 @@ var o = [
     { title: `Mesyuarat`, value: `mesyuarat` },
     { title: `Lain-lain`, value: `lain-lain` },
   ],
-  s = [
+  h = [
     { title: `Umum`, value: `umum` },
     { title: `Muslimah`, value: `muslimah` },
     { title: `Kanak-kanak`, value: `kanak-kanak` },
     { title: `Remaja`, value: `remaja` },
   ],
-  c = [
+  g = [
     { title: `Dijadualkan`, value: `dijadualkan` },
     { title: `Dipinda`, value: `dipinda` },
     { title: `Ditangguhkan`, value: `ditangguhkan` },
     { title: `Dibatalkan`, value: `dibatalkan` },
   ],
-  l = [
+  _ = [
     { title: `Selepas Subuh`, value: `selepas-subuh` },
     { title: `Sebelum Zohor`, value: `sebelum-zohor` },
     { title: `Selepas Zohor`, value: `selepas-zohor` },
@@ -37,7 +87,7 @@ var o = [
     { title: `Selepas Maghrib`, value: `selepas-maghrib` },
     { title: `Selepas Isyak`, value: `selepas-isyak` },
   ],
-  u = [
+  v = [
     { title: `Isnin`, value: `isnin` },
     { title: `Selasa`, value: `selasa` },
     { title: `Rabu`, value: `rabu` },
@@ -46,14 +96,14 @@ var o = [
     { title: `Sabtu`, value: `sabtu` },
     { title: `Ahad`, value: `ahad` },
   ],
-  d = [
+  y = [
     { title: `Penaung`, value: `penaung` },
     { title: `Pengurusan Utama`, value: `pengurusan-utama` },
     { title: `Pegawai Masjid`, value: `pegawai-masjid` },
     { title: `AJK Biro`, value: `ajk-biro` },
   ],
-  f = (e, t) => e.find((e) => e.value === t)?.title ?? t ?? ``,
-  p = r({
+  b = (e, t) => e.find((e) => e.value === t)?.title ?? t ?? ``,
+  x = r({
     name: `aktiviti`,
     title: `Aktiviti`,
     type: `document`,
@@ -70,6 +120,7 @@ var o = [
         title: `Pautan (URL)`,
         description: `Dijana daripada tajuk. Jangan ubah selepas diterbitkan — pautan yang telah dikongsi akan rosak.`,
         type: `slug`,
+        components: { input: f },
         options: { source: `tajuk`, maxLength: 80 },
         validation: (e) => e.required(),
       }),
@@ -111,14 +162,14 @@ var o = [
         name: `kategori`,
         title: `Kategori`,
         type: `string`,
-        options: { list: o },
+        options: { list: m },
         validation: (e) => e.required(),
       }),
       n({
         name: `sasaran`,
         title: `Sasaran`,
         type: `string`,
-        options: { list: s, layout: `radio`, direction: `horizontal` },
+        options: { list: h, layout: `radio`, direction: `horizontal` },
         initialValue: `umum`,
       }),
       n({ name: `penceramah`, title: `Penceramah / Penganjur`, type: `string` }),
@@ -133,7 +184,7 @@ var o = [
         name: `status`,
         title: `Status`,
         type: `string`,
-        options: { list: c, layout: `radio` },
+        options: { list: g, layout: `radio` },
         initialValue: `dijadualkan`,
         validation: (e) => e.required(),
       }),
@@ -155,6 +206,7 @@ var o = [
             !t?.status || t.status === `dijadualkan` || e ? !0 : `Sila terangkan perubahan untuk jemaah.`,
           ),
       }),
+      p,
     ],
     orderings: [
       {
@@ -167,12 +219,12 @@ var o = [
       select: { tajuk: `tajuk`, tarikh: `tarikhMula`, status: `status`, media: `poster` },
       prepare: ({ tajuk: e, tarikh: t, status: n, media: r }) => ({
         title: e,
-        subtitle: [t, n && n !== `dijadualkan` ? f(c, n).toUpperCase() : ``].filter(Boolean).join(` · `),
+        subtitle: [t, n && n !== `dijadualkan` ? b(g, n).toUpperCase() : ``].filter(Boolean).join(` · `),
         media: r,
       }),
     },
   }),
-  m = r({
+  S = r({
     name: `jawatan`,
     title: `Jawatan`,
     type: `document`,
@@ -188,7 +240,7 @@ var o = [
         name: `kumpulan`,
         title: `Kumpulan`,
         type: `string`,
-        options: { list: d, layout: `radio` },
+        options: { list: y, layout: `radio` },
         validation: (e) => e.required(),
       }),
       n({ name: `biro`, title: `Biro / portfolio (jika ada)`, type: `string` }),
@@ -235,6 +287,7 @@ var o = [
         initialValue: 10,
         validation: (e) => e.required(),
       }),
+      p,
     ],
     orderings: [
       {
@@ -250,19 +303,19 @@ var o = [
       select: { jawatan: `jawatan`, nama: `nama`, kosong: `kosong`, kumpulan: `kumpulan`, media: `gambar` },
       prepare: ({ jawatan: e, nama: t, kosong: n, kumpulan: r, media: i }) => ({
         title: e,
-        subtitle: `${n ? `Jawatan kosong` : (t ?? ``)} · ${f(d, r)}`,
+        subtitle: `${n ? `Jawatan kosong` : (t ?? ``)} · ${b(y, r)}`,
         media: i,
       }),
     },
   }),
-  h = [
+  C = [
     { title: `Dibatalkan`, value: `dibatalkan` },
     { title: `Ditangguhkan ke tarikh lain`, value: `ditangguhkan` },
     { title: `Penceramah jemputan`, value: `penceramah-jemputan` },
     { title: `Tukar tempat`, value: `tukar-tempat` },
     { title: `Tukar masa`, value: `tukar-masa` },
   ],
-  g = r({
+  w = r({
     name: `kuliahPerubahan`,
     title: `Perubahan Kuliah`,
     type: `document`,
@@ -296,7 +349,7 @@ var o = [
         name: `jenis`,
         title: `Jenis perubahan`,
         type: `string`,
-        options: { list: h, layout: `radio` },
+        options: { list: C, layout: `radio` },
         validation: (e) => e.required(),
       }),
       n({
@@ -345,16 +398,17 @@ var o = [
         description: `Contoh: "Penceramah uzur." Dipaparkan di laman web.`,
         type: `string`,
       }),
+      p,
     ],
     preview: {
       select: { siri: `siri.nama`, tarikh: `tarikh`, jenis: `jenis` },
       prepare: ({ siri: e, tarikh: t, jenis: n }) => ({
         title: `${e ?? `Kuliah`} — ${t ?? ``}`,
-        subtitle: h.find((e) => e.value === n)?.title,
+        subtitle: C.find((e) => e.value === n)?.title,
       }),
     },
   }),
-  _ = r({
+  T = r({
     name: `kuliahSiri`,
     title: `Siri Kuliah`,
     type: `document`,
@@ -371,6 +425,7 @@ var o = [
         title: `Pautan (URL)`,
         description: `Dijana daripada nama. Jangan ubah selepas diterbitkan.`,
         type: `slug`,
+        components: { input: f },
         options: { source: `nama`, maxLength: 80 },
         validation: (e) => e.required(),
       }),
@@ -392,7 +447,7 @@ var o = [
         name: `hari`,
         title: `Hari`,
         type: `string`,
-        options: { list: u },
+        options: { list: v },
         validation: (e) => e.required(),
       }),
       n({
@@ -429,7 +484,7 @@ var o = [
         name: `sasaran`,
         title: `Sasaran`,
         type: `string`,
-        options: { list: s, layout: `radio`, direction: `horizontal` },
+        options: { list: h, layout: `radio`, direction: `horizontal` },
         initialValue: `umum`,
       }),
       n({
@@ -452,11 +507,12 @@ var o = [
           }),
       }),
       n({ name: `penerangan`, title: `Penerangan`, type: `text`, rows: 3 }),
+      p,
     ],
     preview: {
       select: { nama: `nama`, jenis: `jenis`, hari: `hari`, mingguKe: `mingguKe`, penceramah: `penceramah` },
       prepare: ({ nama: e, jenis: t, hari: n, mingguKe: r, penceramah: i }) => {
-        let a = f(u, n);
+        let a = b(v, n);
         return {
           title: e,
           subtitle: [
@@ -471,7 +527,7 @@ var o = [
       },
     },
   }),
-  v = r({
+  E = r({
     name: `notis`,
     title: `Notis Penting`,
     type: `document`,
@@ -518,10 +574,11 @@ var o = [
           }),
       }),
       n({ name: `pautan`, title: `Pautan (pilihan)`, description: `Contoh: /kuliah`, type: `string` }),
+      p,
     ],
     preview: { select: { title: `mesej`, subtitle: `paparHingga` } },
   }),
-  y = r({
+  D = r({
     name: `gambar`,
     title: `Gambar`,
     type: `image`,
@@ -536,8 +593,8 @@ var o = [
       }),
     ],
   }),
-  b = /^([01]\d|2[0-3]):[0-5]\d$/,
-  x = r({
+  O = /^([01]\d|2[0-3]):[0-5]\d$/,
+  k = r({
     name: `masa`,
     title: `Masa`,
     type: `object`,
@@ -566,7 +623,7 @@ var o = [
           e.custom((e, { parent: t }) =>
             t?.jenis === `jam`
               ? e
-                ? b.test(e) || `Gunakan format 24 jam, contoh 20:30.`
+                ? O.test(e) || `Gunakan format 24 jam, contoh 20:30.`
                 : `Sila isi jam.`
               : !0,
           ),
@@ -575,7 +632,7 @@ var o = [
         name: `waktuSolat`,
         title: `Waktu solat`,
         type: `string`,
-        options: { list: l },
+        options: { list: _ },
         hidden: ({ parent: e }) => e?.jenis !== `solat`,
         validation: (e) =>
           e.custom((e, { parent: t }) => (t?.jenis !== `solat` || e ? !0 : `Sila pilih waktu solat.`)),
@@ -585,15 +642,15 @@ var o = [
         title: `Jam tamat (jika ada)`,
         description: `Pilihan. Format 24 jam, contoh 22:00`,
         type: `string`,
-        validation: (e) => e.custom((e) => !e || b.test(e) || `Gunakan format 24 jam, contoh 22:00.`),
+        validation: (e) => e.custom((e) => !e || O.test(e) || `Gunakan format 24 jam, contoh 22:00.`),
       }),
     ],
     preview: {
       select: { jenis: `jenis`, jam: `jam`, waktuSolat: `waktuSolat` },
-      prepare: ({ jenis: e, jam: t, waktuSolat: n }) => ({ title: e === `jam` ? t : f(l, n) }),
+      prepare: ({ jenis: e, jam: t, waktuSolat: n }) => ({ title: e === `jam` ? t : b(_, n) }),
     },
   }),
-  S = r({
+  A = r({
     name: `perkhidmatan`,
     title: `Perkhidmatan`,
     type: `document`,
@@ -617,6 +674,7 @@ var o = [
         title: `Pautan (URL)`,
         description: `Contoh: dewan-akad-nikah. Jangan ubah selepas diterbitkan — penting untuk carian Google.`,
         type: `slug`,
+        components: { input: f },
         options: { source: `nama`, maxLength: 60 },
         group: `utama`,
         validation: (e) => e.required(),
@@ -772,11 +830,12 @@ var o = [
         ],
         validation: (e) => e.max(6),
       }),
+      { ...p, group: `utama` },
     ],
     orderings: [{ title: `Susunan paparan`, name: `susunan`, by: [{ field: `susunan`, direction: `asc` }] }],
     preview: { select: { title: `nama`, subtitle: `ringkasan`, media: `gambar.0` } },
   }),
-  C = r({
+  j = r({
     name: `siteSettings`,
     title: `Tetapan Masjid`,
     type: `document`,
@@ -823,15 +882,15 @@ var o = [
     ],
     preview: { prepare: () => ({ title: `Tetapan Masjid` }) },
   }),
-  w = [
-    y,
+  M = [
+    D,
+    k,
     x,
-    p,
-    _,
-    g,
-    v,
+    T,
+    w,
+    E,
+    A,
     S,
-    m,
     r({
       name: `tempat`,
       title: `Tempat`,
@@ -847,32 +906,36 @@ var o = [
       ],
       preview: { select: { title: `nama` } },
     }),
-    C,
+    j,
   ],
-  T = new Set([`siteSettings`]),
-  E = t({
+  N = new Set([`siteSettings`]),
+  P = (e, t, n, r) =>
+    e
+      .listItem()
+      .title(n)
+      .schemaType(t)
+      .child(
+        e
+          .documentTypeList(t)
+          .title(n)
+          .filter(`_type == $type && diarkibkan != true`)
+          .params({ type: t })
+          .defaultOrdering(r),
+      ),
+  F = t({
     name: `default`,
     title: `Masjid Al-Ihsan — Pentadbiran`,
     projectId: `1xd617ey`,
     dataset: `production`,
     plugins: [
-      a({
+      c({
         title: `Kandungan`,
         structure: (e) =>
           e
             .list()
             .title(`Kandungan`)
             .items([
-              e
-                .listItem()
-                .title(`Aktiviti & Kalendar`)
-                .schemaType(`aktiviti`)
-                .child(
-                  e
-                    .documentTypeList(`aktiviti`)
-                    .title(`Aktiviti`)
-                    .defaultOrdering([{ field: `tarikhMula`, direction: `desc` }]),
-                ),
+              P(e, `aktiviti`, `Aktiviti & Kalendar`, [{ field: `tarikhMula`, direction: `desc` }]),
               e
                 .listItem()
                 .title(`Jadual Kuliah`)
@@ -881,44 +944,19 @@ var o = [
                     .list()
                     .title(`Jadual Kuliah`)
                     .items([
-                      e.documentTypeListItem(`kuliahSiri`).title(`Siri Kuliah`),
-                      e
-                        .listItem()
-                        .title(`Perubahan (Batal / Penceramah Jemputan)`)
-                        .schemaType(`kuliahPerubahan`)
-                        .child(
-                          e
-                            .documentTypeList(`kuliahPerubahan`)
-                            .title(`Perubahan Kuliah`)
-                            .defaultOrdering([{ field: `tarikh`, direction: `desc` }]),
-                        ),
+                      P(e, `kuliahSiri`, `Siri Kuliah`, [{ field: `nama`, direction: `asc` }]),
+                      P(e, `kuliahPerubahan`, `Perubahan (Batal / Penceramah Jemputan)`, [
+                        { field: `tarikh`, direction: `desc` },
+                      ]),
                     ]),
                 ),
-              e.documentTypeListItem(`notis`).title(`Notis Penting`),
+              P(e, `notis`, `Notis Penting`, [{ field: `paparDari`, direction: `desc` }]),
               e.divider(),
-              e
-                .listItem()
-                .title(`Perkhidmatan`)
-                .schemaType(`perkhidmatan`)
-                .child(
-                  e
-                    .documentTypeList(`perkhidmatan`)
-                    .title(`Perkhidmatan`)
-                    .defaultOrdering([{ field: `susunan`, direction: `asc` }]),
-                ),
-              e
-                .listItem()
-                .title(`Carta Organisasi`)
-                .schemaType(`jawatan`)
-                .child(
-                  e
-                    .documentTypeList(`jawatan`)
-                    .title(`Carta Organisasi`)
-                    .defaultOrdering([
-                      { field: `kumpulan`, direction: `asc` },
-                      { field: `susunan`, direction: `asc` },
-                    ]),
-                ),
+              P(e, `perkhidmatan`, `Perkhidmatan`, [{ field: `susunan`, direction: `asc` }]),
+              P(e, `jawatan`, `Carta Organisasi`, [
+                { field: `kumpulan`, direction: `asc` },
+                { field: `susunan`, direction: `asc` },
+              ]),
               e.divider(),
               e.documentTypeListItem(`tempat`).title(`Tempat`),
               e
@@ -928,13 +966,27 @@ var o = [
                 .child(
                   e.document().schemaType(`siteSettings`).documentId(`siteSettings`).title(`Tetapan Masjid`),
                 ),
+              e.divider(),
+              e
+                .listItem()
+                .title(`Arkib`)
+                .child(
+                  e
+                    .documentList()
+                    .title(`Arkib (tidak dipaparkan di laman web)`)
+                    .filter(`diarkibkan == true`),
+                ),
             ]),
       }),
     ],
-    schema: { types: w, templates: (e) => e.filter(({ schemaType: e }) => !T.has(e)) },
+    schema: { types: M, templates: (e) => e.filter(({ schemaType: e }) => !N.has(e)) },
     document: {
-      actions: (e, { schemaType: t }) =>
-        T.has(t) ? e.filter(({ action: e }) => e && [`publish`, `discardChanges`, `restore`].includes(e)) : e,
+      actions: (e, { schemaType: t, currentUser: n }) =>
+        N.has(t)
+          ? e.filter(({ action: e }) => e && [`publish`, `discardChanges`, `restore`].includes(e))
+          : n?.roles?.some((e) => e.name === `administrator`)
+            ? e
+            : e.filter(({ action: e }) => e !== `delete`),
     },
   });
-i(document.getElementById(`sanity`), E, { reactStrictMode: !1, basePath: `/` });
+i(document.getElementById(`sanity`), F, { reactStrictMode: !1, basePath: `/` });

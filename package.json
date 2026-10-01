@@ -14,7 +14,7 @@
     "contoh:isi": "pnpm --filter studio exec sanity exec scripts/contoh.ts --with-user-token",
     "contoh:buang": "pnpm --filter studio exec sanity exec scripts/buang-contoh.ts --with-user-token",
     "check": "tsc -p tsconfig.json && pnpm -r check",
-    "test": "node --test \"scripts/**/*.test.ts\" \"apps/web/src/**/*.test.ts\"",
+    "test": "node --test \"scripts/**/*.test.ts\" \"apps/web/src/**/*.test.ts\" \"workers/**/src/*.test.ts\"",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "waktu-solat:sync": "node scripts/waktu-solat/sync.ts",
