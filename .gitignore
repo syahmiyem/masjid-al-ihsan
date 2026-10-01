@@ -13,3 +13,5 @@ apps/studio/dist/
 
 # Source photos dropped into the repo root for reference; never commit them
 /PHOTO-*
+# Accidental Studio build output (a stray "-y" passed to sanity deploy became the output folder)
+/apps/studio/-y/
