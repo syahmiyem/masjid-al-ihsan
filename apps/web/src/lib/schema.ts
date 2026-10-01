@@ -165,7 +165,7 @@ export function service(s: Perkhidmatan, settings: Settings, site: URL): Service
         }
       : {};
   // Homestay is a place to stay inside the mosque grounds (plan 6.3); everything else is a Service
-  if (s.slug.includes('homestay')) {
+  if (/homestay|bilik-inap|penginapan/.test(s.slug)) {
     return {
       '@type': 'LodgingBusiness',
       name: `${s.nama} Masjid Al-Ihsan`,

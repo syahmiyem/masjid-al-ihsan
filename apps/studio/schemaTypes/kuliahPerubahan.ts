@@ -27,22 +27,22 @@ export const kuliahPerubahan = defineType({
       title: 'Tarikh kuliah yang terlibat',
       type: 'date',
       options: { dateFormat: 'D MMMM YYYY' },
-      validation: (rule) =>
-        rule.required().custom(async (value, { document, getClient }) => {
-          const siri = (document?.siri as { _ref?: string } | undefined)?._ref;
-          if (!value || !siri) return true;
-          const id = (document?._id ?? '').replace(/^drafts\./, '');
-          const count = await getClient({ apiVersion: '2025-02-19' }).fetch<number>(
-            'count(*[_type == "kuliahPerubahan" && siri._ref == $siri && tarikh == $tarikh && !(_id in [$id, "drafts." + $id])])',
-            { siri, tarikh: value, id },
-          );
-          return (
-            count === 0 || {
-              message: 'Sudah ada perubahan lain untuk tarikh ini.',
-              level: 'warning' as const,
-            }
-          );
-        }),
+      validation: (rule) => [
+        rule.required(),
+        // A warning only: two changes on one date is unusual but not forbidden
+        rule
+          .custom(async (value, { document, getClient }) => {
+            const siri = (document?.siri as { _ref?: string } | undefined)?._ref;
+            if (!value || !siri) return true;
+            const id = (document?._id ?? '').replace(/^drafts\./, '');
+            const count = await getClient({ apiVersion: '2025-02-19' }).fetch<number>(
+              'count(*[_type == "kuliahPerubahan" && siri._ref == $siri && tarikh == $tarikh && !(_id in [$id, "drafts." + $id])])',
+              { siri, tarikh: value, id },
+            );
+            return count === 0 || 'Sudah ada perubahan lain untuk tarikh ini.';
+          })
+          .warning(),
+      ],
     }),
     defineField({
       name: 'jenis',
