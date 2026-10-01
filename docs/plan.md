@@ -1044,7 +1044,8 @@ Durations assume one developer, part-time to full-time. Before the committee pre
 - ✅ Sharing (D-32): "Kongsi ke WhatsApp" with a pre-written Malay message on every main page; device share sheet and "Salin Pautan" appear only where supported; Open Graph + Twitter card tags with a default 1200×630 preview image (per-page share images: Phase 3).
 - ✅ Tambah ke Kalendar (D-33): `.ics` per activity and per kuliah series (RRULE weekly / nth / last weekday; cancelled and postponed dates excluded via EXDATE; prayer-relative times as all-day entries with the label in the title) + Google Calendar links; RFC 5545 escaping and line folding unit-tested.
 - ✅ **Export to image (all content)** — see 4.4: 103 images per build (largest 265 KB), "Simpan Gambar" on every main page (two previews per row, Muat Turun + Kongsi), per-page link previews for activities, kuliah series and services. axe 0 violations and no overflow with the panel open.
-- ⏳ Remaining Phase 2: "next prayer" live script; scheduler Worker (nightly rebuild, e-Solat check, backups); Studio customisation (slug lock, archive-not-delete, ordering).
+- ✅ Live "Seterusnya": the Waktu Solat card embeds today + the next two days and updates every minute (next prayer highlight, "Subuh esok" after Isyak, switches day after midnight — Jumaat label included) without a rebuild. All JavaScript on the home page: 1.8 KB gzipped.
+- ⏳ Remaining Phase 2: scheduler Worker (nightly rebuild, e-Solat check, backups); Studio customisation (slug lock, archive-not-delete, ordering).
 
 ### Phase 3 — Share images & technical SEO on UAT (1–2 weeks)
 

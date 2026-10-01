@@ -1,44 +1,51 @@
 ---
-// "Waktu Solat Hari Ini" (plan 4.8). Values are fixed at build time; the nightly rebuild keeps them
-// current. The small "next prayer" script comes in Phase 2.
+// "Waktu Solat Hari Ini" (plan 4.8). Rendered at build time, then kept current by a small script:
+// it marks the next prayer every minute and switches to the next day after midnight using the next two
+// days embedded below — so the card stays right even if a nightly rebuild is missed.
+import { addDays } from '../../lib/dates';
 import { formatDate, formatHijri, formatTime } from '../../lib/format';
 import { MAIN_PRAYERS, nextPrayer, prayerLabel, type PrayerDay } from '../../lib/waktu-solat';
+import { prayerDay } from '../../lib/waktu-solat-data';
 
 interface Props {
   day: PrayerDay;
-  now?: string; // HH:MM, to mark the next prayer
+  now?: string; // HH:MM at build time, to mark the next prayer before the script runs
   zoneName: string;
   zone: string;
   showHijri?: boolean;
 }
 const { day, now, zoneName, zone, showHijri = false } = Astro.props;
 const next = now ? nextPrayer(day, now) : null;
+const days = [day, prayerDay(addDays(day.date, 1)), prayerDay(addDays(day.date, 2))].filter(Boolean);
 ---
 
-<section class="card prayer" aria-labelledby="waktu-solat-heading">
+<section
+  class="card prayer"
+  aria-labelledby="waktu-solat-heading"
+  data-prayer-card
+  data-days={JSON.stringify(days)}
+  data-hijri={showHijri ? '1' : ''}
+>
   <h2 id="waktu-solat-heading">Waktu Solat Hari Ini</h2>
-  <p class="date">
+  <p class="date" data-date>
     {formatDate(day.date)}
-    {showHijri && <> · {formatHijri(day.hijri)}</>}
+    {showHijri && ` · ${formatHijri(day.hijri)}`}
   </p>
-  {next && (
-    <p class="next">
-      Seterusnya:{' '}
-      <strong>
-        {prayerLabel(next, day.date)} {formatTime(day[next])}
-      </strong>
-    </p>
-  )}
+  <p class="next" data-next hidden={!next}>
+    Seterusnya: <strong>{next ? `${prayerLabel(next, day.date)} ${formatTime(day[next])}` : ''}</strong>
+  </p>
   <table>
-    <caption class="visually-hidden">Waktu solat untuk{formatDate(day.date)}</caption>
+    <caption class="visually-hidden" data-caption>{`Waktu solat untuk ${formatDate(day.date)}`}</caption>
     <tbody>
       {MAIN_PRAYERS.map((key) => (
-        <tr class:list={{ upcoming: key === next }}>
+        <tr class:list={{ upcoming: key === next }} data-key={key}>
           <th scope="row">
-            {prayerLabel(key, day.date)}
-            {key === next && <span class="visually-hidden"> (seterusnya)</span>}
+            <span data-label>{prayerLabel(key, day.date)}</span>
+            <span class="visually-hidden" data-sr hidden={key !== next}>
+              {' (seterusnya)'}
+            </span>
           </th>
-          <td>{formatTime(day[key])}</td>
+          <td data-time>{formatTime(day[key])}</td>
         </tr>
       ))}
     </tbody>
@@ -47,6 +54,54 @@ const next = now ? nextPrayer(day, now) : null;
     Sumber: JAKIM (e-Solat) · Zon {zone} ({zoneName})
   </p>
 </section>
+
+<script>
+  import { formatDate, formatHijri, formatTime } from '../../lib/format';
+  import { MAIN_PRAYERS, nextPrayer, prayerLabel, type PrayerDay } from '../../lib/waktu-solat';
+
+  function nowMyt() {
+    const iso = new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString();
+    return { date: iso.slice(0, 10), time: iso.slice(11, 16) };
+  }
+
+  function update(card: HTMLElement) {
+    const days = JSON.parse(card.dataset.days ?? '[]') as PrayerDay[];
+    const { date, time } = nowMyt();
+    const i = days.findIndex((d) => d.date === date);
+    if (i === -1) return; // embedded data exhausted: keep the build-time view
+    const day = days[i];
+
+    card.querySelector('[data-date]')!.textContent =
+      formatDate(day.date) + (card.dataset.hijri ? ` · ${formatHijri(day.hijri)}` : '');
+    card.querySelector('[data-caption]')!.textContent = `Waktu solat untuk ${formatDate(day.date)}`;
+
+    const next = nextPrayer(day, time);
+    for (const row of card.querySelectorAll<HTMLElement>('tr[data-key]')) {
+      const key = row.dataset.key as (typeof MAIN_PRAYERS)[number];
+      row.querySelector('[data-label]')!.textContent = prayerLabel(key, day.date);
+      row.querySelector('[data-time]')!.textContent = formatTime(day[key]);
+      row.classList.toggle('upcoming', key === next);
+      row.querySelector<HTMLElement>('[data-sr]')!.hidden = key !== next;
+    }
+
+    // After Isyak: point to tomorrow's Subuh if we have it
+    const tomorrow = days[i + 1];
+    const nextText = next
+      ? `${prayerLabel(next, day.date)} ${formatTime(day[next])}`
+      : tomorrow
+        ? `Subuh esok ${formatTime(tomorrow.subuh)}`
+        : '';
+    const nextEl = card.querySelector<HTMLElement>('[data-next]')!;
+    nextEl.querySelector('strong')!.textContent = nextText;
+    nextEl.hidden = !nextText;
+  }
+
+  const cards = [...document.querySelectorAll<HTMLElement>('[data-prayer-card]')];
+  const run = () => cards.forEach(update);
+  run();
+  setInterval(run, 60_000);
+  document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' && run());
+</script>
 
 <style>
   .prayer h2 {
