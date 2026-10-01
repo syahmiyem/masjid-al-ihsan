@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity';
+import { arkibField } from './objects/arkib';
 
 const TYPES = [
   { title: 'Dibatalkan', value: 'dibatalkan' },
@@ -98,6 +99,7 @@ export const kuliahPerubahan = defineType({
       description: 'Contoh: "Penceramah uzur." Dipaparkan di laman web.',
       type: 'string',
     }),
+    arkibField,
   ],
   preview: {
     select: { siri: 'siri.nama', tarikh: 'tarikh', jenis: 'jenis' },

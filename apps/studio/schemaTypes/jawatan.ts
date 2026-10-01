@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity';
+import { arkibField } from './objects/arkib';
 import { ORG_GROUPS, titleOf } from './lists';
 
 // One position on the organisation chart (plan 4.5, D-35). Names are never typed into free text blocks.
@@ -66,6 +67,7 @@ export const jawatan = defineType({
       initialValue: 10,
       validation: (rule) => rule.required(),
     }),
+    arkibField,
   ],
   orderings: [
     {

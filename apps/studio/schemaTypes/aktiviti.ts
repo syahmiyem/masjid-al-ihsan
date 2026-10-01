@@ -1,4 +1,6 @@
 import { defineField, defineType } from 'sanity';
+import { LockedSlugInput } from '../components/LockedSlugInput';
+import { arkibField } from './objects/arkib';
 import { ACTIVITY_STATUSES, AUDIENCES, CATEGORIES, titleOf } from './lists';
 
 // One-off activity on the monthly calendar (plan 4.1). Recurring kuliah use kuliahSiri instead.
@@ -20,6 +22,7 @@ export const aktiviti = defineType({
       description:
         'Dijana daripada tajuk. Jangan ubah selepas diterbitkan — pautan yang telah dikongsi akan rosak.',
       type: 'slug',
+      components: { input: LockedSlugInput },
       options: { source: 'tajuk', maxLength: 80 },
       validation: (rule) => rule.required(),
     }),
@@ -104,6 +107,7 @@ export const aktiviti = defineType({
             : 'Sila terangkan perubahan untuk jemaah.',
         ),
     }),
+    arkibField,
   ],
   orderings: [
     {
