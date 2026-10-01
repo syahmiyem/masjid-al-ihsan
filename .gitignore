@@ -10,3 +10,6 @@ apps/studio/dist/
 .DS_Store
 ._*
 *.log
+
+# Accidental Studio build output (a stray "-y" passed to sanity deploy became the output folder)
+/apps/studio/-y/
