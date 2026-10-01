@@ -403,13 +403,15 @@ export function prayerTodayPoster(
 export type DermaPoster = {
   contoh: boolean;
   qrDataUrl: string;
+  qrName: string;
   accountName: string;
   bank: string;
   accountNumber: string;
 };
 
 export function dermaPoster(format: FormatKey, info: FrameInfo, d: DermaPoster): PosterNode {
-  const qr = format === 'status' ? 620 : 400;
+  const tall = format === 'status';
+  const qr = tall ? 560 : 360;
   return frame(
     format,
     info,
@@ -425,29 +427,28 @@ export function dermaPoster(format: FormatKey, info: FrameInfo, d: DermaPoster):
           background: '#ffffff',
           border: `3px solid ${c.border}`,
           borderRadius: 16,
-          marginTop: 8,
+          marginTop: 4,
         },
         img(d.qrDataUrl, qr, qr),
       ),
-      h(
-        'div',
-        { fontSize: 40, fontWeight: 700, marginTop: 16, textAlign: 'center' },
-        clip(d.accountName, 42),
-      ),
-      h('div', { fontSize: 36, color: c.textMuted }, d.bank),
-      h('div', { fontSize: 52, fontWeight: 700, letterSpacing: 3 }, d.accountNumber),
+      h('div', { fontSize: 32, color: c.textMuted, marginTop: 8 }, 'Nama penerima QR'),
+      h('div', { fontSize: 40, fontWeight: 700, color: c.primary }, clip(d.qrName, 40)),
+      h('div', { width: '100%', height: 2, background: c.surface, margin: '14px 0' }),
+      h('div', { fontSize: 32, color: c.textMuted }, `Pindahan bank · ${d.bank}`),
+      h('div', { fontSize: 52, fontWeight: 700, letterSpacing: 2, color: c.primary }, d.accountNumber),
+      h('div', { fontSize: 32, fontWeight: 700, textAlign: 'center' }, clip(d.accountName, 64)),
       h(
         'div',
         {
           fontSize: 32,
           background: c.postponedBg,
           color: c.postponedText,
-          padding: '12px 20px',
+          padding: '10px 20px',
           borderRadius: 12,
           marginTop: 12,
           textAlign: 'center',
         },
-        `Pastikan nama penerima ialah ${clip(d.accountName, 40)} sebelum mengesahkan.`,
+        'Pastikan nama penerima di aplikasi bank anda betul sebelum mengesahkan.',
       ),
     ),
   );

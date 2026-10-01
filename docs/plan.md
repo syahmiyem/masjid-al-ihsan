@@ -559,6 +559,8 @@ QR-code fraud is a real and growing problem in Malaysia, including fake QR stick
 5. **Change alert:** GitHub automatically requests (and emails) a review from the code owners for any pull request touching `config/derma/`, and the Pengerusi and Bendahari **watch** the repo, so they are also notified of merges. An unexpected change is therefore noticed quickly.
 6. **Live test:** after every change and quarterly, a committee member scans the live QR with two different banking apps, confirms the displayed recipient name, and sends RM1.
 
+**Real details received (1 Oct 2026, pending second approval):** Bank Islam DuitNow QR (static, MCC 8661, recipient name **"Masjid Al Ihsan"**, CRC verified) and account **060190-1002-6869**, holder **"Tetuan Setiausaha Badan Masjid Felda Sungai Panching Selatan"** (from the mosque's own poster). Because the QR and the account show **different recipient names**, the config stores both (`qrName`, `accountName`) and the page's safety note names the right one for each method. The QR image is **redrawn from the decoded payload** (sharper than the photographed card; decodes byte-for-byte identical). The build check now also verifies the EMV CRC and the DuitNow (PayNet) identifier. Still to do: Bendahari confirms against a bank statement; RM1 live test with two banking apps.
+
 **Sample content on UAT:** before real details are approved, the page shows a placeholder QR that **cannot be paid to** (it encodes the text "CONTOH — bukan akaun sebenar") and an obviously fake account number.
 
 **Share:** **Simpan Gambar** poster with QR, account name, account number and the safety note (1080×1350). The poster always shows the account name in text so a recipient can check it.

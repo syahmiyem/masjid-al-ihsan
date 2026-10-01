@@ -13,6 +13,7 @@ import { getSettings } from '../lib/sanity';
 
 const derma = dermaConfig as DermaConfig;
 const contoh = derma.status === 'contoh';
+const qrName = derma.qrName ?? derma.accountName;
 const settings = await getSettings();
 ---
 
@@ -38,7 +39,10 @@ const settings = await getSettings();
 
   <section class="card qr-card" aria-labelledby="qr-heading">
     <h2 id="qr-heading">Imbas DuitNow QR</h2>
-    <img src={qrUrl} width="240" height="240" alt={`Kod QR DuitNow untuk ${derma.accountName}`} class="qr" />
+    <img src={qrUrl} width="240" height="240" alt={`Kod QR DuitNow untuk ${qrName}`} class="qr" />
+    <p class="recipient">
+      Nama penerima: <strong>{qrName}</strong>
+    </p>
     <p class="muted">Buka aplikasi bank anda, pilih DuitNow QR / Imbas, dan imbas kod ini.</p>
   </section>
 
@@ -55,7 +59,7 @@ const settings = await getSettings();
       </div>
       <div>
         <dt>Nombor akaun</dt>
-        <dd class="acct">{groupDigits(derma.accountNumber)}</dd>
+        <dd class="acct">{derma.accountNumberDisplay ?? groupDigits(derma.accountNumber)}</dd>
       </div>
     </dl>
     <button class="btn btn-secondary copy" type="button" data-copy={derma.accountNumber} hidden>
@@ -67,9 +71,10 @@ const settings = await getSettings();
   <div class="safety" role="note">
     <TriangleAlert size={24} aria-hidden="true" />
     <p>
-      <strong>Sebelum mengesahkan pemindahan,</strong> pastikan nama penerima yang dipaparkan oleh aplikasi
-      bank anda ialah <strong>{derma.accountName}</strong>. Kod QR rasmi masjid hanya dipaparkan di laman ini
-      dan di papan kenyataan masjid.
+      <strong>Sebelum mengesahkan,</strong> pastikan nama penerima yang dipaparkan oleh aplikasi bank anda
+      ialah <strong>{qrName}</strong> (jika mengimbas QR) atau <strong>{derma.accountName}</strong> (jika
+      pindahan ke nombor akaun). Kod QR rasmi masjid hanya dipaparkan di laman ini dan di papan kenyataan
+      masjid.
     </p>
   </div>
 
@@ -180,6 +185,9 @@ const settings = await getSettings();
     font-size: 1.4rem;
     letter-spacing: 0.04em;
     font-variant-numeric: tabular-nums;
+  }
+  .recipient {
+    margin: 0 0 0.25rem;
   }
   .copied {
     margin: 0.5rem 0 0;

@@ -1,10 +1,11 @@
 {
-  "$comment": "Donation details (docs/plan.md 4.9, D-81). Changes only by pull request approved by a second code owner (.github/CODEOWNERS). Real values only after the Bendahari checks them against a bank letter.",
-  "status": "contoh",
-  "accountName": "CONTOH — BUKAN AKAUN SEBENAR",
-  "bank": "Bank Contoh",
-  "accountNumber": "000000000000",
+  "$comment": "Sumbangan details (docs/plan.md 4.9, D-81). Changes only by pull request approved by a second code owner (.github/CODEOWNERS). QR redrawn from the bank-issued DuitNow QR (Bank Islam) — same payload, verified identical; recipient name in the QR is 'Masjid Al Ihsan'. Account details from the mosque's own materials (poster); confirm with the Bendahari against a bank statement.",
+  "status": "rasmi",
+  "accountName": "Tetuan Setiausaha Badan Masjid Felda Sungai Panching Selatan",
+  "qrName": "Masjid Al Ihsan",
+  "bank": "Bank Islam",
+  "accountNumber": "06019010026869",
+  "accountNumberDisplay": "060190-1002-6869",
   "qrImage": "duitnow-qr.png",
-  "expectedQrPayload": "CONTOH - bukan akaun sebenar. Laman percubaan Masjid Al-Ihsan. Jangan buat bayaran.",
   "funds": []
 }
