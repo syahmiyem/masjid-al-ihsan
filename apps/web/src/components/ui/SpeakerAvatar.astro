@@ -1,0 +1,51 @@
+---
+// Speaker photo (with consent) or an initials circle (D-58). Decorative: the name is always shown beside it.
+import { initials, speakerPhoto } from '../../lib/speaker';
+import type { Speaker } from '../../lib/types';
+
+interface Props {
+  speaker: Speaker;
+  size?: number; // CSS px
+}
+const { speaker, size = 40 } = Astro.props;
+const src = speakerPhoto(speaker, size * 2);
+---
+
+{src ? (
+  <img
+    class="avatar"
+    src={src}
+    alt=""
+    width={size}
+    height={size}
+    loading="lazy"
+    decoding="async"
+    style={`--size:${size}px`}
+  />
+) : (
+  <span class="avatar initials" aria-hidden="true" style={`--size:${size}px`}>
+    {initials(speaker.nama)}
+  </span>
+)}
+
+<style>
+  .avatar {
+    flex: none;
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--c-accent);
+  }
+  .initials {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--c-primary);
+    color: var(--c-primary-soft);
+    font-weight: 700;
+    font-size: calc(var(--size) * 0.38);
+    letter-spacing: 0.02em;
+    line-height: 1;
+  }
+</style>

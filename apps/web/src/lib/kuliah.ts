@@ -1,7 +1,7 @@
 // Expands kuliah series (rules) into dated occurrences and applies per-date changes (D-11, plan 4.2).
 import { dateRange, nthWeekdayOfMonth, monthRange, weekdayOf } from './dates.ts';
 import { formatDate } from './format.ts';
-import type { KuliahPerubahan, KuliahSiri, Masa } from './types.ts';
+import type { KuliahPerubahan, KuliahSiri, Masa, Speaker } from './types.ts';
 
 export type OccurrenceStatus = 'dijadualkan' | 'dipinda' | 'ditangguhkan' | 'dibatalkan';
 
@@ -10,7 +10,7 @@ export type KuliahOccurrence = {
   date: string;
   masa: Masa;
   tempat: string;
-  penceramah?: string;
+  penceramah?: Speaker;
   status: OccurrenceStatus;
   /** Short label for the status badge, e.g. "PENCERAMAH JEMPUTAN" */
   label?: string;

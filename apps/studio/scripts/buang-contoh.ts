@@ -11,7 +11,17 @@ const ids = await client.fetch<string[]>(
   '*[string::startsWith(_id, "contoh-") || string::startsWith(_id, "drafts.contoh-")]._id',
 );
 // Delete documents that others reference last (references must go first)
-const order = ['perubahan', 'aktiviti', 'kuliah', 'kelas', 'perkhidmatan', 'jawatan', 'notis', 'tempat'];
+const order = [
+  'perubahan',
+  'aktiviti',
+  'kuliah',
+  'kelas',
+  'perkhidmatan',
+  'jawatan',
+  'notis',
+  'penceramah',
+  'tempat',
+];
 const rank = (id: string) => order.findIndex((p) => id.replace(/^drafts\./, '').startsWith(`contoh-${p}`));
 ids.sort((a, b) => rank(a) - rank(b));
 const tx = client.transaction();

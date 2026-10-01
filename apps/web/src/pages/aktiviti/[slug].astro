@@ -3,6 +3,7 @@
 import { ChevronLeft } from '@lucide/astro';
 import MonthView from '../../components/MonthView.astro';
 import ShareBar from '../../components/ShareBar.astro';
+import SpeakerCard from '../../components/ui/SpeakerCard.astro';
 import StatusLabel from '../../components/ui/StatusLabel.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { calendarItems, calendarMonths } from '../../lib/calendar';
@@ -122,6 +123,7 @@ const dateText = a
       )}
       {a.notaPerubahan && <p class="change">{a.notaPerubahan}</p>}
 
+      {a.penceramah && <SpeakerCard speaker={a.penceramah} />}
       <dl class="card facts">
         <div>
           <dt>Tarikh</dt>
@@ -135,10 +137,10 @@ const dateText = a
           <dt>Tempat</dt>
           <dd>{a.tempat}</dd>
         </div>
-        {a.penceramah && (
+        {a.penganjur && (
           <div>
-            <dt>Penceramah / Penganjur</dt>
-            <dd>{a.penceramah}</dd>
+            <dt>Penganjur</dt>
+            <dd>{a.penganjur}</dd>
           </div>
         )}
         <div>
@@ -174,7 +176,7 @@ const dateText = a
   }
   .facts div {
     display: grid;
-    grid-template-columns: 8rem 1fr;
+    grid-template-columns: 6.5rem 1fr;
     gap: 0.5rem;
     padding: 0.4rem 0;
   }

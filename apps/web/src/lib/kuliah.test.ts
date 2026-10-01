@@ -11,7 +11,7 @@ const weekly: KuliahSiri = {
   hari: 'isnin',
   masa: { jenis: 'solat', waktuSolat: 'selepas-maghrib' },
   tempat: 'Dewan Solat Utama',
-  penceramah: 'Ustaz A',
+  penceramah: { nama: 'Ustaz A' },
   aktifDari: '2026-10-01',
 };
 const monthly: KuliahSiri = {
@@ -78,7 +78,7 @@ test('guest speaker, venue and time changes', () => {
       siri: 'maghrib',
       tarikh: '2026-10-05',
       jenis: 'penceramah-jemputan',
-      penceramahJemputan: 'Ustaz B',
+      penceramahJemputan: { nama: 'Ustaz B' },
     },
     {
       _id: 't',
@@ -96,7 +96,7 @@ test('guest speaker, venue and time changes', () => {
     },
   ];
   const occ = expandKuliah([weekly], changes, '2026-10-01', '2026-10-31');
-  assert.equal(occ[0].penceramah, 'Ustaz B');
+  assert.deepEqual(occ[0].penceramah, { nama: 'Ustaz B' });
   assert.equal(occ[0].label, 'PENCERAMAH JEMPUTAN');
   assert.equal(occ[2].tempat, 'Dewan Serbaguna');
   assert.equal(occ[3].masa.waktuSolat, 'selepas-isyak');

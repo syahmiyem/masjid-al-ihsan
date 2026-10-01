@@ -34,7 +34,31 @@ export type EventRow = {
   wide?: boolean;
   /** Optional third line, e.g. the speaker */
   extra?: string;
+  /** Speaker photo (data URL) or initials, shown as a circle on the right */
+  avatar?: Avatar;
 };
+export type Avatar = { src?: string; initials: string };
+
+function avatarNode(a: Avatar, size: number): PosterNode {
+  return a.src
+    ? img(a.src, size, size, { borderRadius: size / 2, border: `4px solid ${c.accent}` })
+    : h(
+        'div',
+        {
+          width: size,
+          height: size,
+          borderRadius: size / 2,
+          background: c.primary,
+          color: c.primarySoft,
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: Math.round(size * 0.38),
+          fontWeight: 700,
+          border: `4px solid ${c.accent}`,
+        },
+        a.initials,
+      );
+}
 export type ListBlock = { kind: 'heading'; text: string } | { kind: 'row'; row: EventRow };
 
 const ROW_H = 112;
@@ -81,7 +105,7 @@ function renderBlock(b: ListBlock): PosterNode {
         ),
     h(
       'div',
-      { flexDirection: 'column', width: r.wide ? full : full - 144 },
+      { flexDirection: 'column', width: (r.wide ? full : full - 144) - (r.avatar ? 104 : 0) },
       h(
         'div',
         {
@@ -109,6 +133,7 @@ function renderBlock(b: ListBlock): PosterNode {
         ? h('div', { fontSize: 32, color: c.textMuted, lineHeight: 1.3, ...ONE_LINE }, clip(r.extra, 54))
         : null,
     ),
+    r.avatar ? h('div', { marginLeft: 'auto', paddingLeft: 16 }, avatarNode(r.avatar, 88)) : null,
   );
 }
 
@@ -155,12 +180,14 @@ export type ItemPoster = {
   bullets?: string[];
   description?: string;
   footerLine?: string; // e.g. "Maklumat lanjut: /aktiviti/…"
+  speaker?: { name: string; role?: string; avatar: Avatar };
 };
 
 export function itemPoster(format: FormatKey, info: FrameInfo, p: ItemPoster): PosterNode {
   const tall = format === 'status';
   // Stay within the portrait budget: less description when a status box and many facts compete for space
-  const crowded = Boolean(p.status) || p.facts.length >= 4 || (p.bullets?.length ?? 0) > 3;
+  const crowded =
+    Boolean(p.status) || Boolean(p.speaker) || p.facts.length >= 4 || (p.bullets?.length ?? 0) > 3;
   const descMax = tall ? 330 : crowded ? 70 : 130;
   return frame(
     format,
@@ -185,6 +212,36 @@ export function itemPoster(format: FormatKey, info: FrameInfo, p: ItemPoster): P
           p.status.note ? h('div', { fontSize: 32 }, clip(p.status.note, 90)) : null,
         ),
       h('div', { fontSize: 60, fontWeight: 700, lineHeight: 1.12, marginTop: 20 }, clip(p.title, 75)),
+      p.speaker
+        ? h(
+            'div',
+            {
+              alignItems: 'center',
+              marginTop: 20,
+              padding: '14px 18px',
+              background: c.primarySoft,
+              borderRadius: 16,
+            },
+            avatarNode(p.speaker.avatar, tall ? 180 : 132),
+            h(
+              'div',
+              {
+                flexDirection: 'column',
+                marginLeft: 24,
+                width: FORMATS.potret.width - 2 * PAD - (tall ? 180 : 132) - 60,
+              },
+              h('div', { fontSize: 32, color: c.textMuted }, 'Penceramah'),
+              h(
+                'div',
+                { fontSize: 42, fontWeight: 700, color: c.primary, lineHeight: 1.15 },
+                clip(p.speaker.name, 40),
+              ),
+              p.speaker.role
+                ? h('div', { fontSize: 32, color: c.textMuted }, clip(p.speaker.role, 44))
+                : null,
+            ),
+          )
+        : null,
       h(
         'div',
         { flexDirection: 'column', marginTop: 20 },
@@ -209,7 +266,7 @@ export function itemPoster(format: FormatKey, info: FrameInfo, p: ItemPoster): P
       p.description
         ? h('div', { fontSize: 36, lineHeight: 1.35, marginTop: 16 }, clip(p.description, descMax))
         : null,
-      p.footerLine
+      p.footerLine && !(crowded && !tall)
         ? h('div', { fontSize: 32, color: c.primary, fontWeight: 700, marginTop: 20 }, p.footerLine)
         : null,
     ),

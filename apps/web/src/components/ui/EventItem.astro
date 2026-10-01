@@ -2,6 +2,8 @@
 // One row in an activity / kuliah list (plan 4.1–4.2): big date, then title, time, place, status.
 import { Clock, MapPin } from '@lucide/astro';
 import { dayName } from '../../lib/format';
+import type { Speaker } from '../../lib/types';
+import SpeakerAvatar from './SpeakerAvatar.astro';
 import StatusLabel, { type Status } from './StatusLabel.astro';
 
 interface Props {
@@ -14,7 +16,7 @@ interface Props {
   /** Overrides the status badge text, e.g. "PENCERAMAH JEMPUTAN" */
   label?: string;
   note?: string;
-  speaker?: string;
+  speaker?: Speaker;
 }
 const { date, title, time, place, href, status = 'dijadualkan', label, note, speaker } = Astro.props;
 const [, m, d] = date.split('-');
@@ -43,7 +45,11 @@ const past = status === 'berlangsung';
     <p class="meta">
       <MapPin size={18} aria-hidden="true" /> {place}
     </p>
-    {speaker && <p class="meta speaker">{speaker}</p>}
+    {speaker && (
+      <p class="meta speaker">
+        <SpeakerAvatar speaker={speaker} size={36} /> {speaker.nama}
+      </p>
+    )}
   </div>
 </article>
 
@@ -86,6 +92,12 @@ const past = status === 'berlangsung';
     gap: 0.4rem;
     margin: 0.2rem 0 0;
     color: var(--c-text-muted);
+  }
+  .meta.speaker {
+    gap: 0.6rem;
+    margin-top: 0.45rem;
+    color: var(--c-text);
+    font-weight: 700;
   }
   .note {
     margin: 0.35rem 0;

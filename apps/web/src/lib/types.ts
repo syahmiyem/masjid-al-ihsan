@@ -7,6 +7,13 @@ export type Masa = {
   jamTamat?: string;
 };
 
+/** A speaker from the Penceramah list (D-58). `gambar` only present when the speaker consented. */
+export type Speaker = {
+  nama: string;
+  keterangan?: string;
+  gambar?: { alt?: string; asset?: { _ref: string }; crop?: unknown; hotspot?: unknown };
+};
+
 export type ActivityStatus = 'dijadualkan' | 'dipinda' | 'ditangguhkan' | 'dibatalkan';
 
 export type Aktiviti = {
@@ -19,7 +26,8 @@ export type Aktiviti = {
   tempat: string;
   kategori: string;
   sasaran?: string;
-  penceramah?: string;
+  penceramah?: Speaker;
+  penganjur?: string;
   penerangan?: string;
   status: ActivityStatus;
   tarikhBaharu?: string;
@@ -35,7 +43,7 @@ export type KuliahSiri = {
   mingguKe?: '1' | '2' | '3' | '4' | 'terakhir';
   masa: Masa;
   tempat: string;
-  penceramah?: string;
+  penceramah?: Speaker;
   topik?: string;
   sasaran?: string;
   aktifDari: string;
@@ -49,7 +57,7 @@ export type KuliahPerubahan = {
   tarikh: string;
   jenis: 'dibatalkan' | 'ditangguhkan' | 'penceramah-jemputan' | 'tukar-tempat' | 'tukar-masa';
   tarikhBaharu?: string;
-  penceramahJemputan?: string;
+  penceramahJemputan?: Speaker;
   tempatBaharu?: string;
   masaBaharu?: Masa;
   sebab?: string;

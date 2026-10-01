@@ -71,7 +71,21 @@ export const aktiviti = defineType({
       options: { list: AUDIENCES, layout: 'radio', direction: 'horizontal' },
       initialValue: 'umum',
     }),
-    defineField({ name: 'penceramah', title: 'Penceramah / Penganjur', type: 'string' }),
+    defineField({
+      name: 'penceramah',
+      title: 'Penceramah (pilihan)',
+      description:
+        'Pilih daripada senarai. Tiada dalam senarai? Tekan "Create" untuk menambah penceramah baharu.',
+      type: 'reference',
+      to: [{ type: 'penceramah' }],
+      options: { filter: 'diarkibkan != true' },
+    }),
+    defineField({
+      name: 'penganjur',
+      title: 'Penganjur (pilihan)',
+      description: 'Jika bukan penceramah. Contoh: Biro Dakwah, Unit Pengurusan Jenazah',
+      type: 'string',
+    }),
     defineField({ name: 'penerangan', title: 'Penerangan', type: 'text', rows: 4 }),
     defineField({
       name: 'poster',

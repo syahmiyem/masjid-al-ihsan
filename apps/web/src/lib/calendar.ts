@@ -3,7 +3,7 @@ import { addMonths, dateRange } from './dates.ts';
 import { formatDate } from './format.ts';
 import { expandKuliah } from './kuliah.ts';
 import { masaLabel, masaSortKey } from './masa.ts';
-import type { Aktiviti, KuliahPerubahan, KuliahSiri } from './types.ts';
+import type { Aktiviti, KuliahPerubahan, KuliahSiri, Speaker } from './types.ts';
 import type { PrayerDay } from './waktu-solat.ts';
 
 export type DisplayStatus = 'dijadualkan' | 'dipinda' | 'ditangguhkan' | 'dibatalkan' | 'berlangsung';
@@ -18,7 +18,7 @@ export type CalendarItem = {
   timePlain: string;
   sortKey: string;
   place: string;
-  speaker?: string;
+  speaker?: Speaker;
   status: DisplayStatus;
   label?: string;
   note?: string;

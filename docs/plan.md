@@ -1,7 +1,7 @@
 # Masjid Al-Ihsan Website — Project Plan & Source of Truth
 
 **Mosque:** Masjid Al-Ihsan, Felda Sungai (Sg) Panching Selatan, Kuantan, Pahang, Malaysia
-**Document status:** Draft v1.8 — build-first; Phases 0–3 complete (enquiry form deferred); ready for Phase 4 committee presentation; to be presented to the committee alongside a working UAT site
+**Document status:** Draft v1.9 — build-first; Phases 0–3 complete (enquiry form deferred); ready for Phase 4 committee presentation; to be presented to the committee alongside a working UAT site
 **Prepared:** 30 September 2026 · **Revised:** 1 October 2026
 **File:** `masjid-al-ihsan-website-plan.md`
 
@@ -28,6 +28,7 @@
 | 1.6 | 1 Oct 2026 | **Export to image for all content** brought forward from Phase 3 into Phase 2 (brief: "export selected content as attractive, readable images for WhatsApp and social media"): 10 templates, portrait + WhatsApp Status sizes, per-page link previews, "Simpan Gambar" panel with download + native file share (4.4; D-30, D-31, D-34, D-37). |
 | 1.7 | 1 Oct 2026 | Brand refresh: official colours (navy / cream / gold), Nunito Sans as an open-licence Avenir-style typeface, full-screen menu, gentle site-wide animations (5.4; D-53 – D-56). |
 | 1.8 | 1 Oct 2026 | Renamed sections to Khidmat and Sumbangan (D-57); Studio practice workspace "Latihan" (7.6). |
+| 1.9 | 1 Oct 2026 | Penceramah list with photos (D-58). |
 
 ---
 
@@ -1317,6 +1318,7 @@ Status key: **Decided** (agreed, with date) · **Recommended** (adopt unless obj
 | D-55 | Design | Full-screen menu from the header Menu button | **Decided** 1 Oct 2026 | Keyboard: Escape closes; background inert |
 | D-56 | Design | Smooth, gentle CSS animations site-wide; off under prefers-reduced-motion | **Decided** 1 Oct 2026 | 5.4 |
 | D-57 | Content | Section names: **"Khidmat"** (was Perkhidmatan) and **"Sumbangan"** (was Derma) in all visible text, Studio labels and share images; URLs `/khidmat`, `/sumbangan` with 301 redirects from the old paths. Internal code names unchanged | **Decided** 1 Oct 2026 | |
+| D-58 | Content | **Penceramah list**: speakers are chosen from a searchable dropdown (with inline "Create") on Siri Kuliah, Aktiviti and Perubahan (guest speaker); each speaker has an optional photo (shown only with a consent tick, else an initials circle) and a one-line description; photo shown on kuliah/activity pages, the timetable, Minggu Ini, share images and in structured data. Activities also get a separate "Penganjur" text field | **Decided** 1 Oct 2026 | Photo consent as D-72 |
 | D-74 | Plan | Target go-live date | Needs confirmation | Suggest before Ramadan 1448 (expected early February 2027) to catch the pre-Ramadan traffic spike (A1) |
 
 ---

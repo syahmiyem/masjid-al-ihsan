@@ -74,7 +74,15 @@ export const kuliahSiri = defineType({
       to: [{ type: 'tempat' }],
       validation: (rule) => rule.required(),
     }),
-    defineField({ name: 'penceramah', title: 'Penceramah biasa', type: 'string' }),
+    defineField({
+      name: 'penceramah',
+      title: 'Penceramah biasa',
+      description:
+        'Pilih daripada senarai. Tiada dalam senarai? Tekan "Create" untuk menambah penceramah baharu.',
+      type: 'reference',
+      to: [{ type: 'penceramah' }],
+      options: { filter: 'diarkibkan != true' },
+    }),
     defineField({ name: 'topik', title: 'Topik / Kitab', type: 'string' }),
     defineField({
       name: 'sasaran',
@@ -106,7 +114,13 @@ export const kuliahSiri = defineType({
     arkibField,
   ],
   preview: {
-    select: { nama: 'nama', jenis: 'jenis', hari: 'hari', mingguKe: 'mingguKe', penceramah: 'penceramah' },
+    select: {
+      nama: 'nama',
+      jenis: 'jenis',
+      hari: 'hari',
+      mingguKe: 'mingguKe',
+      penceramah: 'penceramah.nama',
+    },
     prepare: ({ nama, jenis, hari, mingguKe, penceramah }) => {
       const day = titleOf(WEEKDAYS, hari);
       const when =
