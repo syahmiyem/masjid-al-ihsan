@@ -1,4 +1,6 @@
 import { defineField, defineType } from 'sanity';
+import { LockedSlugInput } from '../components/LockedSlugInput';
+import { arkibField } from './objects/arkib';
 import { AUDIENCES, WEEKDAYS, titleOf } from './lists';
 
 // A recurring kuliah defined once by a rule (D-11, plan 4.2). Individual changes go in kuliahPerubahan.
@@ -19,6 +21,7 @@ export const kuliahSiri = defineType({
       title: 'Pautan (URL)',
       description: 'Dijana daripada nama. Jangan ubah selepas diterbitkan.',
       type: 'slug',
+      components: { input: LockedSlugInput },
       options: { source: 'nama', maxLength: 80 },
       validation: (rule) => rule.required(),
     }),
@@ -100,6 +103,7 @@ export const kuliahSiri = defineType({
         }),
     }),
     defineField({ name: 'penerangan', title: 'Penerangan', type: 'text', rows: 3 }),
+    arkibField,
   ],
   preview: {
     select: { nama: 'nama', jenis: 'jenis', hari: 'hari', mingguKe: 'mingguKe', penceramah: 'penceramah' },

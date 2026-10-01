@@ -1,5 +1,6 @@
 // Build-time content from Sanity (plan 9.1). Pages are static, so nothing here runs in visitors' browsers.
-// Published content only; enquiries (private "pertanyaan." IDs) are never readable without a token.
+// Published content only, archived items excluded (plan 7.5); enquiries (private "pertanyaan." IDs) are
+// never readable without a token.
 import { createClient } from '@sanity/client';
 import type { Aktiviti, KuliahPerubahan, KuliahSiri } from './types.ts';
 
@@ -70,7 +71,7 @@ export const getSettings = () =>
 export const getAktiviti = () =>
   cached<Aktiviti[]>(
     'aktiviti',
-    `*[_type == "aktiviti" && defined(slug.current)] | order(tarikhMula asc) {
+    `*[_type == "aktiviti" && defined(slug.current) && diarkibkan != true] | order(tarikhMula asc) {
       _id, tajuk, "slug": slug.current, tarikhMula, tarikhTamat, masa, "tempat": tempat->nama,
       kategori, sasaran, penceramah, penerangan, status, tarikhBaharu, notaPerubahan
     }`,
@@ -79,7 +80,7 @@ export const getAktiviti = () =>
 export const getKuliahSiri = () =>
   cached<KuliahSiri[]>(
     'kuliahSiri',
-    `*[_type == "kuliahSiri" && defined(slug.current)] | order(nama asc) {
+    `*[_type == "kuliahSiri" && defined(slug.current) && diarkibkan != true] | order(nama asc) {
       _id, nama, "slug": slug.current, jenis, hari, mingguKe, masa, "tempat": tempat->nama,
       penceramah, topik, sasaran, aktifDari, aktifHingga, penerangan
     }`,
@@ -88,7 +89,7 @@ export const getKuliahSiri = () =>
 export const getKuliahPerubahan = () =>
   cached<KuliahPerubahan[]>(
     'kuliahPerubahan',
-    `*[_type == "kuliahPerubahan"] {
+    `*[_type == "kuliahPerubahan" && diarkibkan != true] {
       _id, "siri": siri._ref, tarikh, jenis, tarikhBaharu, penceramahJemputan,
       "tempatBaharu": tempatBaharu->nama, masaBaharu, sebab
     }`,
@@ -97,7 +98,7 @@ export const getKuliahPerubahan = () =>
 export const getPerkhidmatan = () =>
   cached<Perkhidmatan[]>(
     'perkhidmatan',
-    `*[_type == "perkhidmatan" && defined(slug.current)] | order(susunan asc, nama asc) {
+    `*[_type == "perkhidmatan" && defined(slug.current) && diarkibkan != true] | order(susunan asc, nama asc) {
       _id, nama, "slug": slug.current, ringkasan,
       "gambar": gambar[]{ alt, "url": asset->url, "width": asset->metadata.dimensions.width,
                           "height": asset->metadata.dimensions.height },
@@ -108,7 +109,7 @@ export const getPerkhidmatan = () =>
 export const getJawatan = () =>
   cached<Jawatan[]>(
     'jawatan',
-    `*[_type == "jawatan"] | order(susunan asc) {
+    `*[_type == "jawatan" && diarkibkan != true] | order(susunan asc) {
       _id, jawatan, kumpulan, biro, kosong, nama, susunan,
       "gambar": select(kebenaranGambar == true => gambar{ alt, "url": asset->url })
     }`,
@@ -118,7 +119,7 @@ export const getJawatan = () =>
 export const getNotis = (nowIso: string) =>
   cached<Notis[]>(
     `notis-${nowIso.slice(0, 13)}`,
-    `*[_type == "notis" && paparDari <= $now && paparHingga > $now] | order(tahap desc, paparDari desc) {
+    `*[_type == "notis" && diarkibkan != true && paparDari <= $now && paparHingga > $now] | order(tahap desc, paparDari desc) {
       _id, mesej, tahap, pautan
     }`,
     { now: nowIso },

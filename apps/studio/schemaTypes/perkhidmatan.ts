@@ -1,4 +1,6 @@
 import { defineArrayMember, defineField, defineType } from 'sanity';
+import { LockedSlugInput } from '../components/LockedSlugInput';
+import { arkibField } from './objects/arkib';
 
 // One service = one SEO page (plan 4.3, D-60). Structured fields only, so layout can't break (plan 7.5).
 export const perkhidmatan = defineType({
@@ -25,6 +27,7 @@ export const perkhidmatan = defineType({
       title: 'Pautan (URL)',
       description: 'Contoh: dewan-akad-nikah. Jangan ubah selepas diterbitkan — penting untuk carian Google.',
       type: 'slug',
+      components: { input: LockedSlugInput },
       options: { source: 'nama', maxLength: 60 },
       group: 'utama',
       validation: (rule) => rule.required(),
@@ -187,6 +190,7 @@ export const perkhidmatan = defineType({
       ],
       validation: (rule) => rule.max(6),
     }),
+    { ...arkibField, group: 'utama' },
   ],
   orderings: [{ title: 'Susunan paparan', name: 'susunan', by: [{ field: 'susunan', direction: 'asc' }] }],
   preview: { select: { title: 'nama', subtitle: 'ringkasan', media: 'gambar.0' } },

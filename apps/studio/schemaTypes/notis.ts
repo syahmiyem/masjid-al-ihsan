@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity';
+import { arkibField } from './objects/arkib';
 
 // Banner for urgent changes on the home page (plan 3.3, D-18).
 export const notis = defineType({
@@ -53,6 +54,7 @@ export const notis = defineType({
       description: 'Contoh: /kuliah',
       type: 'string',
     }),
+    arkibField,
   ],
   preview: { select: { title: 'mesej', subtitle: 'paparHingga' } },
 });

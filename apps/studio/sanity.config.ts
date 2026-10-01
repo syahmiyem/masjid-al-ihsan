@@ -20,10 +20,16 @@ export default defineConfig({
     templates: (templates) => templates.filter(({ schemaType }) => !SINGLETONS.has(schemaType)),
   },
   document: {
-    // Singletons can only be published, discarded or restored — never duplicated or deleted
-    actions: (actions, { schemaType }) =>
-      SINGLETONS.has(schemaType)
-        ? actions.filter(({ action }) => action && ['publish', 'discardChanges', 'restore'].includes(action))
-        : actions,
+    actions: (actions, { schemaType, currentUser }) => {
+      // Singletons can only be published, discarded or restored — never duplicated or deleted
+      if (SINGLETONS.has(schemaType)) {
+        return actions.filter(
+          ({ action }) => action && ['publish', 'discardChanges', 'restore'].includes(action),
+        );
+      }
+      // Archive instead of delete (plan 7.5, D-26): only a Pentadbir (administrator) can delete permanently
+      const isAdmin = currentUser?.roles?.some((r) => r.name === 'administrator');
+      return isAdmin ? actions : actions.filter(({ action }) => action !== 'delete');
+    },
   },
 });
