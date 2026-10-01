@@ -172,7 +172,20 @@ var p = n({
         options: { list: h, layout: `radio`, direction: `horizontal` },
         initialValue: `umum`,
       }),
-      n({ name: `penceramah`, title: `Penceramah / Penganjur`, type: `string` }),
+      n({
+        name: `penceramah`,
+        title: `Penceramah (pilihan)`,
+        description: `Pilih daripada senarai. Tiada dalam senarai? Tekan "Create" untuk menambah penceramah baharu.`,
+        type: `reference`,
+        to: [{ type: `penceramah` }],
+        options: { filter: `diarkibkan != true` },
+      }),
+      n({
+        name: `penganjur`,
+        title: `Penganjur (pilihan)`,
+        description: `Jika bukan penceramah. Contoh: Biro Dakwah, Unit Pengurusan Jenazah`,
+        type: `string`,
+      }),
       n({ name: `penerangan`, title: `Penerangan`, type: `text`, rows: 4 }),
       n({
         name: `poster`,
@@ -365,12 +378,15 @@ var p = n({
       }),
       n({
         name: `penceramahJemputan`,
-        title: `Nama penceramah jemputan`,
-        type: `string`,
+        title: `Penceramah jemputan`,
+        description: `Pilih daripada senarai, atau tekan "Create" untuk menambah penceramah baharu.`,
+        type: `reference`,
+        to: [{ type: `penceramah` }],
+        options: { filter: `diarkibkan != true` },
         hidden: ({ document: e }) => e?.jenis !== `penceramah-jemputan`,
         validation: (e) =>
           e.custom((e, { document: t }) =>
-            t?.jenis !== `penceramah-jemputan` || e ? !0 : `Sila isi nama penceramah.`,
+            t?.jenis !== `penceramah-jemputan` || e ? !0 : `Sila pilih penceramah jemputan.`,
           ),
       }),
       n({
@@ -478,7 +494,14 @@ var p = n({
         to: [{ type: `tempat` }],
         validation: (e) => e.required(),
       }),
-      n({ name: `penceramah`, title: `Penceramah biasa`, type: `string` }),
+      n({
+        name: `penceramah`,
+        title: `Penceramah biasa`,
+        description: `Pilih daripada senarai. Tiada dalam senarai? Tekan "Create" untuk menambah penceramah baharu.`,
+        type: `reference`,
+        to: [{ type: `penceramah` }],
+        options: { filter: `diarkibkan != true` },
+      }),
       n({ name: `topik`, title: `Topik / Kitab`, type: `string` }),
       n({
         name: `sasaran`,
@@ -510,7 +533,13 @@ var p = n({
       p,
     ],
     preview: {
-      select: { nama: `nama`, jenis: `jenis`, hari: `hari`, mingguKe: `mingguKe`, penceramah: `penceramah` },
+      select: {
+        nama: `nama`,
+        jenis: `jenis`,
+        hari: `hari`,
+        mingguKe: `mingguKe`,
+        penceramah: `penceramah.nama`,
+      },
       prepare: ({ nama: e, jenis: t, hari: n, mingguKe: r, penceramah: i }) => {
         let a = b(v, n);
         return {
@@ -579,6 +608,48 @@ var p = n({
     preview: { select: { title: `mesej`, subtitle: `paparHingga` } },
   }),
   D = r({
+    name: `penceramah`,
+    title: `Penceramah`,
+    type: `document`,
+    fields: [
+      n({
+        name: `nama`,
+        title: `Nama penuh dengan gelaran`,
+        description: `Seperti yang mahu dipaparkan. Contoh: Ustaz Ahmad bin Ali`,
+        type: `string`,
+        validation: (e) => e.required(),
+      }),
+      n({
+        name: `keterangan`,
+        title: `Keterangan ringkas (pilihan)`,
+        description: `Satu baris. Contoh: Imam Masjid Al-Ihsan, atau Pensyarah UIAM Kuantan`,
+        type: `string`,
+        validation: (e) => e.max(80),
+      }),
+      n({
+        name: `gambar`,
+        title: `Gambar (pilihan)`,
+        description: `Gambar wajah yang jelas. Klik "Edit" untuk memilih bahagian wajah supaya dipotong dengan betul.`,
+        type: `gambar`,
+      }),
+      n({
+        name: `kebenaranGambar`,
+        title: `Penceramah telah memberi kebenaran untuk gambar ini dipaparkan`,
+        description: `Wajib jika ada gambar. Tanpa kebenaran, laman web memaparkan huruf awal nama sahaja.`,
+        type: `boolean`,
+        hidden: ({ document: e }) => !e?.gambar,
+        validation: (e) =>
+          e.custom(
+            (e, { document: t }) =>
+              !t?.gambar || e === !0 || `Gambar hanya boleh diterbitkan dengan kebenaran penceramah.`,
+          ),
+      }),
+      p,
+    ],
+    orderings: [{ title: `Nama`, name: `nama`, by: [{ field: `nama`, direction: `asc` }] }],
+    preview: { select: { title: `nama`, subtitle: `keterangan`, media: `gambar` } },
+  }),
+  O = r({
     name: `gambar`,
     title: `Gambar`,
     type: `image`,
@@ -593,8 +664,8 @@ var p = n({
       }),
     ],
   }),
-  O = /^([01]\d|2[0-3]):[0-5]\d$/,
-  k = r({
+  k = /^([01]\d|2[0-3]):[0-5]\d$/,
+  A = r({
     name: `masa`,
     title: `Masa`,
     type: `object`,
@@ -623,7 +694,7 @@ var p = n({
           e.custom((e, { parent: t }) =>
             t?.jenis === `jam`
               ? e
-                ? O.test(e) || `Gunakan format 24 jam, contoh 20:30.`
+                ? k.test(e) || `Gunakan format 24 jam, contoh 20:30.`
                 : `Sila isi jam.`
               : !0,
           ),
@@ -642,7 +713,7 @@ var p = n({
         title: `Jam tamat (jika ada)`,
         description: `Pilihan. Format 24 jam, contoh 22:00`,
         type: `string`,
-        validation: (e) => e.custom((e) => !e || O.test(e) || `Gunakan format 24 jam, contoh 22:00.`),
+        validation: (e) => e.custom((e) => !e || k.test(e) || `Gunakan format 24 jam, contoh 22:00.`),
       }),
     ],
     preview: {
@@ -650,7 +721,7 @@ var p = n({
       prepare: ({ jenis: e, jam: t, waktuSolat: n }) => ({ title: e === `jam` ? t : b(_, n) }),
     },
   }),
-  A = r({
+  j = r({
     name: `perkhidmatan`,
     title: `Khidmat`,
     type: `document`,
@@ -835,7 +906,7 @@ var p = n({
     orderings: [{ title: `Susunan paparan`, name: `susunan`, by: [{ field: `susunan`, direction: `asc` }] }],
     preview: { select: { title: `nama`, subtitle: `ringkasan`, media: `gambar.0` } },
   }),
-  j = r({
+  M = r({
     name: `siteSettings`,
     title: `Tetapan Masjid`,
     type: `document`,
@@ -882,15 +953,16 @@ var p = n({
     ],
     preview: { prepare: () => ({ title: `Tetapan Masjid` }) },
   }),
-  M = [
-    D,
-    k,
+  N = [
+    O,
+    A,
     x,
     T,
     w,
     E,
-    A,
+    j,
     S,
+    D,
     r({
       name: `tempat`,
       title: `Tempat`,
@@ -906,10 +978,10 @@ var p = n({
       ],
       preview: { select: { title: `nama` } },
     }),
-    j,
+    M,
   ],
-  N = new Set([`siteSettings`]),
-  P = (e, t, n, r) =>
+  P = new Set([`siteSettings`]),
+  F = (e, t, n, r) =>
     e
       .listItem()
       .title(n)
@@ -922,7 +994,7 @@ var p = n({
           .params({ type: t })
           .defaultOrdering(r),
       ),
-  F = {
+  I = {
     projectId: `1xd617ey`,
     plugins: [
       c({
@@ -932,7 +1004,7 @@ var p = n({
             .list()
             .title(`Kandungan`)
             .items([
-              P(e, `aktiviti`, `Aktiviti & Kalendar`, [{ field: `tarikhMula`, direction: `desc` }]),
+              F(e, `aktiviti`, `Aktiviti & Kalendar`, [{ field: `tarikhMula`, direction: `desc` }]),
               e
                 .listItem()
                 .title(`Jadual Kuliah`)
@@ -941,20 +1013,21 @@ var p = n({
                     .list()
                     .title(`Jadual Kuliah`)
                     .items([
-                      P(e, `kuliahSiri`, `Siri Kuliah`, [{ field: `nama`, direction: `asc` }]),
-                      P(e, `kuliahPerubahan`, `Perubahan (Batal / Penceramah Jemputan)`, [
+                      F(e, `kuliahSiri`, `Siri Kuliah`, [{ field: `nama`, direction: `asc` }]),
+                      F(e, `kuliahPerubahan`, `Perubahan (Batal / Penceramah Jemputan)`, [
                         { field: `tarikh`, direction: `desc` },
                       ]),
                     ]),
                 ),
-              P(e, `notis`, `Notis Penting`, [{ field: `paparDari`, direction: `desc` }]),
+              F(e, `notis`, `Notis Penting`, [{ field: `paparDari`, direction: `desc` }]),
               e.divider(),
-              P(e, `perkhidmatan`, `Khidmat`, [{ field: `susunan`, direction: `asc` }]),
-              P(e, `jawatan`, `Carta Organisasi`, [
+              F(e, `perkhidmatan`, `Khidmat`, [{ field: `susunan`, direction: `asc` }]),
+              F(e, `jawatan`, `Carta Organisasi`, [
                 { field: `kumpulan`, direction: `asc` },
                 { field: `susunan`, direction: `asc` },
               ]),
               e.divider(),
+              F(e, `penceramah`, `Penceramah`, [{ field: `nama`, direction: `asc` }]),
               e.documentTypeListItem(`tempat`).title(`Tempat`),
               e
                 .listItem()
@@ -976,19 +1049,19 @@ var p = n({
             ]),
       }),
     ],
-    schema: { types: M, templates: (e) => e.filter(({ schemaType: e }) => !N.has(e)) },
+    schema: { types: N, templates: (e) => e.filter(({ schemaType: e }) => !P.has(e)) },
     document: {
       actions: (e, { schemaType: t, currentUser: n }) =>
-        N.has(t)
+        P.has(t)
           ? e.filter(({ action: e }) => e && [`publish`, `discardChanges`, `restore`].includes(e))
           : n?.roles?.some((e) => e.name === `administrator`)
             ? e
             : e.filter(({ action: e }) => e !== `delete`),
     },
   },
-  I = t([
+  L = t([
     {
-      ...F,
+      ...I,
       name: `kandungan`,
       title: `Laman Web Masjid (sebenar)`,
       subtitle: `Kandungan yang dipaparkan di laman web`,
@@ -996,7 +1069,7 @@ var p = n({
       dataset: `production`,
     },
     {
-      ...F,
+      ...I,
       name: `latihan`,
       title: `Latihan (praktis sahaja)`,
       subtitle: `Tidak dipaparkan di laman web — selamat untuk mencuba`,
@@ -1004,4 +1077,4 @@ var p = n({
       dataset: `latihan`,
     },
   ]);
-i(document.getElementById(`sanity`), I, { reactStrictMode: !1, basePath: `/` });
+i(document.getElementById(`sanity`), L, { reactStrictMode: !1, basePath: `/` });

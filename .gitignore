@@ -10,3 +10,6 @@ apps/studio/dist/
 .DS_Store
 ._*
 *.log
+
+# Source photos dropped into the repo root for reference; never commit them
+/PHOTO-*

@@ -385,9 +385,24 @@
         "type": "string"
       },
       {
+        "options": {
+          "filter": "diarkibkan != true"
+        },
+        "description": "Pilih daripada senarai. Tiada dalam senarai? Tekan \"Create\" untuk menambah penceramah baharu.",
+        "to": [
+          {
+            "type": "penceramah"
+          }
+        ],
         "name": "penceramah",
+        "type": "reference",
+        "title": "Penceramah (pilihan)"
+      },
+      {
+        "description": "Jika bukan penceramah. Contoh: Biro Dakwah, Unit Pengurusan Jenazah",
+        "name": "penganjur",
         "type": "string",
-        "title": "Penceramah / Penganjur"
+        "title": "Penganjur (pilihan)"
       },
       {
         "rows": 4,
@@ -693,8 +708,17 @@
         "type": "reference"
       },
       {
+        "options": {
+          "filter": "diarkibkan != true"
+        },
+        "description": "Pilih daripada senarai. Tiada dalam senarai? Tekan \"Create\" untuk menambah penceramah baharu.",
+        "to": [
+          {
+            "type": "penceramah"
+          }
+        ],
         "name": "penceramah",
-        "type": "string",
+        "type": "reference",
         "title": "Penceramah biasa"
       },
       {
@@ -911,6 +935,9 @@
         "title": "Tarikh baharu"
       },
       {
+        "options": {
+          "filter": "diarkibkan != true"
+        },
         "validation": [
           {
             "level": "error",
@@ -921,10 +948,16 @@
             ]
           }
         ],
+        "description": "Pilih daripada senarai, atau tekan \"Create\" untuk menambah penceramah baharu.",
+        "to": [
+          {
+            "type": "penceramah"
+          }
+        ],
         "hidden": "conditional",
         "name": "penceramahJemputan",
-        "type": "string",
-        "title": "Nama penceramah jemputan"
+        "type": "reference",
+        "title": "Penceramah jemputan"
       },
       {
         "validation": [
@@ -1560,6 +1593,79 @@
       }
     ],
     "name": "jawatan",
+    "type": "document"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "description": "Seperti yang mahu dipaparkan. Contoh: Ustaz Ahmad bin Ali",
+        "name": "nama",
+        "type": "string",
+        "title": "Nama penuh dengan gelaran"
+      },
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "max",
+                "constraint": 80
+              }
+            ]
+          }
+        ],
+        "description": "Satu baris. Contoh: Imam Masjid Al-Ihsan, atau Pensyarah UIAM Kuantan",
+        "name": "keterangan",
+        "type": "string",
+        "title": "Keterangan ringkas (pilihan)"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "description": "Gambar wajah yang jelas. Klik \"Edit\" untuk memilih bahagian wajah supaya dipotong dengan betul.",
+        "name": "gambar",
+        "type": "gambar",
+        "title": "Gambar (pilihan)"
+      },
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "custom"
+              }
+            ]
+          }
+        ],
+        "description": "Wajib jika ada gambar. Tanpa kebenaran, laman web memaparkan huruf awal nama sahaja.",
+        "hidden": "conditional",
+        "name": "kebenaranGambar",
+        "type": "boolean",
+        "title": "Penceramah telah memberi kebenaran untuk gambar ini dipaparkan"
+      },
+      {
+        "initialValue": false,
+        "description": "Gunakan ini dan bukannya memadam. Item akan hilang dari laman web tetapi boleh dipulihkan dari senarai \"Arkib\".",
+        "name": "diarkibkan",
+        "type": "boolean",
+        "title": "Arkibkan (sembunyikan daripada laman web)"
+      }
+    ],
+    "name": "penceramah",
     "type": "document"
   },
   {

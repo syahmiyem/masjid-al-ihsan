@@ -437,9 +437,10 @@ async function build(): Promise<Poster[]> {
         dermaPoster(f, info, {
           contoh: derma.status === 'contoh',
           qrDataUrl,
+          qrName: derma.qrName ?? derma.accountName,
           accountName: derma.accountName,
           bank: derma.bank,
-          accountNumber: groupDigits(derma.accountNumber),
+          accountNumber: derma.accountNumberDisplay ?? groupDigits(derma.accountNumber),
         }),
       ],
       'Sumbangan untuk Masjid',

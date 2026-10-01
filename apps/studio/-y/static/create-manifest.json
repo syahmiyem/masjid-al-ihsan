@@ -1,5 +1,5 @@
 {
-  "createdAt": "2026-10-01T01:28:53.988Z",
+  "createdAt": "2026-10-01T01:54:54.279Z",
   "studioVersion": "6.17.0",
   "version": 3,
   "workspaces": [
@@ -13,7 +13,7 @@
       },
       "name": "kandungan",
       "projectId": "1xd617ey",
-      "schema": "f0228a83.create-schema.json",
+      "schema": "c7b3800f.create-schema.json",
       "subtitle": "Kandungan yang dipaparkan di laman web",
       "title": "Laman Web Masjid (sebenar)",
       "tools": "6d71d79e.create-tools.json"
@@ -28,7 +28,7 @@
       },
       "name": "latihan",
       "projectId": "1xd617ey",
-      "schema": "f0228a83.create-schema.json",
+      "schema": "c7b3800f.create-schema.json",
       "subtitle": "Tidak dipaparkan di laman web — selamat untuk mencuba",
       "title": "Latihan (praktis sahaja)",
       "tools": "6d71d79e.create-tools.json"
