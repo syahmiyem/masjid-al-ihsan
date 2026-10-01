@@ -8,10 +8,11 @@
   "workers_dev": false,
   "preview_urls": false,
   "triggers": {
+    // Cloudflare cron: day-of-week is 1–7 (Sunday = 1) or SUN–SAT; 0 is rejected, so names are used.
     "crons": [
       "5 16 * * *", // 00:05 MYT daily — rebuild the site
-      "0 20 * * 0", // 04:00 MYT Monday — compare JAKIM e-Solat with committed data
-      "0 19 * * 6", //  03:00 MYT Sunday — export Sanity to R2
+      "0 20 * * SUN", // 04:00 MYT Monday (Sunday 20:00 UTC) — compare JAKIM e-Solat with committed data
+      "0 19 * * SAT", // 03:00 MYT Sunday (Saturday 19:00 UTC) — export Sanity to R2
     ],
   },
   "vars": {
