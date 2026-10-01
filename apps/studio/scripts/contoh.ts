@@ -6,9 +6,46 @@
 //
 // Re-running replaces the same documents (createOrReplace), so it is safe to run more than once.
 
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { getCliClient } from 'sanity/cli';
 
 const client = getCliClient({ apiVersion: '2025-02-19' });
+
+// Speakers (D-58). Two get a placeholder silhouette (no real faces) to show photos on the site and in
+// share images; the others show the initials fallback.
+const upload = async (file: string) =>
+  (
+    await client.assets.upload('image', readFileSync(join(import.meta.dirname, 'contoh-assets', file)), {
+      filename: file,
+    })
+  )._id;
+const photo = async (file: string, alt: string) => ({
+  _type: 'gambar',
+  alt,
+  asset: { _type: 'reference', _ref: await upload(file) },
+});
+const penceramah = [
+  {
+    _id: 'contoh-penceramah-satu',
+    _type: 'penceramah',
+    nama: 'Ustaz Contoh Satu',
+    keterangan: 'CONTOH: Imam Masjid Al-Ihsan',
+    gambar: await photo('penceramah-1.png', 'Gambar contoh (siluet) Ustaz Contoh Satu'),
+    kebenaranGambar: true,
+  },
+  {
+    _id: 'contoh-penceramah-dua',
+    _type: 'penceramah',
+    nama: 'Ustaz Contoh Dua',
+    keterangan: 'CONTOH: Penceramah jemputan tetap',
+    gambar: await photo('penceramah-2.png', 'Gambar contoh (siluet) Ustaz Contoh Dua'),
+    kebenaranGambar: true,
+  },
+  { _id: 'contoh-penceramah-tiga', _type: 'penceramah', nama: 'Ustaz Contoh Tiga' },
+  { _id: 'contoh-penceramah-empat', _type: 'penceramah', nama: 'Ustazah Contoh Empat' },
+  { _id: 'contoh-penceramah-jemputan', _type: 'penceramah', nama: 'Ustaz Contoh Jemputan' },
+];
 const ref = (id: string) => ({ _type: 'reference', _ref: id });
 const key = (i: number) => `k${i}`;
 const blocks = (...paras: string[]) =>
@@ -37,7 +74,7 @@ const siri = [
     hari: 'isnin',
     masa: { _type: 'masa', jenis: 'solat', waktuSolat: 'selepas-maghrib' },
     tempat: 'contoh-tempat-dewan-solat',
-    penceramah: 'Ustaz Contoh Satu',
+    penceramah: ref('contoh-penceramah-satu'),
     topik: 'CONTOH: Kitab Riyadhus Solihin',
   },
   {
@@ -48,7 +85,7 @@ const siri = [
     hari: 'ahad',
     masa: { _type: 'masa', jenis: 'solat', waktuSolat: 'selepas-subuh' },
     tempat: 'contoh-tempat-dewan-solat',
-    penceramah: 'Ustaz Contoh Dua',
+    penceramah: ref('contoh-penceramah-dua'),
     topik: 'CONTOH: Tafsir Juzuk Amma',
   },
   {
@@ -59,7 +96,7 @@ const siri = [
     hari: 'khamis',
     masa: { _type: 'masa', jenis: 'solat', waktuSolat: 'selepas-isyak' },
     tempat: 'contoh-tempat-bilik-kuliah',
-    penceramah: 'Ustaz Contoh Tiga',
+    penceramah: ref('contoh-penceramah-tiga'),
   },
   {
     _id: 'contoh-kuliah-muslimah',
@@ -70,7 +107,7 @@ const siri = [
     mingguKe: '1',
     masa: { _type: 'masa', jenis: 'jam', jam: '10:00', jamTamat: '11:30' },
     tempat: 'contoh-tempat-dewan-serbaguna',
-    penceramah: 'Ustazah Contoh Empat',
+    penceramah: ref('contoh-penceramah-empat'),
     sasaran: 'muslimah',
   },
 ].map(({ slug, tempat, ...rest }) => ({
@@ -97,7 +134,7 @@ const perubahan = [
     siri: ref('contoh-kuliah-subuh'),
     tarikh: '2026-10-18',
     jenis: 'penceramah-jemputan',
-    penceramahJemputan: 'Ustaz Contoh Jemputan',
+    penceramahJemputan: ref('contoh-penceramah-jemputan'),
   },
 ];
 
@@ -132,7 +169,7 @@ const aktiviti = [
     masa: { _type: 'masa', jenis: 'jam', jam: '08:30', jamTamat: '13:00' },
     tempat: 'contoh-tempat-dewan-serbaguna',
     kategori: 'program-khas',
-    penceramah: 'CONTOH: Unit Pengurusan Jenazah',
+    penganjur: 'CONTOH: Unit Pengurusan Jenazah',
     penerangan: 'CONTOH: Teori dan amali. Terbuka kepada lelaki dan wanita.',
   },
   {
@@ -290,6 +327,7 @@ const siteSettings = {
 
 type Doc = { _id: string; _type: string; [field: string]: unknown };
 const docs: Doc[] = [
+  ...penceramah,
   ...tempat,
   ...siri,
   ...perubahan,

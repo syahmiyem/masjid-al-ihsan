@@ -3,6 +3,7 @@ import { jawatan } from './jawatan';
 import { kuliahPerubahan } from './kuliahPerubahan';
 import { kuliahSiri } from './kuliahSiri';
 import { notis } from './notis';
+import { penceramah } from './penceramah';
 import { gambar } from './objects/gambar';
 import { masa } from './objects/masa';
 import { perkhidmatan } from './perkhidmatan';
@@ -20,6 +21,7 @@ export const schemaTypes = [
   notis,
   perkhidmatan,
   jawatan,
+  penceramah,
   tempat,
   siteSettings,
 ];

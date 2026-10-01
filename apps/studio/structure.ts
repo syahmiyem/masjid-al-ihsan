@@ -42,6 +42,7 @@ export const structure: StructureResolver = (S) =>
         { field: 'susunan', direction: 'asc' },
       ]),
       S.divider(),
+      active(S, 'penceramah', 'Penceramah', [{ field: 'nama', direction: 'asc' }]),
       S.documentTypeListItem('tempat').title('Tempat'),
       S.listItem()
         .title('Tetapan Masjid')

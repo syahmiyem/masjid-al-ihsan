@@ -652,7 +652,7 @@ var p = n({
   }),
   A = r({
     name: `perkhidmatan`,
-    title: `Perkhidmatan`,
+    title: `Khidmat`,
     type: `document`,
     groups: [
       { name: `utama`, title: `Utama`, default: !0 },
@@ -663,7 +663,7 @@ var p = n({
     fields: [
       n({
         name: `nama`,
-        title: `Nama perkhidmatan`,
+        title: `Nama khidmat`,
         description: `Contoh: Dewan Akad Nikah`,
         type: `string`,
         group: `utama`,
@@ -682,7 +682,7 @@ var p = n({
       n({
         name: `ringkasan`,
         title: `Ringkasan satu ayat`,
-        description: `Dipaparkan pada kad perkhidmatan dan hasil carian Google (maksimum 160 aksara).`,
+        description: `Dipaparkan pada kad khidmat dan hasil carian Google (maksimum 160 aksara).`,
         type: `string`,
         group: `utama`,
         validation: (e) => e.required().max(160),
@@ -798,7 +798,7 @@ var p = n({
       }),
       n({
         name: `whatsapp`,
-        title: `Nombor WhatsApp untuk perkhidmatan ini`,
+        title: `Nombor WhatsApp untuk khidmat ini`,
         description: `Kosongkan untuk menggunakan nombor WhatsApp masjid. Format 60xxxxxxxxx.`,
         type: `string`,
         group: `tempahan`,
@@ -922,11 +922,8 @@ var p = n({
           .params({ type: t })
           .defaultOrdering(r),
       ),
-  F = t({
-    name: `default`,
-    title: `Masjid Al-Ihsan — Pentadbiran`,
+  F = {
     projectId: `1xd617ey`,
-    dataset: `production`,
     plugins: [
       c({
         title: `Kandungan`,
@@ -952,7 +949,7 @@ var p = n({
                 ),
               P(e, `notis`, `Notis Penting`, [{ field: `paparDari`, direction: `desc` }]),
               e.divider(),
-              P(e, `perkhidmatan`, `Perkhidmatan`, [{ field: `susunan`, direction: `asc` }]),
+              P(e, `perkhidmatan`, `Khidmat`, [{ field: `susunan`, direction: `asc` }]),
               P(e, `jawatan`, `Carta Organisasi`, [
                 { field: `kumpulan`, direction: `asc` },
                 { field: `susunan`, direction: `asc` },
@@ -988,5 +985,23 @@ var p = n({
             ? e
             : e.filter(({ action: e }) => e !== `delete`),
     },
-  });
-i(document.getElementById(`sanity`), F, { reactStrictMode: !1, basePath: `/` });
+  },
+  I = t([
+    {
+      ...F,
+      name: `kandungan`,
+      title: `Laman Web Masjid (sebenar)`,
+      subtitle: `Kandungan yang dipaparkan di laman web`,
+      basePath: `/kandungan`,
+      dataset: `production`,
+    },
+    {
+      ...F,
+      name: `latihan`,
+      title: `Latihan (praktis sahaja)`,
+      subtitle: `Tidak dipaparkan di laman web — selamat untuk mencuba`,
+      basePath: `/latihan`,
+      dataset: `latihan`,
+    },
+  ]);
+i(document.getElementById(`sanity`), I, { reactStrictMode: !1, basePath: `/` });

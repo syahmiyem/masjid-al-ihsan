@@ -2,8 +2,9 @@
 // Jadual Kuliah (plan 4.2): "Minggu Ini" with changes applied, weekly timetable Isnin → Ahad, monthly series.
 import ShareBar from '../../components/ShareBar.astro';
 import { sharePage } from '../../lib/share';
-import { Clock, MapPin, User } from '@lucide/astro';
+import { Clock, MapPin } from '@lucide/astro';
 import EventItem from '../../components/ui/EventItem.astro';
+import SpeakerAvatar from '../../components/ui/SpeakerAvatar.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { addDays } from '../../lib/dates';
 import { formatDate } from '../../lib/format';
@@ -94,7 +95,7 @@ const monthly = active
               </span>
               {s.penceramah && (
                 <span class="meta">
-                  <User size={18} aria-hidden="true" /> {s.penceramah}
+                  <SpeakerAvatar speaker={s.penceramah} size={32} /> {s.penceramah.nama}
                 </span>
               )}
             </li>

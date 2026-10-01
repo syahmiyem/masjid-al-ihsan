@@ -1,0 +1,52 @@
+---
+// Speaker card on kuliah and activity pages (D-58): photo (or initials), name and short description.
+import type { Speaker } from '../../lib/types';
+import SpeakerAvatar from './SpeakerAvatar.astro';
+
+interface Props {
+  speaker: Speaker;
+  label?: string;
+}
+const { speaker, label = 'Penceramah' } = Astro.props;
+---
+
+<div class="speaker-card reveal">
+  <SpeakerAvatar speaker={speaker} size={76} />
+  <div class="text">
+    <span class="label">{label}</span>
+    <span class="name">{speaker.nama}</span>
+    {speaker.keterangan && <span class="role">{speaker.keterangan}</span>}
+  </div>
+</div>
+
+<style>
+  .speaker-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1rem;
+    margin: 0 0 var(--s2);
+    border-radius: var(--radius);
+    background: var(--c-primary-soft);
+    border-left: 5px solid var(--c-accent);
+  }
+  .text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .label {
+    font-size: 1rem;
+    color: var(--c-text-muted);
+  }
+  .name {
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: var(--c-primary);
+    line-height: 1.25;
+  }
+  .role {
+    font-size: 1rem;
+    color: var(--c-text-muted);
+  }
+</style>

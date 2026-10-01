@@ -1,20 +1,36 @@
 {
-  "createdAt": "2026-10-01T00:32:45.379Z",
+  "createdAt": "2026-10-01T01:28:53.988Z",
   "studioVersion": "6.17.0",
   "version": 3,
   "workspaces": [
     {
-      "basePath": "/",
+      "basePath": "/kandungan",
       "dataset": "production",
-      "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 32 32\"><rect width=\"32\" height=\"32\" rx=\"2\" fill=\"#04b97a\"></rect><text x=\"50%\" y=\"50%\" text-anchor=\"middle\" alignment-baseline=\"middle\" fill=\"hsla(159, 96%, 0%, 1)\" style=\"font-family:Inter, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, &quot;Liberation Sans&quot;, Helvetica, Arial, system-ui, sans-serif;font-weight:500;font-size:13px;transform:translateY(1px)\">MA</text></svg>",
+      "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 32 32\"><rect width=\"32\" height=\"32\" rx=\"2\" fill=\"#721fe5\"></rect><text x=\"50%\" y=\"50%\" text-anchor=\"middle\" alignment-baseline=\"middle\" fill=\"hsla(265, 79%, 91%, 1)\" style=\"font-family:Inter, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, &quot;Liberation Sans&quot;, Helvetica, Arial, system-ui, sans-serif;font-weight:500;font-size:13px;transform:translateY(1px)\">LW</text></svg>",
       "mediaLibrary": {
         "enabled": false,
         "__internal": {}
       },
-      "name": "default",
+      "name": "kandungan",
       "projectId": "1xd617ey",
-      "schema": "b08f13a9.create-schema.json",
-      "title": "Masjid Al-Ihsan — Pentadbiran",
+      "schema": "f0228a83.create-schema.json",
+      "subtitle": "Kandungan yang dipaparkan di laman web",
+      "title": "Laman Web Masjid (sebenar)",
+      "tools": "6d71d79e.create-tools.json"
+    },
+    {
+      "basePath": "/latihan",
+      "dataset": "latihan",
+      "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 32 32\"><rect width=\"32\" height=\"32\" rx=\"2\" fill=\"#653a0b\"></rect><text x=\"50%\" y=\"50%\" text-anchor=\"middle\" alignment-baseline=\"middle\" fill=\"hsla(31, 80%, 62%, 1)\" style=\"font-family:Inter, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, &quot;Liberation Sans&quot;, Helvetica, Arial, system-ui, sans-serif;font-weight:500;font-size:13px;transform:translateY(1px)\">LP</text></svg>",
+      "mediaLibrary": {
+        "enabled": false,
+        "__internal": {}
+      },
+      "name": "latihan",
+      "projectId": "1xd617ey",
+      "schema": "f0228a83.create-schema.json",
+      "subtitle": "Tidak dipaparkan di laman web — selamat untuk mencuba",
+      "title": "Latihan (praktis sahaja)",
       "tools": "6d71d79e.create-tools.json"
     }
   ]

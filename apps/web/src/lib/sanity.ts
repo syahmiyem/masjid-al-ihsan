@@ -12,6 +12,10 @@ export const client = createClient({
   perspective: 'published',
 });
 
+// Speaker as an object whether stored as a reference (current) or plain text (older data)
+const SPEAKER = (field: string) =>
+  `select(defined(${field}._ref) => ${field}->{nama, keterangan, "gambar": select(kebenaranGambar == true => gambar{alt, asset, crop, hotspot})}, defined(${field}) => {"nama": ${field}})`;
+
 const memo = new Map<string, Promise<unknown>>();
 function cached<T>(key: string, query: string, params: Record<string, unknown> = {}): Promise<T> {
   if (!memo.has(key)) memo.set(key, client.fetch<T>(query, params));
@@ -73,7 +77,7 @@ export const getAktiviti = () =>
     'aktiviti',
     `*[_type == "aktiviti" && defined(slug.current) && diarkibkan != true] | order(tarikhMula asc) {
       _id, tajuk, "slug": slug.current, tarikhMula, tarikhTamat, masa, "tempat": tempat->nama,
-      kategori, sasaran, penceramah, penerangan, status, tarikhBaharu, notaPerubahan
+      kategori, sasaran, "penceramah": ${SPEAKER('penceramah')}, penganjur, penerangan, status, tarikhBaharu, notaPerubahan
     }`,
   );
 
@@ -82,7 +86,7 @@ export const getKuliahSiri = () =>
     'kuliahSiri',
     `*[_type == "kuliahSiri" && defined(slug.current) && diarkibkan != true] | order(nama asc) {
       _id, nama, "slug": slug.current, jenis, hari, mingguKe, masa, "tempat": tempat->nama,
-      penceramah, topik, sasaran, aktifDari, aktifHingga, penerangan
+      "penceramah": ${SPEAKER('penceramah')}, topik, sasaran, aktifDari, aktifHingga, penerangan
     }`,
   );
 
@@ -90,7 +94,7 @@ export const getKuliahPerubahan = () =>
   cached<KuliahPerubahan[]>(
     'kuliahPerubahan',
     `*[_type == "kuliahPerubahan" && diarkibkan != true] {
-      _id, "siri": siri._ref, tarikh, jenis, tarikhBaharu, penceramahJemputan,
+      _id, "siri": siri._ref, tarikh, jenis, tarikhBaharu, "penceramahJemputan": ${SPEAKER('penceramahJemputan')},
       "tempatBaharu": tempatBaharu->nama, masaBaharu, sebab
     }`,
   );

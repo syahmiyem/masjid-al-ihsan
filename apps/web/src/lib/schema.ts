@@ -15,7 +15,8 @@ import type {
 } from 'schema-dts';
 import siteConfig from '../../../../config/site.json';
 import type { Perkhidmatan, Settings } from './sanity.ts';
-import type { Aktiviti, Masa } from './types.ts';
+import { speakerPhoto } from './speaker.ts';
+import type { Aktiviti, Masa, Speaker } from './types.ts';
 
 const NAME = 'Masjid Al-Ihsan Felda Sungai Panching Selatan';
 export const mosqueId = (site: URL) => new URL('/#masjid', site).href;
@@ -75,6 +76,11 @@ function when(date: string, masa: Masa, which: 'start' | 'end' = 'start'): strin
   return time ? `${date}T${time}:00+08:00` : date;
 }
 
+const person = (s: Speaker) => {
+  const image = speakerPhoto(s, 400, 'jpg');
+  return { '@type': 'Person' as const, name: s.nama, ...(image ? { image } : {}) };
+};
+
 const STATUS: Record<string, EventStatusType> = {
   dijadualkan: 'https://schema.org/EventScheduled',
   dipinda: 'https://schema.org/EventScheduled',
@@ -101,7 +107,7 @@ export function activityEvent(a: Aktiviti, settings: Settings, site: URL): Event
     inLanguage: 'ms-MY',
     image: new URL(`/gambar/aktiviti/${a.slug}/og.png`, site).href,
     ...(a.penerangan ? { description: a.penerangan } : {}),
-    ...(a.penceramah ? { performer: { '@type': 'Person', name: a.penceramah } } : {}),
+    ...(a.penceramah ? { performer: person(a.penceramah) } : {}),
   };
 }
 
@@ -110,7 +116,7 @@ export function kuliahSeries(
   name: string,
   path: string,
   description: string,
-  occurrences: { date: string; masa: Masa; status: string; place: string; speaker?: string }[],
+  occurrences: { date: string; masa: Masa; status: string; place: string; speaker?: Speaker }[],
   settings: Settings,
   site: URL,
 ): EventSeries {
@@ -131,7 +137,7 @@ export function kuliahSeries(
         location: { '@type': 'Place', name: `${o.place}, ${NAME}`, address: postalAddress(settings) },
         organizer: { '@id': mosqueId(site) },
         isAccessibleForFree: true,
-        ...(o.speaker ? { performer: { '@type': 'Person', name: o.speaker } } : {}),
+        ...(o.speaker ? { performer: person(o.speaker) } : {}),
       } satisfies Event;
     }),
   };

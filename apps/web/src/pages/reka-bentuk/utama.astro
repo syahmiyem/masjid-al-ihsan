@@ -36,7 +36,7 @@ const maghrib = today ? formatTime(today.maghrib) : '';
     title="CONTOH: Kuliah Maghrib Mingguan"
     time={`Selepas Maghrib${maghrib ? ` (${maghrib})` : ''}`}
     place="Dewan Solat Utama"
-    speaker="Ustaz Contoh Satu"
+    speaker={{ nama: 'Ustaz Contoh Satu' }}
     href="#"
   />
   <EventItem
@@ -53,7 +53,7 @@ const maghrib = today ? formatTime(today.maghrib) : '';
     title="CONTOH: Kuliah Dhuha Muslimah"
     time="10:00 pagi"
     place="Dewan Serbaguna"
-    speaker="Ustazah Contoh Dua"
+    speaker={{ nama: 'Ustazah Contoh Dua' }}
     href="#"
   />
 

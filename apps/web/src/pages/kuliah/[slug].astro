@@ -3,6 +3,7 @@
 import { ChevronLeft } from '@lucide/astro';
 import ShareBar from '../../components/ShareBar.astro';
 import EventItem from '../../components/ui/EventItem.astro';
+import SpeakerCard from '../../components/ui/SpeakerCard.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { addDays } from '../../lib/dates';
 import { googleCalendarLink, kuliahRrule } from '../../lib/ics';
@@ -77,6 +78,7 @@ const AUDIENCE: Record<string, string> = {
   </p>
   <h1>{siri.nama}</h1>
 
+  {siri.penceramah && <SpeakerCard speaker={siri.penceramah} />}
   <dl class="card facts">
     <div>
       <dt>Bila</dt>
@@ -90,12 +92,6 @@ const AUDIENCE: Record<string, string> = {
       <dt>Tempat</dt>
       <dd>{siri.tempat}</dd>
     </div>
-    {siri.penceramah && (
-      <div>
-        <dt>Penceramah</dt>
-        <dd>{siri.penceramah}</dd>
-      </div>
-    )}
     {siri.topik && (
       <div>
         <dt>Topik / Kitab</dt>
@@ -149,7 +145,7 @@ const AUDIENCE: Record<string, string> = {
   }
   .facts div {
     display: grid;
-    grid-template-columns: 8rem 1fr;
+    grid-template-columns: 6.5rem 1fr;
     gap: 0.5rem;
     padding: 0.4rem 0;
   }

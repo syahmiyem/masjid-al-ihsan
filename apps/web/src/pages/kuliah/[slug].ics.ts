@@ -24,7 +24,7 @@ export const GET: APIRoute = async ({ props, site }) => {
     date: first,
     masa: s.masa,
     location: calendarLocation(s.tempat),
-    description: [s.penceramah && `Penceramah: ${s.penceramah}`, s.topik].filter(Boolean).join('\n'),
+    description: [s.penceramah && `Penceramah: ${s.penceramah.nama}`, s.topik].filter(Boolean).join('\n'),
     url: new URL(`/kuliah/${s.slug}`, site).href,
     rrule: kuliahRrule(s),
     exdates,

@@ -64,12 +64,15 @@ export const kuliahPerubahan = defineType({
     }),
     defineField({
       name: 'penceramahJemputan',
-      title: 'Nama penceramah jemputan',
-      type: 'string',
+      title: 'Penceramah jemputan',
+      description: 'Pilih daripada senarai, atau tekan "Create" untuk menambah penceramah baharu.',
+      type: 'reference',
+      to: [{ type: 'penceramah' }],
+      options: { filter: 'diarkibkan != true' },
       hidden: ({ document }) => document?.jenis !== 'penceramah-jemputan',
       validation: (rule) =>
         rule.custom((value, { document }) =>
-          document?.jenis !== 'penceramah-jemputan' || value ? true : 'Sila isi nama penceramah.',
+          document?.jenis !== 'penceramah-jemputan' || value ? true : 'Sila pilih penceramah jemputan.',
         ),
     }),
     defineField({

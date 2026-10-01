@@ -18,6 +18,8 @@ import { ruleLabel } from '../lib/kuliah.ts';
 import { masaLabel, masaLabelShort } from '../lib/masa.ts';
 import { getJawatan, getPerkhidmatan, getSettings } from '../lib/sanity.ts';
 import { calendarSources, today } from '../lib/site.ts';
+import { initials, speakerPhoto } from '../lib/speaker.ts';
+import type { Speaker } from '../lib/types.ts';
 import { prayerLabel } from '../lib/waktu-solat.ts';
 import { prayerDay, prayerDaysOfMonth, prayerMonths, prayerZone } from '../lib/waktu-solat-data.ts';
 import { FORMATS, type FormatKey, type FrameInfo } from './frame.ts';
@@ -29,6 +31,7 @@ import {
   ogPoster,
   prayerMonthPosters,
   prayerTodayPoster,
+  type Avatar,
   type ListBlock,
 } from './templates.ts';
 
@@ -84,6 +87,25 @@ function add(
   );
 }
 
+// Speaker photos are fetched once per build from Sanity's image CDN (already cropped square) and embedded
+// as data URLs, because Satori can't load remote images reliably. Any failure falls back to initials.
+const avatars = new Map<string, Avatar>();
+async function loadAvatar(s: Speaker | undefined): Promise<void> {
+  if (!s || avatars.has(s.nama)) return;
+  const url = speakerPhoto(s, 240, 'jpg');
+  let src: string | undefined;
+  if (url) {
+    try {
+      const res = await fetch(url);
+      if (res.ok) src = `data:image/jpeg;base64,${Buffer.from(await res.arrayBuffer()).toString('base64')}`;
+    } catch {
+      /* initials fallback */
+    }
+  }
+  avatars.set(s.nama, { src, initials: initials(s.nama) });
+}
+const avatarOf = (s?: Speaker) => (s ? avatars.get(s.nama) : undefined);
+
 /** Calendar items → rows, with the date block only on the first row of each day. */
 function eventBlocks(items: CalendarItem[], withHeadings = false): ListBlock[] {
   const blocks: ListBlock[] = [];
@@ -104,7 +126,8 @@ function eventBlocks(items: CalendarItem[], withHeadings = false): ListBlock[] {
         status: i.status === 'berlangsung' || i.status === 'dijadualkan' ? undefined : i.status,
         statusText: i.label ?? STATUS_TEXT[i.status],
         wide: withHeadings,
-        extra: withHeadings ? i.speaker : undefined,
+        extra: withHeadings ? i.speaker?.nama : undefined,
+        avatar: withHeadings ? avatarOf(i.speaker) : undefined,
       },
     });
     lastDate = i.date;
@@ -133,6 +156,13 @@ async function build(): Promise<Poster[]> {
   const now = today();
   const info: FrameInfo = { uat, host, updated: formatDateShort(now.date) };
   const src = await calendarSources();
+  await Promise.all(
+    [
+      ...src.siri.map((s) => s.penceramah),
+      ...src.aktiviti.map((a) => a.penceramah),
+      ...src.perubahan.map((c) => c.penceramahJemputan),
+    ].map(loadAvatar),
+  );
   const [services, jawatan, settings] = await Promise.all([getPerkhidmatan(), getJawatan(), getSettings()]);
   const out: Poster[] = [];
 
@@ -204,8 +234,11 @@ async function build(): Promise<Poster[]> {
         ['Tarikh', formatDate(date)],
         ['Masa', time],
         ['Tempat', a.tempat],
-        ...(a.penceramah ? [['Penceramah / Penganjur', a.penceramah]] : []),
+        ...(a.penganjur ? [['Penganjur', a.penganjur]] : []),
       ] as [string, string][],
+      speaker: a.penceramah
+        ? { name: a.penceramah.nama, role: a.penceramah.keterangan, avatar: avatarOf(a.penceramah)! }
+        : undefined,
       description: a.penerangan,
       footerLine: 'Maklumat lanjut di laman web masjid',
     };
@@ -244,7 +277,8 @@ async function build(): Promise<Poster[]> {
         row: {
           title: s.nama.replace(' (CONTOH)', ''),
           meta: [masaLabelShort(s.masa), s.tempat].join(' · '),
-          extra: s.penceramah,
+          extra: s.penceramah?.nama,
+          avatar: avatarOf(s.penceramah),
           wide: true,
         },
       });
@@ -259,7 +293,8 @@ async function build(): Promise<Poster[]> {
         row: {
           title: s.nama.replace(' (CONTOH)', ''),
           meta: `${ruleLabel(s)} · ${masaLabelShort(s.masa)}`,
-          extra: s.penceramah,
+          extra: s.penceramah?.nama,
+          avatar: avatarOf(s.penceramah),
           wide: true,
         },
       });
@@ -284,9 +319,11 @@ async function build(): Promise<Poster[]> {
         ['Bila', ruleLabel(s)],
         ['Masa', masaLabelShort(s.masa)],
         ['Tempat', s.tempat],
-        ...(s.penceramah ? [['Penceramah', s.penceramah]] : []),
         ...(s.topik ? [['Topik / Kitab', s.topik]] : []),
       ] as [string, string][],
+      speaker: s.penceramah
+        ? { name: s.penceramah.nama, role: s.penceramah.keterangan, avatar: avatarOf(s.penceramah)! }
+        : undefined,
       description: s.penerangan,
       footerLine: 'Tarikh terkini dan sebarang perubahan di laman web masjid',
     };

@@ -1116,7 +1116,7 @@
         "description": "Contoh: Dewan Akad Nikah",
         "name": "nama",
         "type": "string",
-        "title": "Nama perkhidmatan"
+        "title": "Nama khidmat"
       },
       {
         "options": {
@@ -1161,7 +1161,7 @@
             ]
           }
         ],
-        "description": "Dipaparkan pada kad perkhidmatan dan hasil carian Google (maksimum 160 aksara).",
+        "description": "Dipaparkan pada kad khidmat dan hasil carian Google (maksimum 160 aksara).",
         "name": "ringkasan",
         "type": "string",
         "title": "Ringkasan satu ayat"
@@ -1351,7 +1351,7 @@
         "description": "Kosongkan untuk menggunakan nombor WhatsApp masjid. Format 60xxxxxxxxx.",
         "name": "whatsapp",
         "type": "string",
-        "title": "Nombor WhatsApp untuk perkhidmatan ini"
+        "title": "Nombor WhatsApp untuk khidmat ini"
       },
       {
         "validation": [
@@ -1418,7 +1418,8 @@
       }
     ],
     "name": "perkhidmatan",
-    "type": "document"
+    "type": "document",
+    "title": "Khidmat"
   },
   {
     "fields": [
