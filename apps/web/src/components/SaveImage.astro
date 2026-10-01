@@ -23,6 +23,14 @@ const label = (p: (typeof posters)[number]) =>
       Gambar untuk dikongsi di WhatsApp dan media sosial. Pilih <strong>Potret</strong> untuk kiriman biasa
       atau <strong>Status WhatsApp</strong> untuk status.
     </p>
+    <p class="ios-hint" hidden>
+      Tekan <strong>Simpan / Kongsi</strong>, kemudian pilih <strong>Simpan Imej</strong> untuk simpan ke
+      Foto, atau pilih WhatsApp.
+    </p>
+    <p class="ios-hint-old" hidden>
+      Tekan <strong>Buka Gambar</strong>, kemudian tekan lama pada gambar dan pilih{' '}
+      <strong>Tambah ke Foto</strong>.
+    </p>
     <ul>
       {posters.map((p) => (
         <li>
@@ -40,7 +48,7 @@ const label = (p: (typeof posters)[number]) =>
             {p.title}
             <span class="format">{label(p)}</span>
           </span>
-          <a class="btn btn-secondary small" href={p.path} download={fileName(p.path)}>
+          <a class="btn btn-secondary small" href={p.path} download={fileName(p.path)} data-download>
             <Download size={20} aria-hidden="true" /> Muat Turun
           </a>
           <button
@@ -59,20 +67,67 @@ const label = (p: (typeof posters)[number]) =>
 )}
 
 <script>
-  // Show "Kongsi" only where the browser can share image files (plan 4.4 browser note).
+  // "Kongsi" appears only where the browser can share image files (plan 4.4 browser note).
+  // iPhone/iPad: <a download> can stall in Safari's Downloads list and saves to Files, where older users
+  // won't find it — so on iOS, saving goes through the share sheet ("Simpan Imej" saves to Photos).
+  const isIOS =
+    /iP(hone|ad|od)/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   const probe = new File([new Uint8Array([0])], 'probe.png', { type: 'image/png' });
-  if (navigator.canShare?.({ files: [probe] })) {
-    for (const button of document.querySelectorAll<HTMLButtonElement>('[data-share-file]')) {
-      button.hidden = false;
-      button.addEventListener('click', async () => {
-        try {
-          const blob = await (await fetch(button.dataset.shareFile!)).blob();
-          const file = new File([blob], button.dataset.name!, { type: 'image/png' });
-          await navigator.share({ files: [file] });
-        } catch {
-          /* cancelled or unsupported: "Muat Turun" remains available */
-        }
+  const canShareFiles = Boolean(navigator.canShare?.({ files: [probe] }));
+
+  // Fetch images when the panel opens, so share() runs straight after the tap (Safari needs a recent tap)
+  const files = new Map<string, Promise<File>>();
+  const fileFor = (path: string, name: string) => {
+    if (!files.has(path)) {
+      files.set(
+        path,
+        fetch(path)
+          .then((r) => r.blob())
+          .then((blob) => new File([blob], name, { type: 'image/png' })),
+      );
+    }
+    return files.get(path)!;
+  };
+
+  for (const panel of document.querySelectorAll<HTMLDetailsElement>('details.save-image')) {
+    const buttons = [...panel.querySelectorAll<HTMLButtonElement>('[data-share-file]')];
+    const downloads = [...panel.querySelectorAll<HTMLAnchorElement>('[data-download]')];
+
+    if (canShareFiles) {
+      panel.addEventListener('toggle', () => {
+        if (panel.open) for (const b of buttons) void fileFor(b.dataset.shareFile!, b.dataset.name!);
       });
+      for (const button of buttons) {
+        button.hidden = false;
+        button.addEventListener('click', async () => {
+          try {
+            await navigator.share({
+              files: [await fileFor(button.dataset.shareFile!, button.dataset.name!)],
+            });
+          } catch {
+            /* cancelled — nothing to do */
+          }
+        });
+      }
+    }
+
+    if (isIOS) {
+      if (canShareFiles) {
+        // One button does both: the share sheet offers "Simpan Imej" (Photos) and WhatsApp
+        for (const a of downloads) a.hidden = true;
+        for (const b of buttons) b.lastChild!.textContent = ' Simpan / Kongsi';
+        panel.querySelector<HTMLElement>('.ios-hint')!.hidden = false;
+      } else {
+        // Older iOS without file sharing: open the image; long-press → "Tambah ke Foto"
+        for (const a of downloads) {
+          a.removeAttribute('download');
+          a.target = '_blank';
+          a.rel = 'noopener';
+          a.lastChild!.textContent = ' Buka Gambar';
+        }
+        panel.querySelector<HTMLElement>('.ios-hint-old')!.hidden = false;
+      }
     }
   }
 </script>
@@ -120,6 +175,10 @@ const label = (p: (typeof posters)[number]) =>
   .format {
     font-weight: 400;
     color: var(--c-text-muted);
+  }
+  .ios-hint,
+  .ios-hint-old {
+    font-weight: 700;
   }
   .small {
     padding: 0.4rem 0.6rem;
