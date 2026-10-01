@@ -1047,7 +1047,8 @@ Durations assume one developer, part-time to full-time. Before the committee pre
 - ✅ Live "Seterusnya": the Waktu Solat card embeds today + the next two days and updates every minute (next prayer highlight, "Subuh esok" after Isyak, switches day after midnight — Jumaat label included) without a rebuild. All JavaScript on the home page: 1.8 KB gzipped.
 - ✅ Studio safety (plan 7.5, D-26): published URLs are **locked** (shown read-only with an explanation; a Pentadbir can unlock); **archive instead of delete** — an "Arkibkan" switch on activities, kuliah series and changes, services, org positions and notices hides the item from the website and moves it to an "Arkib" list; only a Pentadbir (administrator) sees Delete. Ordering stays a number field (no dragging needed — WCAG 2.5.7).
 - ✅ Scheduler Worker `workers/jadual` built and tested locally: nightly 00:05 MYT deploy-hook call; weekly e-Solat comparison for this year and next (reuses the sync script's parser/validator; reads the committed copy back from the repo; tested live: 2026 identical, 2027 not yet published); weekly Sanity export to R2 when bound. Alerts → optional `ALERT_WEBHOOK_URL` + Worker logs.
-- ⏳ To deploy (needs the mosque's Cloudflare account): connect `workers/jadual` as a second Workers Builds project, set `DEPLOY_HOOK_URL`; decide the alert channel (D-77); enable R2 for backups (may require a payment method on the Cloudflare account even within the free tier).
+- ✅ Scheduler deployed (1 Oct 2026) as a second Workers Builds project with `DEPLOY_HOOK_URL` set. Note: Cloudflare cron day-of-week is 1–7 or SUN–SAT (`0` is rejected), so the weekly triggers use `SUN`/`SAT`.
+- ⏳ Open: confirm the first nightly rebuild (00:05 MYT); alert channel (D-77); R2 for backups (may require a payment method on the Cloudflare account even within the free tier).
 
 ### Phase 3 — Share images & technical SEO on UAT (1–2 weeks)
 
